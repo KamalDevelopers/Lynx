@@ -65,14 +65,14 @@ class MainWindow(QMainWindow):
         navtb.setMovable(False) 
         navtb.setMaximumHeight(30)
 
-        back_btn = QAction("Back", self)
+        back_btn = QAction("", self)
         icon = QIcon("img/arrow_left.ico")
         back_btn.setIcon(icon)
         back_btn.setStatusTip("Back to previous page")
         back_btn.setShortcut('Alt+H')
         back_btn.triggered.connect(lambda: browser.back())
 
-        next_btn = QAction("Forward", self)
+        next_btn = QAction("", self)
         icon = QIcon("img/arrow_right.ico")
         next_btn.setIcon(icon)
         next_btn.setStatusTip("Forward to next page")
@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
         urlbar.setFont(font)
         navtb.addWidget(urlbar)
 
-        reload_btn = QAction("Reload", self)
+        reload_btn = QAction("", self)
         icon = QIcon("img/reload.ico")
         reload_btn.setIcon(icon)
         reload_btn.setStatusTip("Reload page")
@@ -103,7 +103,7 @@ class MainWindow(QMainWindow):
         i = self.tabs.addTab(tabpanel, label)
         
         self.tabs.setCurrentIndex(i)
-        browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(qurl.toString()))
+        browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
 
         browser.loadFinished.connect(lambda _, i = i, browser = browser:
                                      self.tabs.setTabText(i, browser.page().title()))
