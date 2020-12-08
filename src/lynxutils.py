@@ -8,7 +8,7 @@ def decodeLynxUrl(qurl):
         lfile = os.path.abspath(BASE_PATH + "lynx/" + lfile)
     else:
         return qurl.toString()
-    return "file:///" + lfile 
+    return "file:///" + lfile + ".html"
 
 def encodeLynxUrl(qurl):
     if str(qurl.toString())[:8] == "file:///":
