@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
         
         browser = QWebEngineView()
         browser.setUrl(QUrl(qurl))
+        browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(browser)))
         
         settings = QWebEngineSettings.defaultSettings()
         settings.setAttribute(QWebEngineSettings.JavascriptEnabled, WEBKIT_JAVASCRIPT_ENABLED)
@@ -83,14 +84,14 @@ class MainWindow(QMainWindow):
         navtb.setMaximumHeight(30)
 
         back_btn = QAction("", self)
-        icon = QIcon("img/arrow_left.ico")
+        icon = QIcon("img/left_arrow.svg")
         back_btn.setIcon(icon)
         back_btn.setStatusTip("Back to previous page")
         back_btn.setShortcut('Alt+J')
         back_btn.triggered.connect(lambda: browser.back())
 
         next_btn = QAction("", self)
-        icon = QIcon("img/arrow_right.ico")
+        icon = QIcon("img/right_arrow.svg")
         next_btn.setIcon(icon)
         next_btn.setStatusTip("Forward to next page")
         next_btn.setShortcut('Alt+K')
@@ -125,6 +126,9 @@ class MainWindow(QMainWindow):
 
         browser.loadFinished.connect(lambda _, i = i, browser = browser:
                                      self.tabs.setTabText(i, browser.page().title()))
+
+    def fullscreen_webview(self, browser):
+        self.showMaximized()
 
     def tab_open_doubleclick(self, i):
         if i == -1:

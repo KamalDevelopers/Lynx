@@ -223,7 +223,6 @@ QMenu::indicator {
     height: 18px;
 }
 
-
 /* non-exclusive indicator = check box style indicator
    (see QActionGroup::setExclusive) */
 

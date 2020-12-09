@@ -14,6 +14,6 @@ def readBlocker():
 
 def match(url):
     for i, bu in enumerate(rules):
-        if bu in url and i != size:
+        if bu.replace("*", "") in url and i != size:
             return [i, bu]
     return False
