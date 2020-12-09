@@ -1,5 +1,8 @@
 import os
 import sys
+import requests
+
+import adblock
 from confvar import *
 import lynxutils as lxu
 
@@ -12,7 +15,14 @@ from PyQt5.QtGui import *
 import PyQt5.QtWebEngineWidgets
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
-from PyQt5.QtNetwork import *
+from PyQt5.QtWebEngineCore import *
+    
+class RequestInterceptor(QWebEngineUrlRequestInterceptor): 
+    def interceptRequest(self, info): 
+        url = info.requestUrl().toString()
+        if adblock.match(url) != False:
+            info.block(True)
+interceptor = RequestInterceptor()
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -46,9 +56,11 @@ class MainWindow(QMainWindow):
             qurl = QUrl(BROWSER_HOMEPAGE)
 
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
+        QWebEngineProfile.defaultProfile().setRequestInterceptor(interceptor)        
+        
         browser = QWebEngineView()
-        browser.setUrl(qurl)
-
+        browser.setUrl(QUrl(qurl))
+        
         settings = QWebEngineSettings.defaultSettings()
         settings.setAttribute(QWebEngineSettings.JavascriptEnabled, WEBKIT_JAVASCRIPT_ENABLED)
         settings.setAttribute(QWebEngineSettings.FullScreenSupportEnabled, WEBKIT_FULLSCREEN_ENABLED)
@@ -56,9 +68,6 @@ class MainWindow(QMainWindow):
         settings.setAttribute(QWebEngineSettings.PluginsEnabled, WEBKIT_PLUGINS_ENABLED)
         settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, True)
         browser.settings = settings
-
-        cookies = QNetworkCookieJar()
-        cookie = QNetworkCookie()
         
         htabbox = QVBoxLayout()
         navtb = QToolBar("Navigation")
@@ -101,8 +110,9 @@ class MainWindow(QMainWindow):
         tabpanel = QWidget()
         tabpanel.setLayout(htabbox)
         i = self.tabs.addTab(tabpanel, label)
-        
+        self.tabs.setTabPosition(QTabWidget.North)
         self.tabs.setCurrentIndex(i)
+        
         browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
 
         browser.loadFinished.connect(lambda _, i = i, browser = browser:

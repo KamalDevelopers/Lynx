@@ -722,6 +722,7 @@ QTabBar::close-button:pressed {
 
 QTabBar::tab:top {
     float: left;
+    text-align: left;
     color: #eff0f1;
     border: 1px solid #76797C;
     border-bottom: 1px transparent black;
