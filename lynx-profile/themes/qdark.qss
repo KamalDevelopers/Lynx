@@ -728,6 +728,7 @@ QTabBar::tab:top {
     background-color: #31363b;
     padding: 5px;
     min-width: 50px;
+    max-width: 100px;
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
 }
