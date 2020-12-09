@@ -39,10 +39,18 @@ class MainWindow(QMainWindow):
         self.tabs.setFont(font)
         self.tabs.setDocumentMode(True)
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
-
         self.tabs.setTabsClosable(True)
-        self.shortcut = QShortcut(QKeySequence("Ctrl+W"), self)
-        self.shortcut.activated.connect(self.close_current_tab)
+        
+        # Shortcuts 
+        self.shortcut_closetab = QShortcut(QKeySequence("Ctrl+W"), self)
+        self.shortcut_addtab = QShortcut(QKeySequence("Ctrl+H"), self)
+        self.shortcut_changetab_f = QShortcut(QKeySequence("Ctrl+K"), self)
+        self.shortcut_changetab_b = QShortcut(QKeySequence("Ctrl+J"), self)
+
+        self.shortcut_closetab.activated.connect(self.close_current_tab)
+        self.shortcut_changetab_f.activated.connect(self.tab_change_forward)
+        self.shortcut_changetab_b.activated.connect(self.tab_change_back)
+        self.shortcut_addtab.activated.connect(self.add_new_tab)
         self.tabs.tabCloseRequested.connect(self.close_current_tab)
 
         self.setCentralWidget(self.tabs)
@@ -78,14 +86,14 @@ class MainWindow(QMainWindow):
         icon = QIcon("img/arrow_left.ico")
         back_btn.setIcon(icon)
         back_btn.setStatusTip("Back to previous page")
-        back_btn.setShortcut('Alt+H')
+        back_btn.setShortcut('Alt+J')
         back_btn.triggered.connect(lambda: browser.back())
 
         next_btn = QAction("", self)
         icon = QIcon("img/arrow_right.ico")
         next_btn.setIcon(icon)
         next_btn.setStatusTip("Forward to next page")
-        next_btn.setShortcut('Alt+J')
+        next_btn.setShortcut('Alt+K')
         next_btn.triggered.connect(lambda: browser.forward())
         navtb.addAction(back_btn)
         navtb.addAction(next_btn)
@@ -128,6 +136,12 @@ class MainWindow(QMainWindow):
         if self.tabs.count() < 2:
             sys.exit()
         self.tabs.removeTab(i)
+
+    def tab_change_forward(self):
+        self.tabs.setCurrentIndex(self.tabs.currentIndex()+1)
+    
+    def tab_change_back(self):
+        self.tabs.setCurrentIndex(self.tabs.currentIndex()-1)
 
     def update_title(self, browser):
         if browser != self.tabs.currentWidget():
