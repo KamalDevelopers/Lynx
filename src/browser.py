@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         global BROWSER_HOMEPAGE
-        
+
         self.settings = QWebEngineSettings.defaultSettings()
         self.settings.setAttribute(QWebEngineSettings.JavascriptEnabled, WEBKIT_JAVASCRIPT_ENABLED)
         self.settings.setAttribute(QWebEngineSettings.FullScreenSupportEnabled, WEBKIT_FULLSCREEN_ENABLED)
@@ -62,6 +62,7 @@ class MainWindow(QMainWindow):
         self.shortcut_changetab_f.activated.connect(self.tab_change_forward)
         self.shortcut_changetab_b.activated.connect(self.tab_change_back)
         self.shortcut_addtab.activated.connect(self.add_new_tab)
+        
         self.tabs.tabCloseRequested.connect(self.close_current_tab)
 
         self.setCentralWidget(self.tabs)
@@ -86,6 +87,20 @@ class MainWindow(QMainWindow):
         navtb = QToolBar("Navigation")
         navtb.setMovable(False) 
         navtb.setMaximumHeight(30)
+        navtb.setIconSize(QSize(10, 10))
+
+        zoom_in = QPushButton("", self)
+        zoom_in.setShortcut("Ctrl++")
+        zoom_in.clicked.connect(lambda: self.zoom(0.1, browser))
+
+        zoom_out = QPushButton("", self)
+        zoom_out.setShortcut("Ctrl+0")
+        zoom_out.clicked.connect(lambda: self.zoom(-0.1, browser))
+
+        navtb.addWidget(zoom_in)
+        navtb.addWidget(zoom_out)
+        zoom_in.setMaximumWidth(0)
+        zoom_out.setMaximumWidth(0)
 
         back_btn = QAction("", self)
         icon = QIcon("img/left_arrow.svg")
@@ -127,6 +142,7 @@ class MainWindow(QMainWindow):
         self.tabs.setCurrentIndex(i)
         
         self.fullscreen = 0
+        
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
 
@@ -148,6 +164,16 @@ class MainWindow(QMainWindow):
             self.setGeometry(self.winsize)
             self.settings.setAttribute(QWebEngineSettings.ShowScrollBars, 1)
             self.fullscreen = 0
+
+    def zoom(self, value, browser):
+        changezoom = 0
+        if value > 0:
+            if browser.zoomFactor() < 4.9:
+                changezoom = browser.zoomFactor() + value
+        if value < 0:
+            if browser.zoomFactor() > .39:
+                changezoom = browser.zoomFactor() + value
+        browser.setZoomFactor(changezoom)
 
     def tab_open_doubleclick(self, i):
         if i == -1:
