@@ -22,6 +22,7 @@ class RequestInterceptor(QWebEngineUrlRequestInterceptor):
     def interceptRequest(self, info): 
         url = info.requestUrl().toString()
         if adblock.match(url) != False:
+            print(adblock.match(url))
             info.block(True)
         if BROWSER_HTTPS_ONLY:
             if url[:5] == "http:":
@@ -53,7 +54,8 @@ class MainWindow(QMainWindow):
         self.tabs.setDocumentMode(True)
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
         self.tabs.setTabsClosable(True)
-        
+        self.tabs.setMovable(True)
+
         # Shortcuts 
         self.shortcut_closetab = QShortcut(QKeySequence("Ctrl+W"), self)
         self.shortcut_addtab = QShortcut(QKeySequence("Ctrl+H"), self)

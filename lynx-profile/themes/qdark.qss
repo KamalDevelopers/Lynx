@@ -744,7 +744,7 @@ QTabBar::tab:top:selected {
 }
 
 QTabBar::tab:top:!selected:hover {
-    background-color: #3daee9;
+    background-color: rgba(53, 53, 53, 0.27);
 }
 
 
