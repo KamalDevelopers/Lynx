@@ -3,8 +3,8 @@ import sys
 from confvar import *
 
 def decodeLynxUrl(qurl):
-    if str(qurl.toString())[:6] == "lynx::":
-        lfile = str(qurl.toString()).split("::")[1]
+    if str(qurl.toString())[:5] == "lynx:":
+        lfile = str(qurl.toString()).split(":")[1]
         lfile = os.path.abspath(BASE_PATH + "lynx/" + lfile)
     else:
         return qurl.toString()
@@ -16,5 +16,9 @@ def encodeLynxUrl(qurl):
         lfile = lfile[len(lfile)-1]
     else:
         return qurl.toString()
-    return "lynx::" + lfile[:-5] 
+    return "lynx:" + lfile[:-5] 
 
+def checkLynxUrl(qurl):
+    if str(qurl.toString())[:5] == "lynx:":
+        return True
+    return False

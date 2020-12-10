@@ -16,18 +16,29 @@ import PyQt5.QtWebEngineWidgets
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
-    
+
 class RequestInterceptor(QWebEngineUrlRequestInterceptor): 
     def interceptRequest(self, info): 
         url = info.requestUrl().toString()
         if adblock.match(url) != False:
             info.block(True)
+        if BROWSER_HTTPS_ONLY:
+            if url[:5] == "http:":
+                info.redirect(QUrl(url.replace("http:", "https:")))
+
 interceptor = RequestInterceptor()
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         global BROWSER_HOMEPAGE
+        
+        self.settings = QWebEngineSettings.defaultSettings()
+        self.settings.setAttribute(QWebEngineSettings.JavascriptEnabled, WEBKIT_JAVASCRIPT_ENABLED)
+        self.settings.setAttribute(QWebEngineSettings.FullScreenSupportEnabled, WEBKIT_FULLSCREEN_ENABLED)
+        self.settings.setAttribute(QWebEngineSettings.WebGLEnabled, WEBKIT_WEBGL_ENABLED)
+        self.settings.setAttribute(QWebEngineSettings.PluginsEnabled, WEBKIT_PLUGINS_ENABLED)
+        self.settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, True)
         
         font = QFont()
         font.setFamily(BROWSER_FONT_FAMILY)
@@ -68,15 +79,8 @@ class MainWindow(QMainWindow):
         
         browser = QWebEngineView()
         browser.setUrl(QUrl(qurl))
-        browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(browser)))
         
-        settings = QWebEngineSettings.defaultSettings()
-        settings.setAttribute(QWebEngineSettings.JavascriptEnabled, WEBKIT_JAVASCRIPT_ENABLED)
-        settings.setAttribute(QWebEngineSettings.FullScreenSupportEnabled, WEBKIT_FULLSCREEN_ENABLED)
-        settings.setAttribute(QWebEngineSettings.WebGLEnabled, WEBKIT_WEBGL_ENABLED)
-        settings.setAttribute(QWebEngineSettings.PluginsEnabled, WEBKIT_PLUGINS_ENABLED)
-        settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, True)
-        browser.settings = settings
+        browser.settings = self.settings
         
         htabbox = QVBoxLayout()
         navtb = QToolBar("Navigation")
@@ -122,13 +126,28 @@ class MainWindow(QMainWindow):
         self.tabs.setTabPosition(QTabWidget.North)
         self.tabs.setCurrentIndex(i)
         
+        self.fullscreen = 0
+        browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
 
         browser.loadFinished.connect(lambda _, i = i, browser = browser:
                                      self.tabs.setTabText(i, browser.page().title()))
-
-    def fullscreen_webview(self, browser):
-        self.showMaximized()
+    
+    def fullscreen_webview(self, htabbox, browser):
+        if self.fullscreen == 0:
+            self.winsize = self.geometry()
+            browser.setParent(None)
+            browser.showFullScreen()
+            self.fullscreen = 1
+            self.settings.setAttribute(QWebEngineSettings.ShowScrollBars, 0)
+            self.hide()
+        else:
+            htabbox.addWidget(browser) 
+            browser.showNormal()
+            self.show()
+            self.setGeometry(self.winsize)
+            self.settings.setAttribute(QWebEngineSettings.ShowScrollBars, 1)
+            self.fullscreen = 0
 
     def tab_open_doubleclick(self, i):
         if i == -1:
@@ -139,6 +158,7 @@ class MainWindow(QMainWindow):
             i = self.tabs.currentIndex()
         if self.tabs.count() < 2:
             sys.exit()
+        self.tabs.widget(i).deleteLater()
         self.tabs.removeTab(i)
 
     def tab_change_forward(self):
@@ -161,13 +181,10 @@ class MainWindow(QMainWindow):
         self.tabs.currentWidget().setUrl(QUrl(BROWSER_HOMEPAGE))
 
     def navigate_to_url(self, u, webview):
-        formatU = 0
-        if "." not in u and u[:6] != "lynx::":
-            u = "https://duckduckgo.com/?q=" + u 
-        else:
-            formatU = 1
         q = QUrl(u)
-        if formatU == 1 and q.toString()[:6] != "lynx::":
+        if "." not in u and not lxu.checkLynxUrl(q):
+            q = QUrl("https://duckduckgo.com/?q=" + u)
+        elif "." in u and not lxu.checkLynxUrl(q):
             q.setScheme("http")
         
         q = QUrl(lxu.decodeLynxUrl(q))
