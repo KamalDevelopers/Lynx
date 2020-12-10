@@ -16,6 +16,7 @@ import PyQt5.QtWebEngineWidgets
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
+from PyQt5.QtNetwork import *
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor): 
     def interceptRequest(self, info): 
@@ -38,8 +39,9 @@ class MainWindow(QMainWindow):
         self.settings.setAttribute(QWebEngineSettings.FullScreenSupportEnabled, WEBKIT_FULLSCREEN_ENABLED)
         self.settings.setAttribute(QWebEngineSettings.WebGLEnabled, WEBKIT_WEBGL_ENABLED)
         self.settings.setAttribute(QWebEngineSettings.PluginsEnabled, WEBKIT_PLUGINS_ENABLED)
-        self.settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, True)
-        
+        self.settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, WEBKIT_JAVASCRIPT_POPUPS_ENABLED)
+        QWebEngineProfile.defaultProfile().setRequestInterceptor(interceptor)
+
         font = QFont()
         font.setFamily(BROWSER_FONT_FAMILY)
         font.setPointSize(BROWSER_FONT_SIZE)
@@ -76,13 +78,13 @@ class MainWindow(QMainWindow):
             qurl = QUrl(BROWSER_HOMEPAGE)
 
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
-        QWebEngineProfile.defaultProfile().setRequestInterceptor(interceptor)        
         
         browser = QWebEngineView()
         browser.setUrl(QUrl(qurl))
-        
+        if BROWSER_AGENT != None: 
+            browser.page().profile().setHttpUserAgent(BROWSER_AGENT)
         browser.settings = self.settings
-        
+
         htabbox = QVBoxLayout()
         navtb = QToolBar("Navigation")
         navtb.setMovable(False) 
@@ -127,6 +129,7 @@ class MainWindow(QMainWindow):
 
         reload_btn = QAction("", self)
         icon = QIcon("img/reload.ico")
+        reload_btn.setShortcut("Ctrl+Shift+R")
         reload_btn.setIcon(icon)
         reload_btn.setStatusTip("Reload page")
         reload_btn.triggered.connect(lambda: browser.reload())
