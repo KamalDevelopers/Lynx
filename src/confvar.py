@@ -1,6 +1,11 @@
 import os
 import sys
-from configparser import ConfigParser 
+import platform
+from os.path import expanduser
+from configparser import ConfigParser
+
+CURRENT_OS = platform.system()
+OS_HOME = expanduser("~")
 configur = ConfigParser() 
 
 BASE_PATH = "../lynx-profile/"
@@ -9,7 +14,7 @@ if not os.path.isdir(BASE_PATH):
     sys.exit()
 
 # Default Values
-BROWSER_WINDOW_TITLE = "LynxWeb"
+BROWSER_WINDOW_TITLE = "Lynx"
 BROWSER_HOMEPAGE = "lynx:home"
 BROWSER_FONT_FAMILY = "Noto"
 BROWSER_STYLESHEET = "qdark"

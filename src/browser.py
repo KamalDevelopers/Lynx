@@ -22,7 +22,6 @@ class RequestInterceptor(QWebEngineUrlRequestInterceptor):
     def interceptRequest(self, info): 
         url = info.requestUrl().toString()
         if adblock.match(url) != False:
-            print(adblock.match(url))
             info.block(True)
         if BROWSER_HTTPS_ONLY:
             if url[:5] == "http:":
@@ -93,6 +92,7 @@ class MainWindow(QMainWindow):
         navtb.setMaximumHeight(30)
         navtb.setIconSize(QSize(10, 10))
 
+        # Hidden Buttons
         zoom_in = QPushButton("", self)
         zoom_in.setShortcut("Ctrl++")
         zoom_in.clicked.connect(lambda: self.zoom(0.1, browser))
@@ -101,10 +101,16 @@ class MainWindow(QMainWindow):
         zoom_out.setShortcut("Ctrl+0")
         zoom_out.clicked.connect(lambda: self.zoom(-0.1, browser))
 
+        save_page = QPushButton("", self)
+        save_page.setShortcut("Ctrl+S")
+        save_page.clicked.connect(lambda: self.save_page(browser))
+        
         navtb.addWidget(zoom_in)
         navtb.addWidget(zoom_out)
+        navtb.addWidget(save_page)
         zoom_in.setMaximumWidth(0)
         zoom_out.setMaximumWidth(0)
+        save_page.setMaximumWidth(0)
 
         back_btn = QAction("", self)
         icon = QIcon("img/left_arrow.svg")
@@ -179,6 +185,11 @@ class MainWindow(QMainWindow):
             if browser.zoomFactor() > .39:
                 changezoom = browser.zoomFactor() + value
         browser.setZoomFactor(changezoom)
+    
+    def save_page(self, browser):
+        destination = QFileDialog.getSaveFileName(self, "Save Page", OS_HOME + "/Downloads/" + browser.page().title() + ".html", "*.html")
+        if destination:
+            browser.page().save(destination[0], QWebEngineDownloadItem.SingleHtmlSaveFormat)
 
     def tab_open_doubleclick(self, i):
         if i == -1:

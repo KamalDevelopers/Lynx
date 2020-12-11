@@ -14,8 +14,15 @@ def readBlocker():
             rules += F.read().split("\n")
     size = len(rules)-1
 
+    for x in range(0, size):
+        if "*" in rules[x]:
+            rules[x] = rules[x].replace("*", "")
+
+    while "" in rules: 
+        rules.remove("")
+
 def match(url):
     for i, bu in enumerate(rules):
-        if bu.replace("*", "") in url and i != size and bu != "":
+        if bu in url:
             return [i, bu]
     return False
