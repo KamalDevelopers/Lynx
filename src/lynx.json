@@ -1,0 +1,7 @@
+{
+  "package":
+    {
+      "profile": "../lynx-profile/",
+      "version": "0.1.0"
+    }
+}

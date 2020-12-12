@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import platform
 from os.path import expanduser
 from configparser import ConfigParser
@@ -8,7 +9,13 @@ CURRENT_OS = platform.system()
 OS_HOME = expanduser("~")
 configur = ConfigParser() 
 
-BASE_PATH = "../lynx-profile/"
+with open('lynx.json') as f:
+    data = json.load(f)
+
+print(data)
+BASE_PATH = data['package']['profile']
+VERSION = data['package']['version']
+
 if not os.path.isdir(BASE_PATH):
     print("Failed to find lynx profile")
     sys.exit()

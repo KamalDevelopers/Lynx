@@ -223,6 +223,8 @@ class MainWindow(QMainWindow):
         self.tabs.currentWidget().setUrl(QUrl(BROWSER_HOMEPAGE))
 
     def navigate_to_url(self, u, webview):
+        if u == "":
+            return
         q = QUrl(u)
         if "." not in u and not lxu.checkLynxUrl(q):
             q = QUrl("https://duckduckgo.com/?q=" + u)
