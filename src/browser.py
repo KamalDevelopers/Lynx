@@ -81,7 +81,9 @@ class MainWindow(QMainWindow):
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
         
         browser = QWebEngineView()
+        browser.page().setBackgroundColor(Qt.darkGray) 
         browser.setUrl(QUrl(qurl))
+        
         if BROWSER_AGENT != None: 
             browser.page().profile().setHttpUserAgent(BROWSER_AGENT)
         browser.settings = self.settings
