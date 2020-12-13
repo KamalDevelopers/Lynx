@@ -50,9 +50,10 @@ class MainWindow(QMainWindow):
         font.setFamily(BROWSER_FONT_FAMILY)
         font.setPointSize(BROWSER_FONT_SIZE)
         self.setFont(font)
-
-        self.tabs = QTabWidget()
+        
         font = QFont(BROWSER_FONT_FAMILY, BROWSER_FONT_SIZE)
+        self.tabs = QTabWidget()
+        self.tabs.setIconSize(QSize(13, 13))
         self.tabs.setFont(font)
         self.tabs.setDocumentMode(True)
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
@@ -87,7 +88,7 @@ class MainWindow(QMainWindow):
         browser = QWebEngineView()
         browser.page().setBackgroundColor(Qt.darkGray) 
         browser.setUrl(QUrl(qurl))
-        
+
         if BROWSER_AGENT != None: 
             browser.page().profile().setHttpUserAgent(BROWSER_AGENT)
         browser.settings = self.settings
@@ -157,9 +158,10 @@ class MainWindow(QMainWindow):
         i = self.tabs.addTab(tabpanel, label)
         self.tabs.setTabPosition(QTabWidget.North)
         self.tabs.setCurrentIndex(i)
-        
+
         self.fullscreen = 0
         
+        browser.page().iconChanged.connect(lambda: self.set_tab_icon(i, browser.page()))
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
 
@@ -196,6 +198,9 @@ class MainWindow(QMainWindow):
         destination = QFileDialog.getSaveFileName(self, "Save Page", OS_HOME + "/Downloads/" + browser.page().title() + ".html", "*.html")
         if destination:
             browser.page().save(destination[0], QWebEngineDownloadItem.SingleHtmlSaveFormat)
+
+    def set_tab_icon(self, i, webpage):
+        self.tabs.setTabIcon(i, webpage.icon())
 
     def tab_open_doubleclick(self, i):
         if i == -1:
