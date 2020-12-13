@@ -19,9 +19,9 @@ fname = ("Lynx (" + str(platform.system()) + ") v" + version)
 os.mkdir(fname)
 
 PyInstaller.__main__.run([
-    '../src/main.py',
+    'src/main.py',
     '--onefile',
-    '-i ../src/img/lynx_logo.ico'
+    '-i src/img/lynx_logo.ico'
 ])
 
 if platform.system() == "Linux":
@@ -29,8 +29,8 @@ if platform.system() == "Linux":
 if platform.system() == "Windows":
     shutil.move("dist/main.exe", "./" + fname + "/lynx.exe")
 
-shutil.copytree("../src/img", "./" + fname + "/img")
-shutil.copyfile("../src/lynx.json", "./" + fname + "/lynx.json")
+shutil.copytree("src/img", "./" + fname + "/img")
+shutil.copyfile("src/lynx.json", "./" + fname + "/lynx.json")
 zips = (fname.replace("(", "[").replace(")", "]")) + ".zip"
 
 zipf = zipfile.ZipFile(zips, "w", zipfile.ZIP_DEFLATED, compresslevel=1)
