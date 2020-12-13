@@ -9,6 +9,8 @@ import os
 def runbrowser():
     app = QApplication(sys.argv)
     app.setApplicationName(confvar.BROWSER_WINDOW_TITLE)
+    if len(sys.argv) > 1: 
+        open_url_arg(sys.argv[1])
     window = MainWindow()
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
     app.setWindowIcon(QIcon('img/lynx_logo.svg'))

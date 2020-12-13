@@ -18,6 +18,10 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
 
+default_url_open = None 
+def open_url_arg(url):
+    global default_url_open
+    default_url_open = url
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor): 
     def interceptRequest(self, info): 
@@ -80,9 +84,14 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(BROWSER_WINDOW_TITLE)
 
     def add_new_tab(self, qurl=None, label="Blank"):
-        if qurl is None:
+        global default_url_open
+        if qurl is None and default_url_open is None:
             qurl = QUrl(BROWSER_HOMEPAGE)
-
+        if default_url_open is not None: 
+            qurl = QUrl(default_url_open)
+            qurl.setScheme("http")
+            default_url_open = None
+        
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
         
         browser = QWebEngineView()
@@ -160,11 +169,9 @@ class MainWindow(QMainWindow):
         self.tabs.setCurrentIndex(i)
 
         self.fullscreen = 0
-        
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(i, browser.page()))
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
-
         browser.loadFinished.connect(lambda _, i = i, browser = browser:
                                      self.tabs.setTabText(i, browser.page().title()))
     
@@ -227,9 +234,6 @@ class MainWindow(QMainWindow):
         title = self.tabs.currentWidget().page().title()
         self.setWindowTitle(BROWSER_WINDOW_TITLE)
     
-    def update_title(self, url, ):
-        self.setWindowTitle(BROWSER_WINDOW_TITLE)
-
     def navigate_home(self):
         self.tabs.currentWidget().setUrl(QUrl(BROWSER_HOMEPAGE))
 
