@@ -2,6 +2,7 @@ import os
 import sys
 import requests
 
+import proxy
 import adblock
 from confvar import *
 import lynxutils as lxu
@@ -16,7 +17,7 @@ import PyQt5.QtWebEngineWidgets
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
-from PyQt5.QtNetwork import *
+
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor): 
     def interceptRequest(self, info): 
@@ -33,6 +34,9 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         global BROWSER_HOMEPAGE
+
+        if BROWSER_PROXY:
+            proxy.setProxy(BROWSER_PROXY)
 
         self.settings = QWebEngineSettings.defaultSettings()
         self.settings.setAttribute(QWebEngineSettings.JavascriptEnabled, WEBKIT_JAVASCRIPT_ENABLED)
