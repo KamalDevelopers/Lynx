@@ -49,6 +49,8 @@ class MainWindow(QMainWindow):
         self.settings.setAttribute(QWebEngineSettings.PluginsEnabled, WEBKIT_PLUGINS_ENABLED)
         self.settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, WEBKIT_JAVASCRIPT_POPUPS_ENABLED)
         QWebEngineProfile.defaultProfile().setRequestInterceptor(interceptor)
+        if BROWSER_STORE_VISITED_LINKS != True:
+            QWebEngineProfile.defaultProfile().clearAllVisitedLinks()
 
         font = QFont()
         font.setFamily(BROWSER_FONT_FAMILY)
@@ -78,10 +80,10 @@ class MainWindow(QMainWindow):
         self.tabs.tabCloseRequested.connect(self.close_current_tab)
 
         self.setCentralWidget(self.tabs)
-        self.add_new_tab(QUrl(BROWSER_HOMEPAGE), 'Homepage')
 
-        self.show()
         self.setWindowTitle(BROWSER_WINDOW_TITLE)
+        self.add_new_tab()
+        self.show()
 
     def add_new_tab(self, qurl=None, label="Blank"):
         global default_url_open
@@ -156,6 +158,12 @@ class MainWindow(QMainWindow):
         font = QFont("Noto", 9)
         urlbar.setFont(font)
         navtb.addWidget(urlbar)
+        
+        urlbar_focus = QPushButton("", self)
+        urlbar_focus.setShortcut("Ctrl+U")
+        urlbar_focus.clicked.connect(lambda: urlbar.setFocus())
+        navtb.addWidget(urlbar_focus)
+        urlbar_focus.setMaximumWidth(0)
 
         reload_btn = QAction("", self)
         icon = QIcon("img/reload.ico")
