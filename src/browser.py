@@ -121,12 +121,18 @@ class MainWindow(QMainWindow):
         save_page.setShortcut("Ctrl+S")
         save_page.clicked.connect(lambda: self.save_page(browser))
         
+        mute_page = QPushButton("", self)
+        mute_page.setShortcut("Ctrl+M")
+        mute_page.clicked.connect(lambda: self.mute_page(browser))
+        
         navtb.addWidget(zoom_in)
         navtb.addWidget(zoom_out)
         navtb.addWidget(save_page)
+        navtb.addWidget(mute_page)
         zoom_in.setMaximumWidth(0)
         zoom_out.setMaximumWidth(0)
         save_page.setMaximumWidth(0)
+        mute_page.setMaximumWidth(0)
 
         back_btn = QAction("", self)
         icon = QIcon("img/left_arrow.svg")
@@ -169,6 +175,7 @@ class MainWindow(QMainWindow):
         self.tabs.setCurrentIndex(i)
 
         self.fullscreen = 0
+        urlbar.setFocus()
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(i, browser.page()))
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
@@ -205,6 +212,12 @@ class MainWindow(QMainWindow):
         destination = QFileDialog.getSaveFileName(self, "Save Page", OS_HOME + "/Downloads/" + browser.page().title() + ".html", "*.html")
         if destination:
             browser.page().save(destination[0], QWebEngineDownloadItem.SingleHtmlSaveFormat)
+
+    def mute_page(self, browser):
+        if browser.page().isAudioMuted():
+            browser.page().setAudioMuted(0)
+        else:
+            browser.page().setAudioMuted(1)
 
     def set_tab_icon(self, i, webpage):
         self.tabs.setTabIcon(i, webpage.icon())
