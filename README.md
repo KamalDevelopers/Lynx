@@ -28,5 +28,5 @@ Distributed under the Unlicense License. See `LICENSE` for more information.
 ## Screenshot
 ***
 <p align="center">
-  <img src="https://i.imgur.com/9CUwC01.png">
+  <img src="https://i.imgur.com/SdzP9mj.png">
 </p>
