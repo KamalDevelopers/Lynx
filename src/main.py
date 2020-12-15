@@ -1,5 +1,6 @@
 import confvar
 import adblock
+import bookmark
 from browser import *
 
 import threading
@@ -19,4 +20,5 @@ def runbrowser():
 
 if __name__ == "__main__":
     adblock.readBlocker()
+    bookmark.readBookmarks()
     runbrowser()

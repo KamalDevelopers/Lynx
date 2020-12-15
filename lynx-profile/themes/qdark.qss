@@ -280,7 +280,7 @@ QAbstractItemView {
 
 QWidget:focus,
 QMenuBar:focus {
-    border: 1px solid #3daee9;
+    padding-top: 2px;
 }
 
 QTabWidget:focus,
@@ -321,6 +321,7 @@ QAbstractScrollArea {
     border-radius: 2px;
     border: 1px solid #76797C;
     background-color: transparent;
+    font-size: 11px;
 }
 
 QScrollBar:horizontal {

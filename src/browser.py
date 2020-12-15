@@ -4,6 +4,7 @@ import requests
 
 import proxy
 import adblock
+import bookmark
 from confvar import *
 import lynxutils as lxu
 
@@ -159,14 +160,14 @@ class MainWindow(QMainWindow):
         mute_page.setMaximumWidth(0)
         max_view.setMaximumWidth(0)
 
-        back_btn = QAction("Back", self)
+        back_btn = QAction("Back (Alt+J)", self)
         icon = QIcon("img/left_arrow.svg")
         back_btn.setIcon(icon)
         back_btn.setStatusTip("Back to previous page")
         back_btn.setShortcut('Alt+J')
         back_btn.triggered.connect(lambda: browser.back())
 
-        next_btn = QAction("Forward", self)
+        next_btn = QAction("Forward (Alt+K)", self)
         icon = QIcon("img/right_arrow.svg")
         next_btn.setIcon(icon)
         next_btn.setStatusTip("Forward to next page")
@@ -181,6 +182,10 @@ class MainWindow(QMainWindow):
         font = QFont("Noto", 9)
         urlbar.setStyleSheet("QLineEdit { color: #bfbfbf; }")
         urlbar.setFont(font)
+
+        completer = QCompleter(bookmark.getBookmarks())
+        #completer.popup().setStyleSheet("QScrollBar { width: 10px; }")
+        urlbar.setCompleter(completer)
         navtb.addWidget(urlbar)
         
         urlbar_focus = QPushButton("Foucs", self)
@@ -189,9 +194,9 @@ class MainWindow(QMainWindow):
         navtb.addWidget(urlbar_focus)
         urlbar_focus.setMaximumWidth(0)
 
-        reload_btn = QAction("Reload", self)
+        reload_btn = QAction("Reload (Ctrl+R)", self)
         icon = QIcon("img/reload.ico")
-        reload_btn.setShortcut("Ctrl+Shift+R")
+        reload_btn.setShortcut("Ctrl+R")
         reload_btn.setIcon(icon)
         reload_btn.setStatusTip("Reload page")
         reload_btn.triggered.connect(lambda: browser.reload())
