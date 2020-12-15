@@ -8,7 +8,6 @@ def readBookmarks():
     with open(BASE_PATH + 'bookmarks.json') as f:
         data = json.load(f)
     bookmarks = data["bookmarks"]
-    print(bookmarks)
 
 def getBookmarks():
     return bookmarks

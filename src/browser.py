@@ -79,6 +79,8 @@ class MainWindow(QMainWindow):
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
         self.tabs.setTabsClosable(True)
         self.tabs.setMovable(True)
+        self.tabs.tabBar().setExpanding(True)
+        self.tabs.tabBar().setAutoHide(1)
 
         # Shortcuts 
         self.shortcut_closetab = QShortcut(QKeySequence("Ctrl+W"), self)
@@ -108,11 +110,12 @@ class MainWindow(QMainWindow):
             default_url_open = None
         
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
-        
         browser = QWebEngineView()
-        cwe = CustomWebEnginePage(self)
-        cwe.set_add_new_tab_h(self.add_new_tab)
-        browser.setPage(cwe)
+        #cwe = CustomWebEnginePage(self)
+        #cwe.set_add_new_tab_h(self.add_new_tab)
+        #browser.setPage(cwe)
+        # The Custom Web Engine Page feature causes deleteLater() to fail
+
         browser.page().setBackgroundColor(Qt.darkGray) 
         browser.setUrl(QUrl(qurl))
 
@@ -143,6 +146,10 @@ class MainWindow(QMainWindow):
         mute_page.setShortcut("Ctrl+M")
         mute_page.clicked.connect(lambda: self.mute_page(browser))
         
+        reload_page = QPushButton("", self)
+        reload_page.setShortcut("Ctrl+R")
+        reload_page.clicked.connect(lambda: browser.reload())
+        
         max_view = QPushButton("", self)
         max_view.setShortcut("Alt+F")
         size = QDesktopWidget().screenGeometry(-1)
@@ -152,12 +159,14 @@ class MainWindow(QMainWindow):
         navtb.addWidget(zoom_out)
         navtb.addWidget(save_page)
         navtb.addWidget(mute_page)
+        navtb.addWidget(reload_page)
         navtb.addWidget(max_view)
 
         zoom_in.setMaximumWidth(0)
         zoom_out.setMaximumWidth(0)
         save_page.setMaximumWidth(0)
         mute_page.setMaximumWidth(0)
+        reload_page.setMaximumWidth(0)
         max_view.setMaximumWidth(0)
 
         back_btn = QAction("Back (Alt+J)", self)
@@ -193,14 +202,12 @@ class MainWindow(QMainWindow):
         urlbar_focus.clicked.connect(lambda: urlbar.setFocus())
         navtb.addWidget(urlbar_focus)
         urlbar_focus.setMaximumWidth(0)
-
-        reload_btn = QAction("Reload (Ctrl+R)", self)
-        icon = QIcon("img/reload.ico")
-        reload_btn.setShortcut("Ctrl+R")
-        reload_btn.setIcon(icon)
-        reload_btn.setStatusTip("Reload page")
-        reload_btn.triggered.connect(lambda: browser.reload())
-        navtb.addAction(reload_btn)
+ 
+        add_tab_btn = QAction("Add Tab (Ctrl+H)", self)
+        icon = QIcon("img/add_tab.png")
+        add_tab_btn.setIcon(icon)
+        add_tab_btn.triggered.connect(lambda: self.add_new_tab())
+        navtb.addAction(add_tab_btn)
 
         htabbox.addWidget(navtb)
         htabbox.addWidget(browser)
@@ -258,8 +265,8 @@ class MainWindow(QMainWindow):
             browser.page().setAudioMuted(1)
 
     def set_tab_icon(self, i, webpage):
-        if self.tabs.currentIndex() != i:
-            return
+        #if self.tabs.currentIndex() != i:
+        #    return
         if webpage.icon():
             self.tabs.setTabIcon(i, webpage.icon())
 
