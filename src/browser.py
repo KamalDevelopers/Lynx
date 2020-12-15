@@ -81,7 +81,7 @@ class MainWindow(QMainWindow):
         self.tabs.setMovable(True)
         self.tabs.tabBar().setExpanding(True)
         self.tabs.tabBar().setAutoHide(1)
-
+        
         # Shortcuts 
         self.shortcut_closetab = QShortcut(QKeySequence("Ctrl+W"), self)
         self.shortcut_addtab = QShortcut(QKeySequence("Ctrl+H"), self)
