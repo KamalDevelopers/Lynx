@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
         navtb.setMaximumHeight(30)
         navtb.setIconSize(QSize(10, 10))
 
-        # Hidden Buttons
+        # Hidden Buttons - Keyboard Shortcuts
         zoom_in = QPushButton("", self)
         zoom_in.setShortcut("Ctrl++")
         zoom_in.clicked.connect(lambda: self.zoom(0.1, browser))
@@ -142,23 +142,31 @@ class MainWindow(QMainWindow):
         mute_page.setShortcut("Ctrl+M")
         mute_page.clicked.connect(lambda: self.mute_page(browser))
         
+        max_view = QPushButton("", self)
+        max_view.setShortcut("Alt+F")
+        size = QDesktopWidget().screenGeometry(-1)
+        max_view.clicked.connect(lambda: self.resize(size.width(), size.height()))
+        
         navtb.addWidget(zoom_in)
         navtb.addWidget(zoom_out)
         navtb.addWidget(save_page)
         navtb.addWidget(mute_page)
+        navtb.addWidget(max_view)
+
         zoom_in.setMaximumWidth(0)
         zoom_out.setMaximumWidth(0)
         save_page.setMaximumWidth(0)
         mute_page.setMaximumWidth(0)
+        max_view.setMaximumWidth(0)
 
-        back_btn = QAction("", self)
+        back_btn = QAction("Back", self)
         icon = QIcon("img/left_arrow.svg")
         back_btn.setIcon(icon)
         back_btn.setStatusTip("Back to previous page")
         back_btn.setShortcut('Alt+J')
         back_btn.triggered.connect(lambda: browser.back())
 
-        next_btn = QAction("", self)
+        next_btn = QAction("Forward", self)
         icon = QIcon("img/right_arrow.svg")
         next_btn.setIcon(icon)
         next_btn.setStatusTip("Forward to next page")
@@ -175,13 +183,13 @@ class MainWindow(QMainWindow):
         urlbar.setFont(font)
         navtb.addWidget(urlbar)
         
-        urlbar_focus = QPushButton("", self)
+        urlbar_focus = QPushButton("Foucs", self)
         urlbar_focus.setShortcut("Ctrl+U")
         urlbar_focus.clicked.connect(lambda: urlbar.setFocus())
         navtb.addWidget(urlbar_focus)
         urlbar_focus.setMaximumWidth(0)
 
-        reload_btn = QAction("", self)
+        reload_btn = QAction("Reload", self)
         icon = QIcon("img/reload.ico")
         reload_btn.setShortcut("Ctrl+Shift+R")
         reload_btn.setIcon(icon)
@@ -278,14 +286,14 @@ class MainWindow(QMainWindow):
     def navigate_home(self):
         self.tabs.currentWidget().setUrl(QUrl(BROWSER_HOMEPAGE))
 
-    def navigate_to_url(self, u, webview):
-        if u == "":
+    def navigate_to_url(self, url, webview):
+        if url == "":
             return
-        q = QUrl(u)
-        if "." not in u and not lxu.checkLynxUrl(q):
-            q = QUrl("https://duckduckgo.com/?q=" + u)
-        elif "." in u and not lxu.checkLynxUrl(q):
-            q.setScheme("http")
+        _qurl = QUrl(url)
+        if "." not in url and not lxu.checkLynxUrl(_qurl):
+            _qurl = QUrl("https://duckduckgo.com/?q=" + url)
+        elif "." in url and not lxu.checkLynxUrl(_qurl):
+            _qurl.setScheme("http")
         
-        q = QUrl(lxu.decodeLynxUrl(q))
-        webview.setUrl(q)
+        _qurl = QUrl(lxu.decodeLynxUrl(_qurl))
+        webview.setUrl(_qurl)
