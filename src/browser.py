@@ -22,6 +22,18 @@ default_url_open = None
 def open_url_arg(url):
     global default_url_open
     default_url_open = url
+    
+class CustomWebEnginePage(QWebEnginePage):
+    # Hook the "add_new_tab" method 
+    def set_add_new_tab_h(self, _add_new_tab):
+        self.add_new_tab = _add_new_tab
+
+    def acceptNavigationRequest(self, url,  _type, isMainFrame):
+        modifiers = QApplication.keyboardModifiers()
+        if _type == QWebEnginePage.NavigationTypeLinkClicked and (modifiers & Qt.ControlModifier):
+            self.add_new_tab(QUrl(url)) 
+            return False 
+        return super().acceptNavigationRequest(url,  _type, isMainFrame)
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor): 
     def interceptRequest(self, info): 
@@ -47,6 +59,7 @@ class MainWindow(QMainWindow):
         self.settings.setAttribute(QWebEngineSettings.FullScreenSupportEnabled, WEBKIT_FULLSCREEN_ENABLED)
         self.settings.setAttribute(QWebEngineSettings.WebGLEnabled, WEBKIT_WEBGL_ENABLED)
         self.settings.setAttribute(QWebEngineSettings.PluginsEnabled, WEBKIT_PLUGINS_ENABLED)
+        self.settings.setAttribute(QWebEngineSettings.ScrollAnimatorEnabled, 1)
         self.settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, WEBKIT_JAVASCRIPT_POPUPS_ENABLED)
         QWebEngineProfile.defaultProfile().setRequestInterceptor(interceptor)
         if BROWSER_STORE_VISITED_LINKS != True:
@@ -78,14 +91,13 @@ class MainWindow(QMainWindow):
         self.shortcut_addtab.activated.connect(self.add_new_tab)
         
         self.tabs.tabCloseRequested.connect(self.close_current_tab)
-
         self.setCentralWidget(self.tabs)
 
         self.setWindowTitle(BROWSER_WINDOW_TITLE)
         self.add_new_tab()
         self.show()
 
-    def add_new_tab(self, qurl=None, label="Blank"):
+    def add_new_tab(self, qurl=None, label="Blank", silent=0):
         global default_url_open
         if qurl is None and default_url_open is None:
             qurl = QUrl(BROWSER_HOMEPAGE)
@@ -97,6 +109,9 @@ class MainWindow(QMainWindow):
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
         
         browser = QWebEngineView()
+        cwe = CustomWebEnginePage(self)
+        cwe.set_add_new_tab_h(self.add_new_tab)
+        browser.setPage(cwe)
         browser.page().setBackgroundColor(Qt.darkGray) 
         browser.setUrl(QUrl(qurl))
 
@@ -156,6 +171,7 @@ class MainWindow(QMainWindow):
         urlbar.returnPressed.connect(lambda: self.navigate_to_url(urlbar.text(), browser))
         urlbar.setFixedHeight(23)
         font = QFont("Noto", 9)
+        urlbar.setStyleSheet("QLineEdit { color: #bfbfbf; }")
         urlbar.setFont(font)
         navtb.addWidget(urlbar)
         
@@ -180,7 +196,8 @@ class MainWindow(QMainWindow):
         tabpanel.setLayout(htabbox)
         i = self.tabs.addTab(tabpanel, label)
         self.tabs.setTabPosition(QTabWidget.North)
-        self.tabs.setCurrentIndex(i)
+        if silent != 1:
+            self.tabs.setCurrentIndex(i)
 
         self.fullscreen = 0
         urlbar.setFocus()
@@ -228,7 +245,10 @@ class MainWindow(QMainWindow):
             browser.page().setAudioMuted(1)
 
     def set_tab_icon(self, i, webpage):
-        self.tabs.setTabIcon(i, webpage.icon())
+        if self.tabs.currentIndex() != i:
+            return
+        if webpage.icon():
+            self.tabs.setTabIcon(i, webpage.icon())
 
     def tab_open_doubleclick(self, i):
         if i == -1:
