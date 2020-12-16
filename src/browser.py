@@ -3,8 +3,8 @@ import sys
 import requests
 
 import proxy
-import adblock
 import bookmark
+from webkit import *
 from confvar import *
 import lynxutils as lxu
 
@@ -23,28 +23,6 @@ default_url_open = None
 def open_url_arg(url):
     global default_url_open
     default_url_open = url
-    
-class CustomWebEnginePage(QWebEnginePage):
-    # Hook the "add_new_tab" method 
-    def set_add_new_tab_h(self, _add_new_tab):
-        self.add_new_tab = _add_new_tab
-
-    def acceptNavigationRequest(self, url,  _type, isMainFrame):
-        modifiers = QApplication.keyboardModifiers()
-        if _type == QWebEnginePage.NavigationTypeLinkClicked and (modifiers & Qt.ControlModifier):
-            self.add_new_tab(QUrl(url)) 
-            return False 
-        return super().acceptNavigationRequest(url,  _type, isMainFrame)
-
-class RequestInterceptor(QWebEngineUrlRequestInterceptor): 
-    def interceptRequest(self, info): 
-        url = info.requestUrl().toString()
-        if adblock.match(url) != False:
-            info.block(True)
-        if BROWSER_HTTPS_ONLY:
-            if url[:5] == "http:":
-                info.redirect(QUrl(url.replace("http:", "https:")))
-
 interceptor = RequestInterceptor()
 
 class MainWindow(QMainWindow):

@@ -8,6 +8,7 @@ def decodeLynxUrl(qurl):
         lfile = os.path.abspath(BASE_PATH + "lynx/" + lfile)
     else:
         return qurl.toString()
+    lfile = lfile.replace("\\", "/")
     return "file:///" + lfile + ".html"
 
 def encodeLynxUrl(qurl):
