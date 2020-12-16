@@ -224,8 +224,7 @@ class MainWindow(QMainWindow):
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(i, browser.page()))
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
-        browser.loadFinished.connect(lambda _, i = i, browser = browser:
-                                     self.tabs.setTabText(i, browser.page().title()))
+        browser.titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(i, browser.page().title()))
     
     def fullscreen_webview(self, htabbox, browser):
         if self.fullscreen == 0:
