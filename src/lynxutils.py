@@ -5,6 +5,7 @@ from confvar import *
 def decodeLynxUrl(qurl):
     if str(qurl.toString())[:5] == "lynx:":
         lfile = str(qurl.toString()).split(":")[1]
+        lfile = BROWSER_STYLESHEET + "_" + lfile
         lfile = os.path.abspath(BASE_PATH + "lynx/" + lfile)
     else:
         return qurl.toString()

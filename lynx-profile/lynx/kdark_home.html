@@ -32,13 +32,11 @@ html body {
     border-radius: 15px;
     outline: none;
 }
-
 </style>
 
 </head>
 
 <body>
-
 <script>
     function onSearch() {
         window.location.href = "https://duckduckgo.com/?q=" + document.getElementById("searchbox").value;
@@ -46,13 +44,17 @@ html body {
 </script>
 
 <div id="container">
-    <center><img width=100 src="lynx_logo.png"></center>
+    <center>
+        <img width=100 src="lynx_logo.png">
+    </center>
          
-        <center><input name="url" id="searchbox" type="text" onkeydown="if (event.keyCode == 13) { onSearch(); }"  autocomplete="off" placeholder="Search" /></center>
-        <script type="text/javascript">
-			document.getElementsByName("url")[0].focus();
-        </script>
-	
+    <center>
+        <input name="url" id="searchbox" type="text" onkeydown="if (event.keyCode == 13) { onSearch(); }"  autocomplete="off" placeholder="Search" />
+    </center>
+    
+    <script type="text/javascript">
+		document.getElementsByName("url")[0].focus();
+    </script>
 </div>
 
 </body>
