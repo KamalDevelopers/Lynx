@@ -1,6 +1,6 @@
 import os, sys
 
-PYTHON = "python3"
+PYTHON = sys.executable
 
 os.chdir("./src")
 os.system(PYTHON + " main.py")
