@@ -40,6 +40,14 @@ WEBKIT_WEBGL_ENABLED = 1
 WEBKIT_PLUGINS_ENABLED = 1
 WEBKIT_JAVASCRIPT_POPUPS_ENABLED = 1
 
+def stealth(mode=True):
+    global configur 
+    configur.read(BASE_PATH + 'config.ini')
+    BROWSER = configur["BROWSER"]
+    BROWSER["stealth"] = str(mode) 
+    with open(BASE_PATH + 'config.ini', 'w') as conf:
+        configur.write(conf)
+
 def sparse(string):
     if string == "None" or string == "0" or string == "False" or string == "Default":
         return None
@@ -47,6 +55,7 @@ def sparse(string):
 
 def confb():
     global configur
+    global STEALTH_MODE 
     global BROWSER_WINDOW_TITLE, BROWSER_HOMEPAGE, BROWSER_FONT_FAMILY, BROWSER_FONT_SIZE, BROWSER_STYLESHEET, BROWSER_ADBLOCKER, BROWSER_HTTPS_ONLY, BROWSER_AGENT, BROWSER_MINER_BLOCKER, BROWSER_PROXY, BROWSER_STORE_VISITED_LINKS, BROWSER_LOCALE 
     global WEBKIT_JAVASCRIPT_ENABLED, WEBKIT_FULLSCREEN_ENABLED, WEBKIT_WEBGL_ENABLE, WEBKIT_PLUGINS_ENABLED, WEBKIT_JAVASCRIPT_POPUPS_ENABLED
     
@@ -62,12 +71,26 @@ def confb():
     BROWSER_STORE_VISITED_LINKS = (configur.getboolean('BROWSER', 'STORE_VISITED_LINKS')) 
     BROWSER_AGENT = sparse(configur.get('BROWSER', 'AGENT')) 
     BROWSER_PROXY = sparse(configur.get('BROWSER', 'PROXY')) 
+    STEALTH_FLAG = (configur.getboolean('BROWSER', 'STEALTH')) 
     
     WEBKIT_JAVASCRIPT_POPUPS_ENABLED = (configur.getboolean('WEBKIT', 'JAVASCRIPT_POPUPS_ENABLED')) 
     WEBKIT_JAVASCRIPT_ENABLED = (configur.getboolean('WEBKIT', 'JAVASCRIPT_ENABLED')) 
     WEBKIT_FULLSCREEN_ENABLED = (configur.getboolean('WEBKIT', 'FULLSCREEN_ENABLED')) 
     WEBKIT_WEBGL_ENABLED = (configur.getboolean('WEBKIT', 'WEBGL_ENABLED')) 
     WEBKIT_PLUGINS_ENABLED = (configur.getboolean('WEBKIT', 'PLUGINS_ENABLED')) 
+ 
+    if STEALTH_FLAG:
+        BROWSER_STYLESHEET = "stealth"
+        BROWSER_ADBLOCKER = True 
+        BROWSER_MINER_BLOCKER = True 
+        BROWSER_STORE_VISITED_LINKS = False 
+        BROWSER_HTTPS_ONLY = True
+        BROWSER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+        BROWSER_PROXY = None 
+        BROWSER_WINDOW_TITLE = "Lynx Stealth"
+        WEBKIT_WEBGL_ENABLED = 0
+        WEBKIT_PLUGINS_ENABLED = 0
+        WEBKIT_JAVASCRIPT_POPUPS_ENABLED = 0
 try:
     confb()
 except:
