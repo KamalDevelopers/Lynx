@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Lynx Home</title>
+
+<meta name="generator" content="php-proxy.com">
+<meta name="version" content="<?=$version;?>">
+<link rel="icon" type="image/png" href="stealth-lynx_logo.png" sizes="32x32" />
+
+<style type="text/css">
+html body {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 12px;
+    background-color: #242b2e;
+}
+
+#container {
+    width: 600px;
+    margin: 0 auto;
+    margin-top: 200px;
+}
+
+#searchbox {
+    color: white;
+    background-color: #151d1d;
+    margin-top: 50px;
+    border: 0;
+    border-width: 0px;
+    width: 600px;
+    height: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 15px;
+    outline: none;
+}
+</style>
+
+</head>
+
+<body>
+<script>
+    function onSearch() {
+        window.location.href = "https://duckduckgo.com/?q=" + document.getElementById("searchbox").value;
+    };
+</script>
+
+<div id="container">
+    <center>
+        <img width=100 src="stealth-lynx_logo.png">
+    </center>
+         
+    <center>
+        <input name="url" id="searchbox" type="text" onkeydown="if (event.keyCode == 13) { onSearch(); }"  autocomplete="off" placeholder="Search" />
+    </center>
+    
+    <script type="text/javascript">
+		document.getElementsByName("url")[0].focus();
+    </script>
+</div>
+
+</body>
+</html>
+
