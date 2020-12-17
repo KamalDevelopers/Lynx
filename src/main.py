@@ -8,8 +8,17 @@ import sys
 import os
 
 def runbrowser():
+    global BROWSER_LOCALE
+
     app = QApplication(sys.argv)
     app.setApplicationName(confvar.BROWSER_WINDOW_TITLE)
+    
+    translator = QTranslator()
+    if not BROWSER_LOCALE:
+        BROWSER_LOCALE = QLocale.system().name()
+    print('Localization loaded:', translator.load(BROWSER_LOCALE + '.qm', '../localization'), BROWSER_LOCALE)
+    app.installTranslator(translator)
+
     if len(sys.argv) > 1: 
         open_url_arg(sys.argv[1])
     window = MainWindow()

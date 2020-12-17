@@ -103,7 +103,7 @@ class MainWindow(QMainWindow):
         browser.settings = self.settings
 
         htabbox = QVBoxLayout()
-        navtb = QToolBar("Navigation")
+        navtb = QToolBar(self.tr("Navigation"))
         navtb.setMovable(False) 
         navtb.setMaximumHeight(30)
         navtb.setIconSize(QSize(10, 10))
@@ -154,14 +154,14 @@ class MainWindow(QMainWindow):
         max_view.setMaximumWidth(0)
         reopen_tab.setMaximumWidth(0)
 
-        back_btn = QAction("Back (Alt+J)", self)
+        back_btn = QAction(self.tr("Back (Alt+J)"), self)
         icon = QIcon("img/left_arrow.svg")
         back_btn.setIcon(icon)
         back_btn.setStatusTip("Back to previous page")
         back_btn.setShortcut('Alt+J')
         back_btn.triggered.connect(lambda: browser.back())
 
-        next_btn = QAction("Forward (Alt+K)", self)
+        next_btn = QAction(self.tr("Forward (Alt+K)"), self)
         icon = QIcon("img/right_arrow.svg")
         next_btn.setIcon(icon)
         next_btn.setStatusTip("Forward to next page")
@@ -181,13 +181,13 @@ class MainWindow(QMainWindow):
         urlbar.setCompleter(completer)
         navtb.addWidget(urlbar)
         
-        urlbar_focus = QPushButton("Foucs", self)
+        urlbar_focus = QPushButton("", self)
         urlbar_focus.setShortcut("Ctrl+U")
         urlbar_focus.clicked.connect(lambda: urlbar.setFocus())
         navtb.addWidget(urlbar_focus)
         urlbar_focus.setMaximumWidth(0)
  
-        add_tab_btn = QAction("Add Tab (Ctrl+H)", self)
+        add_tab_btn = QAction(self.tr("Add Tab (Ctrl+H)"), self)
         icon = QIcon("img/add_tab.png")
         add_tab_btn.setIcon(icon)
         add_tab_btn.triggered.connect(lambda: self.add_new_tab())
@@ -237,7 +237,7 @@ class MainWindow(QMainWindow):
         browser.setZoomFactor(changezoom)
     
     def save_page(self, browser):
-        destination = QFileDialog.getSaveFileName(self, "Save Page", OS_HOME + "/Downloads/" + browser.page().title() + ".html", "*.html")
+        destination = QFileDialog.getSaveFileName(self, self.tr("Save Page"), OS_HOME + "/Downloads/" + browser.page().title() + ".html", "*.html")
         if destination:
             browser.page().save(destination[0], QWebEngineDownloadItem.SingleHtmlSaveFormat)
 

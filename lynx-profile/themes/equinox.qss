@@ -8,7 +8,7 @@ QToolTip {
 
 QWidget {
     color: #eff0f1;
-    background-color: #31363b;
+    background-color: #2e3036;
     selection-background-color: #3daee9;
     selection-color: #eff0f1;
     background-clip: border;
@@ -491,7 +491,7 @@ QStackedWidget {
 
 QToolBar {
     border: 1px transparent #393838;
-    background: 1px solid #31363b;
+    background: 1px solid #2e3036;
     font-weight: bold;
 }
 
@@ -701,9 +701,9 @@ QTabBar::tab:top {
     float: left;
     text-align: left;
     color: #eff0f1;
-    border: 1px solid #2a2e33;
+    border: 1px solid #181A1C;
     border-bottom: 1px transparent black;
-    background-color: #23272b;
+    background-color: #1B1E21;
     padding: 5px;
     max-width: 15px;
     border-top-left-radius: 2px;
@@ -713,9 +713,9 @@ QTabBar::tab:top {
 QTabBar::tab:top:selected {
     float: left;
     color: #eff0f1;
-    background-color: #31363b;
-    border: 1px solid #31363b;
-    border-top: 2px solid #3daee9;
+    background-color: #2e3036;
+    border: 1px solid #2e3036;
+    border-top: 2px solid #4675E2;
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
     text-align: left;
@@ -1234,3 +1234,4 @@ QDateEdit::down-arrow:hover,
 QDateEdit::down-arrow:focus {
     image: url(:/qss_icons/rc/down_arrow.png);
 }
+
