@@ -29,6 +29,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         global BROWSER_HOMEPAGE
+        self.last_closed_tab = None
 
         if BROWSER_PROXY:
             proxy.setProxy(BROWSER_PROXY)
@@ -128,6 +129,10 @@ class MainWindow(QMainWindow):
         reload_page.setShortcut("Ctrl+R")
         reload_page.clicked.connect(lambda: browser.reload())
         
+        reopen_tab = QPushButton("", self)
+        reopen_tab.setShortcut("Ctrl+Shift+T")
+        reopen_tab.clicked.connect(lambda: self.open_last())
+        
         max_view = QPushButton("", self)
         max_view.setShortcut("Alt+F")
         size = QDesktopWidget().screenGeometry(-1)
@@ -139,6 +144,7 @@ class MainWindow(QMainWindow):
         navtb.addWidget(mute_page)
         navtb.addWidget(reload_page)
         navtb.addWidget(max_view)
+        navtb.addWidget(reopen_tab)
 
         zoom_in.setMaximumWidth(0)
         zoom_out.setMaximumWidth(0)
@@ -146,6 +152,7 @@ class MainWindow(QMainWindow):
         mute_page.setMaximumWidth(0)
         reload_page.setMaximumWidth(0)
         max_view.setMaximumWidth(0)
+        reopen_tab.setMaximumWidth(0)
 
         back_btn = QAction("Back (Alt+J)", self)
         icon = QIcon("img/left_arrow.svg")
@@ -171,7 +178,6 @@ class MainWindow(QMainWindow):
         urlbar.setFont(font)
 
         completer = QCompleter(bookmark.getBookmarks())
-        #completer.popup().setStyleSheet("QScrollBar { width: 10px; }")
         urlbar.setCompleter(completer)
         navtb.addWidget(urlbar)
         
@@ -251,11 +257,16 @@ class MainWindow(QMainWindow):
         if i == -1:
             self.add_new_tab()
 
+    def open_last(self):
+        if self.last_closed_tab:
+            self.add_new_tab(self.last_closed_tab)
+
     def close_current_tab(self, i=-1):
         if i == -1:
             i = self.tabs.currentIndex()
         if self.tabs.count() < 2:
             sys.exit()
+        self.last_closed_tab = self.tabs.widget(i).findChildren(QWebEngineView)[0].url()
         self.tabs.widget(i).deleteLater()
         self.tabs.removeTab(i)
 

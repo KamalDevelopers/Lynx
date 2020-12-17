@@ -18,7 +18,7 @@ def encodeLynxUrl(qurl):
         lfile = lfile[len(lfile)-1]
     else:
         return qurl.toString()
-    return "lynx:" + lfile[:-5] 
+    return "lynx:" + lfile.split("_")[1][:-5] 
 
 def checkLynxUrl(qurl):
     if str(qurl.toString())[:5] == "lynx:":
