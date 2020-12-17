@@ -23,7 +23,12 @@ def runbrowser():
         open_url_arg(sys.argv[1])
     window = MainWindow()
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
-    app.setWindowIcon(QIcon('img/lynx_logo.svg'))
+  
+    if os.path.isfile(confvar.BASE_PATH + "lynx/" + BROWSER_STYLESHEET + "-lynx_logo.png"):
+        app.setWindowIcon(QIcon(confvar.BASE_PATH + "lynx/" + BROWSER_STYLESHEET + "-lynx_logo.png")) 
+    else: 
+        app.setWindowIcon(QIcon('img/lynx_logo.svg'))
+
     app.setStyleSheet(open(BASE_PATH + "themes/" + BROWSER_STYLESHEET + ".qss").read())
     app.exec_()
 
