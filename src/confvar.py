@@ -5,16 +5,15 @@ import platform
 from os.path import expanduser
 from configparser import ConfigParser
 
-CURRENT_OS = platform.system()
-OS_HOME = expanduser("~")
-configur = ConfigParser() 
-
 with open('lynx.json') as f:
     data = json.load(f)
 
-print(data)
+CURRENT_OS = platform.system()
+OS_HOME = expanduser("~")
+configur = ConfigParser() 
 BASE_PATH = data['package']['profile']
 VERSION = data['package']['version']
+print(data)
 
 if not os.path.isdir(BASE_PATH):
     print("Failed to find lynx profile")
@@ -25,7 +24,7 @@ BROWSER_WINDOW_TITLE = "Lynx"
 BROWSER_LOCALE = None 
 BROWSER_HOMEPAGE = "lynx:home"
 BROWSER_FONT_FAMILY = "Noto"
-BROWSER_STYLESHEET = "kdark"
+BROWSER_STYLESHEET = "equinox"
 BROWSER_FONT_SIZE = 10 
 BROWSER_ADBLOCKER = True 
 BROWSER_MINER_BLOCKER = True 
