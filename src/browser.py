@@ -155,14 +155,14 @@ class MainWindow(QMainWindow):
         reopen_tab.setMaximumWidth(0)
 
         back_btn = QAction(self.tr("Back (Alt+J)"), self)
-        icon = QIcon("img/left_arrow.svg")
+        icon = QIcon("img/remix/arrow-left-s-line.png")
         back_btn.setIcon(icon)
         back_btn.setStatusTip("Back to previous page")
         back_btn.setShortcut('Alt+J')
         back_btn.triggered.connect(lambda: browser.back())
 
         next_btn = QAction(self.tr("Forward (Alt+K)"), self)
-        icon = QIcon("img/right_arrow.svg")
+        icon = QIcon("img/remix/arrow-right-s-line.png")
         next_btn.setIcon(icon)
         next_btn.setStatusTip("Forward to next page")
         next_btn.setShortcut('Alt+K')
@@ -188,7 +188,7 @@ class MainWindow(QMainWindow):
         urlbar_focus.setMaximumWidth(0)
  
         add_tab_btn = QAction(self.tr("Add Tab (Ctrl+H)"), self)
-        icon = QIcon("img/add_tab.png")
+        icon = QIcon("img/remix/add-line.png")
         add_tab_btn.setIcon(icon)
         add_tab_btn.triggered.connect(lambda: self.add_new_tab())
         navtb.addAction(add_tab_btn)
