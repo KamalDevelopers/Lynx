@@ -4,22 +4,22 @@ import argparser
 # Needs to be above local imports
 # If the stealth flag is set then overwrite conf
 args = argparser.parse()
-if args.URL:
-    open_url_arg(args.URL)
 if args.s:
     confvar.stealth()
 else:
     confvar.stealth(False)
 confvar.confb()
 
-
 import adblock
+import extension
 import bookmark
 from browser import *
-
 import threading
 import sys
 import os
+
+if args.URL:
+    open_url_arg(args.URL)
 
 def runbrowser():
     app = QApplication(sys.argv)
@@ -35,10 +35,8 @@ def runbrowser():
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
   
     if os.path.isfile("./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico"):
-        print("Loading Custom Icon From:", os.path.abspath("./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico"))
         app.setWindowIcon(QIcon(os.path.abspath("./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico")))
     else: 
-        print("Loading Default Icon From:", os.path.abspath("./img/icons/lynx_logo.ico"))
         app.setWindowIcon(QIcon(os.path.abspath('./img/icons/lynx_logo.ico')))
 
     app.setStyleSheet(open(BASE_PATH + "themes/" + confvar.BROWSER_STYLESHEET + ".qss").read())
@@ -46,5 +44,6 @@ def runbrowser():
 
 if __name__ == "__main__":
     adblock.readBlocker()
+    extension.readExtensions() 
     bookmark.readBookmarks()
     runbrowser()

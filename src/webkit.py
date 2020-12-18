@@ -30,4 +30,3 @@ class RequestInterceptor(QWebEngineUrlRequestInterceptor):
             if url[:5] == "http:":
                 info.redirect(QUrl(url.replace("http:", "https:")))
 
-

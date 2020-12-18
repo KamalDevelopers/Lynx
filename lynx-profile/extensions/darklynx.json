@@ -1,0 +1,9 @@
+{
+   "extension": {
+      "host": [
+         "youtube.com",
+         "duckduckgo.com"
+      ],
+      "js": "darklynx.js"
+   }
+}
