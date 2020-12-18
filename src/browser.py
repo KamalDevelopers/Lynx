@@ -71,6 +71,19 @@ class MainWindow(QMainWindow):
         self.tabs.tabBar().setExpanding(True)
         self.tabs.tabBar().setAutoHide(1)
         
+        self.js_btn_enable = QAction(self.tr("Disable Javascript (Alt+Ctrl+A)"), self)
+        self.js_btn_enable.setShortcut("Alt+Ctrl+A")
+        icon = QIcon("img/js_enabled.png")
+        self.js_btn_enable.setIcon(icon)
+        self.js_btn_enable.triggered.connect(lambda: self.javascript_toggle())
+
+        self.js_btn_disable = QAction(self.tr("Enable Javascript (Alt+Ctrl+S)"), self)
+        self.js_btn_disable.setShortcut("Alt+Ctrl+S")
+        icon = QIcon("img/js_disabled.png")
+        self.js_btn_disable.setIcon(icon)
+        self.js_btn_disable.setVisible(False)
+        self.js_btn_disable.triggered.connect(lambda: self.javascript_toggle())
+
         # Shortcuts 
         self.shortcut_closetab = QShortcut(QKeySequence("Ctrl+W"), self)
         self.shortcut_addtab = QShortcut(QKeySequence("Ctrl+H"), self)
@@ -226,6 +239,10 @@ class MainWindow(QMainWindow):
         if not STEALTH_FLAG:
             navtb.addAction(stealth_btn)
         
+        if STEALTH_FLAG:
+            navtb.addAction(self.js_btn_enable)
+            navtb.addAction(self.js_btn_disable)
+        
         htabbox.addWidget(navtb)
         htabbox.addWidget(searchbar)
         htabbox.addWidget(browser)
@@ -269,7 +286,17 @@ class MainWindow(QMainWindow):
             browser.findText("")
             searchbar.setText("")
             searchbar.hide()
-    
+
+    def javascript_toggle(self):
+        if self.settings.testAttribute(QWebEngineSettings.JavascriptEnabled):
+            self.settings.setAttribute(QWebEngineSettings.JavascriptEnabled, 0)
+            self.js_btn_enable.setVisible(False)
+            self.js_btn_disable.setVisible(True)
+        else: 
+            self.settings.setAttribute(QWebEngineSettings.JavascriptEnabled, 1)
+            self.js_btn_disable.setVisible(False)
+            self.js_btn_enable.setVisible(True)
+
     def search_webview(self, browser, search):
         browser.findText(search)
 
