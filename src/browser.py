@@ -108,6 +108,14 @@ class MainWindow(QMainWindow):
         navtb.setMaximumHeight(30)
         navtb.setIconSize(QSize(10, 10))
 
+        searchbar = QLineEdit()
+        searchbar.returnPressed.connect(lambda: self.search_webview(browser, searchbar.text()))
+        searchbar.setFixedHeight(23)
+        font = QFont("Noto", 9)
+        searchbar.setStyleSheet("QLineEdit { color: #bfbfbf; }")
+        searchbar.setFont(font)
+        searchbar.hide()
+
         # Hidden Buttons - Keyboard Shortcuts
         zoom_in = QPushButton("", self)
         zoom_in.setShortcut("Ctrl++")
@@ -138,21 +146,28 @@ class MainWindow(QMainWindow):
         size = QDesktopWidget().screenGeometry(-1)
         max_view.clicked.connect(lambda: self.resize(size.width(), size.height()))
         
+        search_text = QPushButton("", self)
+        search_text.setShortcut("Ctrl+F")
+        size = QDesktopWidget().screenGeometry(-1)
+        search_text.clicked.connect(lambda: self.open_searchbar(browser, searchbar))
+        
         navtb.addWidget(zoom_in)
         navtb.addWidget(zoom_out)
         navtb.addWidget(save_page)
         navtb.addWidget(mute_page)
         navtb.addWidget(reload_page)
-        navtb.addWidget(max_view)
         navtb.addWidget(reopen_tab)
+        navtb.addWidget(max_view)
+        navtb.addWidget(search_text)
 
         zoom_in.setMaximumWidth(0)
         zoom_out.setMaximumWidth(0)
         save_page.setMaximumWidth(0)
         mute_page.setMaximumWidth(0)
         reload_page.setMaximumWidth(0)
-        max_view.setMaximumWidth(0)
         reopen_tab.setMaximumWidth(0)
+        max_view.setMaximumWidth(0)
+        search_text.setMaximumWidth(0)
 
         back_btn = QAction(self.tr("Back (Alt+J)"), self)
         icon = QIcon("img/remix/arrow-left-s-line.png")
@@ -192,10 +207,12 @@ class MainWindow(QMainWindow):
         add_tab_btn.setIcon(icon)
         add_tab_btn.triggered.connect(lambda: self.add_new_tab())
         navtb.addAction(add_tab_btn)
-
+        
         htabbox.addWidget(navtb)
         htabbox.addWidget(browser)
+        htabbox.addWidget(searchbar)
         htabbox.setContentsMargins(0, 6, 0, 0)
+        
         tabpanel = QWidget()
         tabpanel.setLayout(htabbox)
         i = self.tabs.addTab(tabpanel, label)
@@ -209,7 +226,7 @@ class MainWindow(QMainWindow):
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
         browser.titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(i, browser.page().title()))
-    
+
     def fullscreen_webview(self, htabbox, browser):
         if self.fullscreen == 0:
             self.winsize = self.geometry()
@@ -225,6 +242,18 @@ class MainWindow(QMainWindow):
             self.setGeometry(self.winsize)
             self.settings.setAttribute(QWebEngineSettings.ShowScrollBars, 1)
             self.fullscreen = 0
+    
+    def open_searchbar(self, browser, searchbar):
+        if searchbar.isHidden():
+            searchbar.show()
+            searchbar.setFocus()
+        else:
+            browser.findText("")
+            searchbar.setText("")
+            searchbar.hide()
+    
+    def search_webview(self, browser, search):
+        browser.findText(search)
 
     def zoom(self, value, browser):
         changezoom = 0
