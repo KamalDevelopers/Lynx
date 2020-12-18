@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 import requests
 
 import proxy
@@ -24,6 +25,15 @@ def open_url_arg(url):
     global default_url_open
     default_url_open = url
 interceptor = RequestInterceptor()
+
+def launch_stealth(window):
+    exec_file = sys.argv[0]
+    window.close()
+    if ".py" in exec_file:
+        subprocess.run([sys.executable, exec_file, "-s"])
+    else:
+        subprocess.run([exec_file, "-s"])
+    sys.exit()
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -145,7 +155,7 @@ class MainWindow(QMainWindow):
         max_view.setShortcut("Alt+F")
         size = QDesktopWidget().screenGeometry(-1)
         max_view.clicked.connect(lambda: self.resize(size.width(), size.height()))
-        
+
         search_text = QPushButton("", self)
         search_text.setShortcut("Ctrl+F")
         size = QDesktopWidget().screenGeometry(-1)
@@ -207,10 +217,17 @@ class MainWindow(QMainWindow):
         add_tab_btn.setIcon(icon)
         add_tab_btn.triggered.connect(lambda: self.add_new_tab())
         navtb.addAction(add_tab_btn)
+   
+        stealth_btn = QAction(self.tr("Stealth Mode (Alt+S)"), self)
+        icon = QIcon("img/remix/spy-line.png")
+        stealth_btn.setIcon(icon)
+        stealth_btn.triggered.connect(lambda: launch_stealth(self))
+        if not STEALTH_FLAG:
+            navtb.addAction(stealth_btn)
         
         htabbox.addWidget(navtb)
-        htabbox.addWidget(browser)
         htabbox.addWidget(searchbar)
+        htabbox.addWidget(browser)
         htabbox.setContentsMargins(0, 6, 0, 0)
         
         tabpanel = QWidget()
