@@ -219,6 +219,7 @@ class MainWindow(QMainWindow):
         navtb.addAction(add_tab_btn)
    
         stealth_btn = QAction(self.tr("Stealth Mode (Alt+S)"), self)
+        stealth_btn.setShortcut("Alt+S")
         icon = QIcon("img/remix/spy-line.png")
         stealth_btn.setIcon(icon)
         stealth_btn.triggered.connect(lambda: launch_stealth(self))

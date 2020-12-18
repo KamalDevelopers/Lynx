@@ -4,29 +4,34 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/browser.py" line="106"/>
+        <location filename="../src/browser.py" line="116"/>
         <source>Navigation</source>
         <translation>Navigation</translation>
     </message>
     <message>
-        <location filename="../src/browser.py" line="157"/>
+        <location filename="../src/browser.py" line="182"/>
         <source>Back (Alt+J)</source>
         <translation>Bakåt (Alt+J)</translation>
     </message>
     <message>
-        <location filename="../src/browser.py" line="164"/>
+        <location filename="../src/browser.py" line="189"/>
         <source>Forward (Alt+K)</source>
         <translation>Frammåt+(Alt+K)</translation>
     </message>
     <message>
-        <location filename="../src/browser.py" line="190"/>
+        <location filename="../src/browser.py" line="215"/>
         <source>Add Tab (Ctrl+H)</source>
         <translation>Ny Flik (Ctrl+H)</translation>
     </message>
     <message>
-        <location filename="../src/browser.py" line="240"/>
+        <location filename="../src/browser.py" line="287"/>
         <source>Save Page</source>
         <translation>Spara Sida</translation>
+    </message>
+    <message>
+        <location filename="../src/browser.py" line="221"/>
+        <source>Stealth Mode (Alt+S)</source>
+        <translation>Dolt Läge (Alt+S)</translation>
     </message>
 </context>
 </TS>
