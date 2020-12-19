@@ -16,7 +16,9 @@ def readExtension(extension_file):
     with open(BASE_PATH + "extensions/" + extension_file) as f:
         data = json.load(f)
     for host in data['extension']['host']:
-        extension_data[host.replace("www.", "")] = data['extension']['js']
+        if host.replace("www.", "") not in extension_data:
+            extension_data[host.replace("www.", "")] = [] 
+        extension_data[host.replace("www.", "")].append(data['extension']['js'])
 
 def readExtensions():
     files = os.listdir(BASE_PATH + "extensions/")
@@ -27,10 +29,13 @@ def readExtensions():
 
 def pageLoad(browser):
     match = browser.page().url().host().replace("www.", "")
+    if match not in list(extension_data.keys()):
+        match = "*"
 
     if match in list(extension_data.keys()):
-        with open(BASE_PATH + "extensions/" + extension_data[match]) as f:
-            js_code = f.read()
-        browser.page().runJavaScript(js_code)
+        for load_scripts in extension_data[match]:
+            with open(BASE_PATH + "extensions/" + load_scripts) as f:
+                js_code = f.read()
+            browser.page().runJavaScript(js_code)
         return 1
     return 0

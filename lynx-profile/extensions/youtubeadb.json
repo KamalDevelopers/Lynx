@@ -1,0 +1,11 @@
+{
+    "name": "YoutubeAdBlocker",
+    "desc": "Automatically skips Youtube ads",
+    "extension": {
+        "host": [
+            "youtube.com",
+            "*"
+        ],
+        "js": "youtubeadb.js"
+    }
+}

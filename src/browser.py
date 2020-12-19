@@ -334,8 +334,6 @@ class MainWindow(QMainWindow):
             browser.page().setAudioMuted(1)
 
     def set_tab_icon(self, i, webpage):
-        #if self.tabs.currentIndex() != i:
-        #    return
         if webpage.icon():
             self.tabs.setTabIcon(i, webpage.icon())
 
