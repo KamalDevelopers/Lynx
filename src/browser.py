@@ -41,6 +41,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         global BROWSER_HOMEPAGE
         self.last_closed_tab = None
+        self.tab_indexes = []
 
         if BROWSER_PROXY:
             proxy.setProxy(BROWSER_PROXY)
@@ -256,18 +257,22 @@ class MainWindow(QMainWindow):
         
         tabpanel = QWidget()
         tabpanel.setLayout(htabbox)
-        i = self.tabs.addTab(tabpanel, label)
+        i = self.tabs.addTab(tabpanel, label) # Current index of the tab
+        tab_i = len(self.tab_indexes) # Constant index of the tab inside the tab index array
+        self.tab_indexes.append(i) # The index is stored in the tab array where it may be updated on tab_remove
+
         self.tabs.setTabPosition(QTabWidget.North)
         if silent != 1:
             self.tabs.setCurrentIndex(i)
 
         self.fullscreen = 0
         urlbar.setFocus()
-        browser.page().iconChanged.connect(lambda: self.set_tab_icon(i, browser.page()))
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.page().loadFinished.connect(lambda: extension.pageLoad(browser))
-        browser.urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
-        browser.titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(i, browser.page().title()))
+        browser.page().urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
+        browser.page().titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(self.tab_indexes[tab_i], browser.page().title()))
+        browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
+
 
     def fullscreen_webview(self, htabbox, browser):
         if self.fullscreen == 0:
@@ -342,6 +347,12 @@ class MainWindow(QMainWindow):
         if self.last_closed_tab:
             self.add_new_tab(self.last_closed_tab)
 
+    def tab_removed(self, value):
+        # Updates all the local index values of the tabs 
+        for i in range(0, len(self.tab_indexes)):
+            if self.tab_indexes[i] > value:
+                self.tab_indexes[i] = self.tab_indexes[i] - 1
+
     def close_current_tab(self, i=-1):
         if i == -1:
             i = self.tabs.currentIndex()
@@ -350,6 +361,7 @@ class MainWindow(QMainWindow):
         self.last_closed_tab = self.tabs.widget(i).findChildren(QWebEngineView)[0].url()
         self.tabs.widget(i).deleteLater()
         self.tabs.removeTab(i)
+        self.tab_removed(i)
 
     def tab_change_forward(self):
         self.tabs.setCurrentIndex(self.tabs.currentIndex()+1)
