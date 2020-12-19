@@ -11,3 +11,33 @@ def readBookmarks():
 
 def getBookmarks():
     return bookmarks
+
+def removeBookmark(url):
+    if "://" in url:
+        url = url.split("://")[1]
+    if url not in bookmarks:
+        return False
+    
+    data = {} 
+    bookmarks.remove(url)
+    data["bookmarks"] = bookmarks
+    with open(BASE_PATH + 'bookmarks.json', 'w') as f:
+        json.dump(data, f, indent=4)
+    readBookmarks() 
+    return True
+
+def addBookmark(url, remove=False):
+    if "://" in url:
+        url = url.split("://")[1]
+    if url in bookmarks:
+        if remove == True:
+            removeBookmark(url)
+        return False
+    
+    data = {} 
+    bookmarks.append(url)
+    data["bookmarks"] = bookmarks
+    with open(BASE_PATH + 'bookmarks.json', 'w') as f:
+        json.dump(data, f, indent=4)
+    readBookmarks() 
+    return True

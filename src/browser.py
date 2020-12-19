@@ -172,8 +172,11 @@ class MainWindow(QMainWindow):
 
         search_text = QPushButton("", self)
         search_text.setShortcut("Ctrl+F")
-        size = QDesktopWidget().screenGeometry(-1)
         search_text.clicked.connect(lambda: self.open_searchbar(browser, searchbar))
+        
+        bookmark_page = QPushButton("", self)
+        bookmark_page.setShortcut("Ctrl+D")
+        bookmark_page.clicked.connect(lambda: bookmark.addBookmark(browser.page().url().toString(), True))
         
         navtb.addWidget(zoom_in)
         navtb.addWidget(zoom_out)
@@ -183,6 +186,7 @@ class MainWindow(QMainWindow):
         navtb.addWidget(reopen_tab)
         navtb.addWidget(max_view)
         navtb.addWidget(search_text)
+        navtb.addWidget(bookmark_page)
 
         zoom_in.setMaximumWidth(0)
         zoom_out.setMaximumWidth(0)
@@ -192,6 +196,7 @@ class MainWindow(QMainWindow):
         reopen_tab.setMaximumWidth(0)
         max_view.setMaximumWidth(0)
         search_text.setMaximumWidth(0)
+        bookmark_page.setMaximumWidth(0)
 
         back_btn = QAction(self.tr("Back (Alt+J)"), self)
         icon = QIcon("img/remix/arrow-left-s-line.png")
