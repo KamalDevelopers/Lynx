@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         global BROWSER_HOMEPAGE
+        
         self.last_closed_tab = None
         self.tab_indexes = []
 
@@ -115,10 +116,10 @@ class MainWindow(QMainWindow):
         
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
         browser = QWebEngineView()
-        #cwe = CustomWebEnginePage(self)
-        #cwe.set_add_new_tab_h(self.add_new_tab)
-        #browser.setPage(cwe)
-        # The Custom Web Engine Page feature causes deleteLater() to fail
+        
+        cwe = CustomWebEnginePage(self)
+        cwe.set_add_new_tab_h(self.add_new_tab)
+        browser.setPage(cwe)
 
         browser.page().setBackgroundColor(Qt.darkGray) 
         browser.setUrl(QUrl(qurl))
@@ -354,6 +355,7 @@ class MainWindow(QMainWindow):
         if self.tabs.count() < 2:
             sys.exit()
         self.last_closed_tab = self.tabs.widget(i).findChildren(QWebEngineView)[0].url()
+        self.tabs.widget(i).findChildren(QWebEngineView)[0].page().setParent(None)
         self.tabs.widget(i).deleteLater()
         self.tabs.removeTab(i)
 

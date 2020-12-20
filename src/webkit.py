@@ -17,7 +17,7 @@ class CustomWebEnginePage(QWebEnginePage):
     def acceptNavigationRequest(self, url,  _type, isMainFrame):
         modifiers = QApplication.keyboardModifiers()
         if _type == QWebEnginePage.NavigationTypeLinkClicked and (modifiers & Qt.ControlModifier):
-            self.add_new_tab(QUrl(url)) 
+            self.add_new_tab(QUrl(url), silent=1) 
             return False 
         return super().acceptNavigationRequest(url,  _type, isMainFrame)
 
