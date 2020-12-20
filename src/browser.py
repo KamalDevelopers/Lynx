@@ -92,7 +92,9 @@ class MainWindow(QMainWindow):
         self.shortcut_addtab = QShortcut(QKeySequence("Ctrl+H"), self)
         self.shortcut_changetab_f = QShortcut(QKeySequence("Ctrl+K"), self)
         self.shortcut_changetab_b = QShortcut(QKeySequence("Ctrl+J"), self)
+        self.shortcut_store_session = QShortcut(QKeySequence("Alt+X"), self)
 
+        self.shortcut_store_session.activated.connect(lambda: bookmark.store_session(self.current_urls()))
         self.shortcut_closetab.activated.connect(self.close_current_tab)
         self.shortcut_changetab_f.activated.connect(self.tab_change_forward)
         self.shortcut_changetab_b.activated.connect(self.tab_change_back)
@@ -102,7 +104,12 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tabs)
 
         self.setWindowTitle(BROWSER_WINDOW_TITLE)
-        self.add_new_tab()
+        
+        if BROWSER_OPEN_URLS:
+            for page in BROWSER_OPEN_URLS:
+                self.add_new_tab(QUrl(page))
+        else:
+            self.add_new_tab()
         self.show()
 
     def add_new_tab(self, qurl=None, label="Blank", silent=0):
@@ -275,8 +282,15 @@ class MainWindow(QMainWindow):
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
         urlbar.textEdited.connect(lambda: self.update_index(self.tabs.currentIndex(), tab_i))
 
+
     def update_index(self, i, ti):
         self.tab_indexes[ti] = i
+    
+    def current_urls(self):
+        open_urls = []
+        for i in range(0, self.tabs.count()):
+            open_urls.append(self.tabs.widget(i).findChildren(QWebEngineView)[0].url().toString())
+        return open_urls
 
     def fullscreen_webview(self, htabbox, browser):
         if self.fullscreen == 0:
