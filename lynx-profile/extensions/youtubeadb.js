@@ -28,7 +28,8 @@ if (!document.getElementById(cssId))
     link.id   = cssId;
     link.rel  = 'stylesheet';
     link.type = 'text/css';
-    link.href = 'https://www.gozer.org/mozilla/ad_blocking/css/ad_blocking.css';
+    var d = new Date();
+    link.href = 'https://alpen.ml/adblocker/ads.css?d=' + d.getTime();
     link.media = 'all';
     head.appendChild(link);
 }

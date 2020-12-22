@@ -5,7 +5,7 @@ size = 0
 rules = [] 
 def readBlocker():
     global rules, size
-    
+ 
     if BROWSER_ADBLOCKER == True:
         with open(BASE_PATH + "adblock/lite.txt") as F:
             rules += F.read().split("\n")
