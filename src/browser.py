@@ -104,7 +104,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tabs)
 
         self.setWindowTitle(BROWSER_WINDOW_TITLE)
-        
+
         if BROWSER_OPEN_URLS:
             for page in BROWSER_OPEN_URLS:
                 self.add_new_tab(QUrl(page))
@@ -280,6 +280,7 @@ class MainWindow(QMainWindow):
         browser.page().urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
         browser.page().titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(self.tab_indexes[tab_i], browser.page().title()))
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
+        browser.page().profile().downloadRequested.connect(self.download_item)
         urlbar.textEdited.connect(lambda: self.update_index(self.tabs.currentIndex(), tab_i))
 
 
@@ -329,6 +330,9 @@ class MainWindow(QMainWindow):
 
     def search_webview(self, browser, search):
         browser.findText(search)
+
+    def download_item(self, download):
+        download.accept()
 
     def zoom(self, value, browser):
         changezoom = 0

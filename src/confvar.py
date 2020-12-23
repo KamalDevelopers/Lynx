@@ -13,6 +13,7 @@ OS_HOME = expanduser("~")
 STEALTH_FLAG = 0 
 configur = ConfigParser() 
 BASE_PATH = data['package']['profile']
+DOWNLOAD_PATH = OS_HOME + "/" + "Downloads/"
 VERSION = data['package']['version']
 print(data)
 
