@@ -1,6 +1,7 @@
 {
     "name": "DarkLynx",
     "desc": "Automatically enables dark mode for Youtube and Duckduckgo",
+    "enabled": true,
     "extension": {
         "host": [
             "youtube.com",

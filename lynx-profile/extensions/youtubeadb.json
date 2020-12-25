@@ -1,6 +1,7 @@
 {
     "name": "YoutubeAdBlocker",
     "desc": "Automatically skips Youtube ads",
+    "enabled": true,
     "extension": {
         "host": [
             "youtube.com",

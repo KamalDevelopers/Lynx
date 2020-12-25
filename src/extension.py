@@ -15,10 +15,13 @@ def readExtension(extension_file):
     global extension_data
     with open(BASE_PATH + "extensions/" + extension_file) as f:
         data = json.load(f)
-    for host in data['extension']['host']:
+    for i, host in enumerate(data['extension']['host']):
+        if data['enabled'] == False:
+            return
         if host.replace("www.", "") not in extension_data:
-            extension_data[host.replace("www.", "")] = [] 
-        extension_data[host.replace("www.", "")].append(data['extension']['js'])
+            extension_data[host.replace("www.", "")] = []
+        extension_data[host.replace("www.", "")].append(
+            data['extension']['js'])
 
 def readExtensions():
     files = os.listdir(BASE_PATH + "extensions/")

@@ -389,13 +389,6 @@ class MainWindow(QMainWindow):
     def tab_change_back(self):
         self.tabs.setCurrentIndex(self.tabs.currentIndex()-1)
 
-    def update_title(self, browser):
-        if browser != self.tabs.currentWidget():
-            return
-
-        title = self.tabs.currentWidget().page().title()
-        self.setWindowTitle(BROWSER_WINDOW_TITLE)
-    
     def navigate_home(self):
         self.tabs.currentWidget().setUrl(QUrl(BROWSER_HOMEPAGE))
 
