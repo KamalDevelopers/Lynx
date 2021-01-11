@@ -1,0 +1,11 @@
+{
+    "name": "TsCssBlock",
+    "desc": "An extension to block css elements",
+    "enabled": true,
+    "extension": {
+        "host": [
+            "*"
+        ],
+        "js": "tscssblock.ts"
+    }
+}

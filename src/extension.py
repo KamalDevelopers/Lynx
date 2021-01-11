@@ -15,13 +15,25 @@ def readExtension(extension_file):
     global extension_data
     with open(BASE_PATH + "extensions/" + extension_file) as f:
         data = json.load(f)
+
+    if 'extension' not in data.keys():
+        return False
+
     for i, host in enumerate(data['extension']['host']):
         if data['enabled'] == False:
             return
         if host.replace("www.", "") not in extension_data:
             extension_data[host.replace("www.", "")] = []
-        extension_data[host.replace("www.", "")].append(
-            data['extension']['js'])
+
+        if data['extension']['js'][-3:] == ".ts":
+            new_name = data['extension']['js'].replace(".ts", ".js")
+            if BROWSER_TS_DISABLED:
+                return
+            if not os.path.isfile(BASE_PATH + "extensions/" + new_name):
+                print("Transpiling TS code")
+                os.system("npx tsc " + BASE_PATH + "extensions/" + data['extension']['js'])
+            data['extension']['js'] = new_name
+        extension_data[host.replace("www.", "")].append(data['extension']['js'])
 
 def readExtensions():
     files = os.listdir(BASE_PATH + "extensions/")
@@ -32,11 +44,15 @@ def readExtensions():
 
 def pageLoad(browser):
     match = browser.page().url().host().replace("www.", "")
-    if match not in list(extension_data.keys()):
-        match = "*"
 
     if match in list(extension_data.keys()):
         for load_scripts in extension_data[match]:
+            with open(BASE_PATH + "extensions/" + load_scripts) as f:
+                js_code = f.read()
+            browser.page().runJavaScript(js_code)
+
+    if "*" in list(extension_data.keys()):
+        for load_scripts in extension_data["*"]:
             with open(BASE_PATH + "extensions/" + load_scripts) as f:
                 js_code = f.read()
             browser.page().runJavaScript(js_code)

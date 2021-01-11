@@ -4,8 +4,7 @@
     "enabled": true,
     "extension": {
         "host": [
-            "youtube.com",
-            "*"
+            "youtube.com"
         ],
         "js": "youtubeadb.js"
     }
