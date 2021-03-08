@@ -259,7 +259,6 @@ QAbstractItemView {
 
 QWidget:focus,
 QMenuBar:focus {
-    padding-top: 2px;
 }
 
 QTabWidget:focus,
@@ -273,9 +272,9 @@ QLineEdit {
     background-color: #232629;
     padding: 1px;
     border-style: solid;
-    border: 1px solid #76797C;
+    border: 1px solid #202224;
     border-radius: 2px;
-    color: #eff0f1;
+    color: #CACACA;
 }
 
 QAbstractItemView QLineEdit {
@@ -572,8 +571,6 @@ QTextEdit:hover,
 QPlainTextEdit:hover,
 QAbstractView:hover,
 QTreeView:hover {
-    border: 1px solid #3daee9;
-    color: #eff0f1;
 }
 
 QComboBox:on {
@@ -1183,13 +1180,12 @@ QSplitter::handle:vertical {
 }
 
 QProgressBar {
-    border: 1px solid #76797C;
-    border-radius: 5px;
     text-align: center;
+    height: 4px;
 }
 
 QProgressBar::chunk {
-    background-color: #05B8CC;
+    background-color: #004A83;
 }
 
 QDateEdit {

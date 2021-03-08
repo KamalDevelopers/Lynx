@@ -21,7 +21,10 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
 
+progress_color = None
+progress_color_loading = None
 default_url_open = None 
+
 def open_url_arg(url):
     global default_url_open
     default_url_open = url
@@ -143,15 +146,16 @@ class MainWindow(QMainWindow):
 
         htabbox = QVBoxLayout()
         navtb = QToolBar(self.tr("Navigation"))
+        navtb.addSeparator() 
         navtb.setMovable(False) 
-        navtb.setMaximumHeight(30)
+        navtb.setMaximumHeight(35)
         navtb.setIconSize(QSize(10, 10))
 
         searchbar = QLineEdit()
         searchbar.returnPressed.connect(lambda: self.search_webview(browser, searchbar.text()))
         searchbar.setFixedHeight(23)
         font = QFont("Noto", 9)
-        searchbar.setStyleSheet("QLineEdit { color: #bfbfbf; }")
+        searchbar.setStyleSheet("QLineEdit { color: #909090; }")
         searchbar.setFont(font)
         searchbar.hide()
 
@@ -229,22 +233,30 @@ class MainWindow(QMainWindow):
         navtb.addAction(back_btn)
         navtb.addAction(next_btn)
 
+        secure_icon = QIcon("img/search.png")
+
         urlbar = QLineEdit()
         urlbar.returnPressed.connect(lambda: self.navigate_to_url(urlbar.text(), browser))
-        urlbar.setFixedHeight(23)
+        urlbar.setFixedHeight(26)
         font = QFont("Noto", 9)
-        urlbar.setStyleSheet("QLineEdit { color: #bfbfbf; }")
+        urlbar.setStyleSheet("QLineEdit { color: #909090; }")
         urlbar.setFont(font)
+        urlbar.addAction(secure_icon, QLineEdit.LeadingPosition);
 
         completer = QCompleter(bookmark.getBookmarks())
         urlbar.setCompleter(completer)
+        for _ in range(0, 10):
+            navtb.addSeparator()
         navtb.addWidget(urlbar)
         
         urlbar_focus = QPushButton("", self)
         urlbar_focus.setShortcut("Ctrl+U")
         urlbar_focus.clicked.connect(lambda: urlbar.setFocus())
-        navtb.addWidget(urlbar_focus)
         urlbar_focus.setMaximumWidth(0)
+        self.load_start(urlbar)
+        for _ in range(0, 20):
+            navtb.addSeparator()
+        navtb.addWidget(urlbar_focus)
  
         add_tab_btn = QAction(self.tr("Add Tab (Ctrl+H)"), self)
         icon = QIcon("img/remix/add-line.png")
@@ -263,9 +275,16 @@ class MainWindow(QMainWindow):
         if STEALTH_FLAG:
             navtb.addAction(self.js_btn_enable)
             navtb.addAction(self.js_btn_disable)
-        
+
+        progress_bar = QProgressBar(self)
+        progress_bar.setTextVisible(0)
+        progress_bar.setStyleSheet(" QWidget { height: 2px; font-size: 2px; } ")
+        progress_bar.hide()
+
+        navtb.addSeparator() 
         htabbox.addWidget(navtb)
         htabbox.addWidget(searchbar)
+        # htabbox.addWidget(progress_bar)
         htabbox.addWidget(browser)
         htabbox.setContentsMargins(0, 6, 0, 0)
         
@@ -283,12 +302,30 @@ class MainWindow(QMainWindow):
         urlbar.setFocus()
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.page().loadFinished.connect(lambda: extension.pageLoad(browser))
-        browser.page().urlChanged.connect(lambda qurl, browser = browser: urlbar.setText(lxu.encodeLynxUrl(qurl)))
+        browser.page().urlChanged.connect(lambda qurl, browser = browser: self.update_urlbar(urlbar, qurl))
         browser.page().titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(self.tab_indexes[tab_i], browser.page().title()))
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
+        browser.page().loadProgress.connect(lambda p: self.load_progress(p, urlbar))
+        browser.page().loadFinished.connect(lambda: self.load_done(urlbar))
         browser.page().profile().downloadRequested.connect(self.download_item)
+
         urlbar.textEdited.connect(lambda: self.update_index(self.tabs.currentIndex(), tab_i))
 
+    def update_urlbar(self, urlbar, qurl):
+        url = lxu.encodeLynxUrl(qurl)
+        urlbar.setText(url)
+
+        icon = None
+        if "lynx:" == urlbar.text()[:5]:
+            icon = QIcon("img/search.png")
+            urlbar.setText("")
+        if "https://" == urlbar.text()[:8]:
+            icon = QIcon("img/secure.png")
+        if "http://" == urlbar.text()[:7]:
+            icon = QIcon("img/unsecure.png")
+        if icon != None:
+            urlbar.removeAction(urlbar.actions()[0])
+            urlbar.addAction(icon, QLineEdit.LeadingPosition);
 
     def update_index(self, i, ti):
         self.tab_indexes[ti] = i
@@ -400,6 +437,22 @@ class MainWindow(QMainWindow):
             _qurl = QUrl("https://duckduckgo.com/?q=" + url)
         elif "." in url and not lxu.checkLynxUrl(_qurl):
             _qurl.setScheme("http")
-        
+
         _qurl = QUrl(lxu.decodeLynxUrl(_qurl))
         webview.setUrl(_qurl)
+
+    def load_start(self, line_edit):
+        global progress_color, progress_color_loading
+        progress_color = line_edit.palette().color(QPalette.Base).name()
+        progress_color_loading = "#24272B"
+
+    def load_done(self, line_edit):
+        line_edit.clearFocus()
+        line_edit.setStyleSheet('background-color: #' + str(progress_color) + ';')
+
+    def load_progress(self, progress, line_edit):
+        if progress < 99:
+            percent = progress / 100
+            line_edit.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 ' + progress_color_loading + ', stop: ' + str(percent) + ' ' + progress_color_loading + ', stop: ' + str(percent+ 0.001) + ' rgba(0, 0, 0, 0), stop: 1 #00000005)')
+        else:
+            line_edit.setStyleSheet('background-color: #' + str(progress_color) + ';')
