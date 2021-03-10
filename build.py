@@ -21,7 +21,7 @@ os.mkdir(fname)
 PyInstaller.__main__.run([
     'src/main.py',
     '--onefile',
-    '-i src/img/lynx_logo.ico'
+    '-i src/img/icons/logo.ico'
 ])
 
 if platform.system() == "Linux":
