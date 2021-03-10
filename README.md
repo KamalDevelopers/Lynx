@@ -25,6 +25,12 @@ It is written in PyQt5 and uses the module PyQtWebEngine.
 Currently, the Lynx browser comes with many features, such as custom extensions and themes support. <br>
 There is also a Lynx Stealth mode. Which aims to bring the same functionality as incognito mode would bring on most other modern browsers. The only difference being that Lynx Stealth mode is more privacy-focused. With support for NoScript and HttpsOnly. The Lynx browser is fully open source and runs on Linux, Windows, and Mac.
 
+## Configuration
+
+Lynx offers customizability and configuration through the `config.ini` file inside the lynx-profile folder.
+Here you may change everything from privacy preferences to themes and webkit settings.
+Lynx also comes bundled with multiple extensions, to disable/enable these check out their json files.
+
 ## License
 
 Distributed under the Unlicense License. See `LICENSE` for more information.
