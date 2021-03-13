@@ -28,7 +28,7 @@ PyInstaller.__main__.run([
 if platform.system() == "Linux":
     shutil.move("dist/main", "./" + fname + "/lynx")
 if platform.system() == "Windows":
-    shutil.move("dist/main.exe", "./" + fname + "/lynx.exe")
+    shutil.move("dist/main.exe", "./" + fname + "/Lynx.exe")
 
 shutil.copytree("src/img", "./" + fname + "/img")
 shutil.copyfile("src/lynx.json", "./" + fname + "/lynx.json")

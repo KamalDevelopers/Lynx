@@ -1,11 +1,14 @@
 {
-    "name": "TsCssBlock",
+    "name": "CssAdBlocker",
     "desc": "An extension to block css elements",
     "enabled": true,
+    "external": {
+        "adblock": "adblock.css"
+    },
     "extension": {
         "host": [
             "*"
         ],
-        "js": "tscssblock.ts"
+        "js": "cssadblock.js"
     }
 }

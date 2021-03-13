@@ -21,8 +21,6 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
 
-progress_color = None
-progress_color_loading = None
 default_url_open = None 
 
 def open_url_arg(url):
@@ -129,10 +127,10 @@ class MainWindow(QMainWindow):
             qurl = QUrl(default_url_open)
             qurl.setScheme("http")
             default_url_open = None
-        
+
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
         browser = QWebEngineView()
-        
+
         cwe = CustomWebEnginePage(self)
         cwe.set_add_new_tab_h(self.add_new_tab)
         browser.setPage(cwe)
@@ -253,7 +251,6 @@ class MainWindow(QMainWindow):
         urlbar_focus.setShortcut("Ctrl+U")
         urlbar_focus.clicked.connect(lambda: urlbar.setFocus())
         urlbar_focus.setMaximumWidth(0)
-        self.load_start(urlbar)
         for _ in range(0, 20):
             navtb.addSeparator()
         navtb.addWidget(urlbar_focus)
@@ -306,7 +303,6 @@ class MainWindow(QMainWindow):
         browser.page().titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(self.tab_indexes[tab_i], browser.page().title()))
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
         browser.page().loadProgress.connect(lambda p: self.load_progress(p, urlbar))
-        browser.page().loadFinished.connect(lambda: self.load_done(urlbar))
         browser.page().profile().downloadRequested.connect(self.download_item)
 
         urlbar.textEdited.connect(lambda: self.update_index(self.tabs.currentIndex(), tab_i))
@@ -441,18 +437,10 @@ class MainWindow(QMainWindow):
         _qurl = QUrl(lxu.decodeLynxUrl(_qurl))
         webview.setUrl(_qurl)
 
-    def load_start(self, line_edit):
-        global progress_color, progress_color_loading
-        progress_color = line_edit.palette().color(QPalette.Base).name()
-        progress_color_loading = "#24272B"
-
-    def load_done(self, line_edit):
-        line_edit.clearFocus()
-        line_edit.setStyleSheet('background-color: #' + str(progress_color) + ';')
-
     def load_progress(self, progress, line_edit):
+        progress_color_loading = "#24272B"
         if progress < 99:
             percent = progress / 100
             line_edit.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 ' + progress_color_loading + ', stop: ' + str(percent) + ' ' + progress_color_loading + ', stop: ' + str(percent+ 0.001) + ' rgba(0, 0, 0, 0), stop: 1 #00000005)')
         else:
-            line_edit.setStyleSheet('background-color: #' + str(progress_color) + ';')
+            line_edit.setStyleSheet('background-color: ;')
