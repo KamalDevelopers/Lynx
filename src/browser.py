@@ -371,6 +371,8 @@ class MainWindow(QMainWindow):
         browser.findText(search)
 
     def download_item(self, download):
+        path = str(QFileDialog.getSaveFileName(self, 'Open file', DOWNLOAD_PATH + os.path.basename(download.path()), "All Files(*)")[0])
+        download.setPath(path)
         download.accept()
 
     def zoom(self, value, browser):
@@ -384,7 +386,7 @@ class MainWindow(QMainWindow):
         browser.setZoomFactor(changezoom)
     
     def save_page(self, browser):
-        destination = QFileDialog.getSaveFileName(self, self.tr("Save Page"), OS_HOME + "/Downloads/" + browser.page().title() + ".html", "*.html")
+        destination = QFileDialog.getSaveFileName(self, self.tr("Save Page"), DOWNLOAD_PATH + browser.page().title() + ".html", "*.html")
         if destination:
             browser.page().save(destination[0], QWebEngineDownloadItem.SingleHtmlSaveFormat)
 
