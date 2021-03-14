@@ -1,5 +1,6 @@
 import os
 import sys
+import platform as arch
 import subprocess
 import requests
 
@@ -22,6 +23,16 @@ from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
 
 default_url_open = None 
+downloading_item = False
+download_directory = DOWNLOAD_PATH
+
+def open_folder(path):
+    if arch.system() == "Windows":
+        os.startfile(path)
+    elif arch.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
 
 def open_url_arg(url):
     global default_url_open
@@ -93,6 +104,12 @@ class MainWindow(QMainWindow):
         self.js_btn_disable.setIcon(icon)
         self.js_btn_disable.setVisible(False)
         self.js_btn_disable.triggered.connect(lambda: self.javascript_toggle())
+
+        self.download_btn = QAction(self.tr("Downloads (Alt+D)"), self)
+        self.download_btn.setShortcut("Alt+D")
+        icon = QIcon("img/download-item/download-idle.png")
+        self.download_btn.setIcon(icon)
+        self.download_btn.triggered.connect(lambda: self.download_pressed())
 
         # Shortcuts 
         self.shortcut_closetab = QShortcut(QKeySequence("Ctrl+W"), self)
@@ -254,13 +271,14 @@ class MainWindow(QMainWindow):
         for _ in range(0, 20):
             navtb.addSeparator()
         navtb.addWidget(urlbar_focus)
- 
+   
         add_tab_btn = QAction(self.tr("Add Tab (Ctrl+H)"), self)
         icon = QIcon("img/remix/add-line.png")
         add_tab_btn.setIcon(icon)
         add_tab_btn.triggered.connect(lambda: self.add_new_tab())
         navtb.addAction(add_tab_btn)
-   
+        navtb.addAction(self.download_btn)
+
         stealth_btn = QAction(self.tr("Stealth Mode (Alt+S)"), self)
         stealth_btn.setShortcut("Alt+S")
         icon = QIcon("img/remix/spy-line.png")
@@ -273,15 +291,9 @@ class MainWindow(QMainWindow):
             navtb.addAction(self.js_btn_enable)
             navtb.addAction(self.js_btn_disable)
 
-        progress_bar = QProgressBar(self)
-        progress_bar.setTextVisible(0)
-        progress_bar.setStyleSheet(" QWidget { height: 2px; font-size: 2px; } ")
-        progress_bar.hide()
-
         navtb.addSeparator() 
         htabbox.addWidget(navtb)
         htabbox.addWidget(searchbar)
-        # htabbox.addWidget(progress_bar)
         htabbox.addWidget(browser)
         htabbox.setContentsMargins(0, 6, 0, 0)
         
@@ -303,7 +315,7 @@ class MainWindow(QMainWindow):
         browser.page().titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(self.tab_indexes[tab_i], browser.page().title()))
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
         browser.page().loadProgress.connect(lambda p: self.load_progress(p, urlbar))
-        browser.page().profile().downloadRequested.connect(self.download_item)
+        browser.page().profile().downloadRequested.connect(self.download_item_requested)
 
         urlbar.textEdited.connect(lambda: self.update_index(self.tabs.currentIndex(), tab_i))
 
@@ -370,10 +382,39 @@ class MainWindow(QMainWindow):
     def search_webview(self, browser, search):
         browser.findText(search)
 
-    def download_item(self, download):
-        path = str(QFileDialog.getSaveFileName(self, 'Open file', DOWNLOAD_PATH + os.path.basename(download.path()), "All Files(*)")[0])
-        download.setPath(path)
-        download.accept()
+    def download_item_progress(self, bytes_received, bytes_total):
+        global downloading_item 
+        progress = 100
+        if bytes_received > 0 and bytes_total > 0:
+            progress = 100 * float(bytes_received)/float(bytes_total)
+
+        images = {20:"download-20", 40:"download-40", 60:"download-60", 80:"download-80", 90:"download-100", 100:"download-done"}
+        set_picture = "download-idle"
+        for i, val in enumerate(list(images.keys())):
+            if progress >= val:
+                set_picture = list(images.values())[i]
+        if progress >= 100:
+            downloading_item = False 
+
+        icon = QIcon("img/download-item/" + set_picture + ".png")
+        self.download_btn.setIcon(icon)
+        if not downloading_item:
+            QTimer.singleShot(1000, lambda: self.download_btn.setIcon(QIcon("img/download-item/download-reset.png")))
+
+    def download_pressed(self):
+        global download_directory
+        open_folder(download_directory)
+
+    def download_item_requested(self, download):
+        global download_directory, downloading_item
+        if not downloading_item:
+            path = str(QFileDialog.getSaveFileName(self, 'Open file', DOWNLOAD_PATH + os.path.basename(download.path()), "All Files(*)")[0])
+            download.downloadProgress.connect(self.download_item_progress)
+            download.setPath(path)
+            if download.path() == path:
+                download_directory = os.path.dirname(path)
+            downloading_item = True 
+            download.accept()
 
     def zoom(self, value, browser):
         changezoom = 0
