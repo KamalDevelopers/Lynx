@@ -25,6 +25,7 @@ from PyQt5.QtWebEngineCore import *
 default_url_open = None 
 downloading_item = False
 download_directory = DOWNLOAD_PATH
+progress_color_loading = grab_stylesheet_value("QLineEdit", "background-color")
 
 def open_folder(path):
     if arch.system() == "Windows":
@@ -481,7 +482,7 @@ class MainWindow(QMainWindow):
         webview.setUrl(_qurl)
 
     def load_progress(self, progress, line_edit):
-        progress_color_loading = "#24272B"
+        global progress_color_loading
         if progress < 99:
             percent = progress / 100
             line_edit.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 ' + progress_color_loading + ', stop: ' + str(percent) + ' ' + progress_color_loading + ', stop: ' + str(percent+ 0.001) + ' rgba(0, 0, 0, 0), stop: 1 #00000005)')

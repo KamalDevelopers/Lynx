@@ -4,6 +4,10 @@ import argparser
 # Needs to be above local imports
 # If the stealth flag is set then overwrite conf
 args = argparser.parse()
+if args.l:
+    confvar.locale(args.l)
+if args.t:
+    confvar.theme(args.t)
 if args.s:
     confvar.stealth()
 else:

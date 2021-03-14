@@ -48,18 +48,41 @@ WEBKIT_WEBGL_ENABLED = 1
 WEBKIT_PLUGINS_ENABLED = 1
 WEBKIT_JAVASCRIPT_POPUPS_ENABLED = 1
 
-def stealth(mode=True):
+def alter_value(cat, var, val):
     global configur 
     configur.read(BASE_PATH + 'config.ini')
-    BROWSER = configur["BROWSER"]
-    BROWSER["stealth"] = str(mode) 
+    BROWSER = configur[cat]
+    BROWSER[var] = val
     with open(BASE_PATH + 'config.ini', 'w') as conf:
         configur.write(conf)
+
+def stealth(mode=True):
+    alter_value("BROWSER", "stealth", str(mode))
+
+def locale(loc):
+    alter_value("BROWSER", "locale", str(loc))
+
+def theme(t):
+    alter_value("BROWSER", "stylesheet", str(t))
 
 def sparse(string):
     if string == "None" or string == "0" or string == "False" or string == "Default":
         return None
     return string
+
+def grab_stylesheet_value(element, rule):
+    with open(BASE_PATH + 'themes/' + BROWSER_STYLESHEET + '.qss') as F:
+        style = F.read()
+    lines = style.split("\n")
+    search = False
+    for line in lines:
+        if element == line.replace(" ", "").replace("{", ""):
+            search = True
+        if "}" in line:
+            search = False
+        if search:
+            if line.split(":")[0].replace(" ", "") == rule:
+                return line.split(":")[1].replace(" ", "").replace(";", "")
 
 def confb():
     global configur
