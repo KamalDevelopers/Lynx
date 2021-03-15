@@ -2,9 +2,9 @@
     "name": "CssAdBlocker",
     "desc": "An extension to block css elements",
     "enabled": true,
-    "external": {
-        "adblock": "adblock.css"
-    },
+    "permissions": [
+        "filesystem"
+    ],
     "extension": {
         "host": [
             "*"

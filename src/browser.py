@@ -21,6 +21,7 @@ import PyQt5.QtWebEngineWidgets
 from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
+from PyQt5.QtWebChannel import QWebChannel
 
 default_url_open = None 
 downloading_item = False
@@ -38,7 +39,9 @@ def open_folder(path):
 def open_url_arg(url):
     global default_url_open
     default_url_open = url
+
 interceptor = RequestInterceptor()
+webchannel = WebChannel()
 
 def launch_stealth(window):
     exec_file = sys.argv[0]
@@ -139,6 +142,7 @@ class MainWindow(QMainWindow):
 
     def add_new_tab(self, qurl=None, label="Blank", silent=0):
         global default_url_open
+
         if qurl is None and default_url_open is None:
             qurl = QUrl(BROWSER_HOMEPAGE)
         if default_url_open is not None: 
@@ -152,6 +156,10 @@ class MainWindow(QMainWindow):
         cwe = CustomWebEnginePage(self)
         cwe.set_add_new_tab_h(self.add_new_tab)
         browser.setPage(cwe)
+
+        browser.channel = QWebChannel()
+        browser.channel.registerObject('backend', webchannel)
+        browser.page().setWebChannel(browser.channel)
 
         browser.page().setBackgroundColor(Qt.darkGray) 
         browser.setUrl(QUrl(qurl))
@@ -475,7 +483,7 @@ class MainWindow(QMainWindow):
         _qurl = QUrl(url)
         if "." not in url and not lxu.checkLynxUrl(_qurl):
             _qurl = QUrl("https://duckduckgo.com/?q=" + url)
-        elif "." in url and not lxu.checkLynxUrl(_qurl):
+        elif "." in url and not lxu.checkLynxUrl(_qurl) and not "file:///" in url:
             _qurl.setScheme("http")
 
         _qurl = QUrl(lxu.decodeLynxUrl(_qurl))

@@ -1,13 +1,26 @@
 var cssId = 'cssLynxId';
-var adblock_code = @read(adblock)
 
-if (!document.getElementById(cssId))
+var backend;
+var adblock_code;
+
+function add_adblocker()
 {
-    css = document.createElement('style');
-    css = document.createElement('style');   
-    css.type = 'text/css';                   
-    css.id = cssId;
-    document.head.appendChild(css);          
-    css.innerText = adblock_code;
+    if (!document.getElementById(cssId)) {
+        css = document.createElement('style');
+        css = document.createElement('style');   
+        css.type = 'text/css';                   
+        css.id = cssId;
+        document.head.appendChild(css);          
+        css.innerText = adblock_code;
+    }
 }
+
+new QWebChannel(qt.webChannelTransport, function (channel) {
+    backend = channel.objects.backend;
+
+    backend.readFile("extensions/adblock.css", function(pyval) {
+        adblock_code = pyval;
+        add_adblocker();
+    });
+});
 

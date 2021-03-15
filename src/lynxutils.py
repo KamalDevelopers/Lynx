@@ -13,7 +13,7 @@ def decodeLynxUrl(qurl):
     return "file:///" + lfile + ".html"
 
 def encodeLynxUrl(qurl):
-    if str(qurl.toString())[:8] == "file:///":
+    if str(qurl.toString())[:8] == "file:///" and "lynx/" in qurl.toString():
         lfile = str(qurl.toString()).split("/")
         lfile = lfile[len(lfile)-1]
     else:

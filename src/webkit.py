@@ -9,6 +9,32 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineCore import *
 
+privileges = []
+def setPrivileges(p=[]):
+    global privileges
+    privileges = p
+
+class WebChannel(QObject):
+    def __init__(self):
+        super().__init__()
+        setPrivileges([])
+
+    @pyqtSlot(str, result=str)
+    def readFile(self, path):
+        if not "filesystem" in privileges:
+            print("Insufficient permissions")
+            return
+        with open(BASE_PATH + path) as F:
+            return F.read()
+
+    @pyqtSlot(str, str)
+    def writeFile(self, path, data):
+        if not "filesystem" in privileges:
+            print("Insufficient permissions")
+            return
+        with open(BASE_PATH + path, "w") as F:
+            F.write(data)
+
 class CustomWebEnginePage(QWebEnginePage):
     # Hook the "add_new_tab" method 
     def set_add_new_tab_h(self, _add_new_tab):
