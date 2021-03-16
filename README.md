@@ -43,13 +43,14 @@ python3 run.py
 To build Lynx into a package you can run:
 `python3 build.py`
 
-## License
-
-Distributed under the Unlicense License. See `LICENSE` for more information.
-
-
 ## Screenshot
 ***
 <p align="center">
   <img src="https://i.postimg.cc/8zB88ZfG/Screenshot-2021-03-16-09-50-54.png">
 </p>
+
+
+## License
+
+Distributed under the Unlicense License. See `LICENSE` for more information.
+
