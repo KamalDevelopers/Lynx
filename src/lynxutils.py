@@ -3,6 +3,8 @@ import sys
 from confvar import *
 
 def decodeLynxUrl(qurl):
+    if qurl.toString() == "lynx:blank":
+        return qurl.toString()
     if str(qurl.toString())[:5] == "lynx:":
         lfile = str(qurl.toString()).split(":")[1]
         lfile = BROWSER_STYLESHEET + "_" + lfile

@@ -483,9 +483,14 @@ ytd-video-masthead-ad-v3-renderer {
     display: none !important;
 }
 
-ytd-promoted-sparkles-web-renderer {
-    /*visibility:hidden !important;
-    display: none !important;*/
+#sparkles-container.ytd-promoted-sparkles-web-renderer {
+    display: none !important;
+    visibility:hidden !important;
+}
+
+ytd-companion-slot-renderer {
+    display: none !important;
+    visibility:hidden !important;
 }
 
 /* https://gist.github.com/4rc0s/374163 */

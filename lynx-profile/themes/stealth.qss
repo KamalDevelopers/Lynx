@@ -1231,3 +1231,6 @@ QDateEdit::down-arrow:focus {
     image: url(:/qss_icons/rc/down_arrow.png);
 }
 
+Background {
+    background-color: #242b2e;
+}

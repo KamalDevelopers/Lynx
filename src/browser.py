@@ -27,6 +27,7 @@ default_url_open = None
 downloading_item = False
 download_directory = DOWNLOAD_PATH
 progress_color_loading = grab_stylesheet_value("QLineEdit", "background-color")
+webkit_background_color = grab_stylesheet_value("Background", "background-color")
 
 def open_folder(path):
     if arch.system() == "Windows":
@@ -63,6 +64,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         global BROWSER_HOMEPAGE
         
+        self.first_opened = False
         self.last_closed_tab = None
         self.tab_indexes = []
 
@@ -140,11 +142,15 @@ class MainWindow(QMainWindow):
             self.add_new_tab()
         self.show()
 
-    def add_new_tab(self, qurl=None, label="Blank", silent=0):
+    def add_new_tab(self, qurl=None, label="New Tab", silent=0):
         global default_url_open
 
         if qurl is None and default_url_open is None:
-            qurl = QUrl(BROWSER_HOMEPAGE)
+            if not self.first_opened:
+                qurl = QUrl(BROWSER_HOMEPAGE)
+                self.first_opened = True
+            else:
+                qurl = QUrl(BROWSER_NEWTAB)
         if default_url_open is not None: 
             qurl = QUrl(default_url_open)
             qurl.setScheme("http")
@@ -161,8 +167,9 @@ class MainWindow(QMainWindow):
         browser.channel.registerObject('backend', webchannel)
         browser.page().setWebChannel(browser.channel)
 
-        browser.page().setBackgroundColor(Qt.darkGray) 
-        browser.setUrl(QUrl(qurl))
+        browser.page().setBackgroundColor(QColor(webkit_background_color)) 
+        if qurl.toString() != "lynx:blank":
+            browser.setUrl(QUrl(qurl))
 
         if BROWSER_AGENT != None: 
             browser.page().profile().setHttpUserAgent(BROWSER_AGENT)

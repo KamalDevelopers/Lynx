@@ -1,5 +1,6 @@
 import adblock
 from confvar import *
+import bookmark
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -18,6 +19,13 @@ class WebChannel(QObject):
     def __init__(self):
         super().__init__()
         setPrivileges([])
+
+    @pyqtSlot(int, result=str)
+    def getBookmarkIndex(self, index):
+        if not "bookmarks" in privileges:
+            print("Insufficient permissions")
+            return
+        return bookmark.getBookmarks()[index]
 
     @pyqtSlot(str, result=str)
     def readFile(self, path):
