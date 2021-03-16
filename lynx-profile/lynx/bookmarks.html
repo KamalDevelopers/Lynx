@@ -1,60 +1,14 @@
-<!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="utf-8" />
-    <title>Lynx Bookmarks</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bookmarks.css">
     <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
-        
-        * {
-            box-sizing: border-box;
-        }
-        
-        #search {
-            /* background-image: url('resources/search.png'); */
-            background-position: 10px 12px;
-            background-repeat: no-repeat;
-            width: 100%;
-            font-size: 16px;
-            padding: 12px 20px 12px 10px;
-            border: 1px solid #ddd;
-            margin-bottom: 12px;
-        }
-        
-        #bookmark-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        #bookmark-list li a {
-            border: 1px solid black;
-            margin-top: 10px;
-            font-family: "Open Sans";
-            background-color: #171717;
-            padding: 12px;
-            text-decoration: none;
-            font-size: 14px;
-            color: #DBDBDB;
-            display: block
-        }
-        
-        #bookmark-lits li a:hover:not(.header) {
-            background-color: #45484D;
-            border: 1px solid #ddd;
-        }
-    </style>
+    <title>Lynx Bookmarks</title>
 </head>
-
 <body>
-
     <input type="text" id="search" onkeyup="searchFilter()" placeholder="Search for bookmark" title="Type in bookmark">
-
     <ul id="bookmark-list">
-        <!-- Bookmarks go Here -->
     </ul>
 
     <script>
@@ -78,26 +32,78 @@
 
     <script>
         var backend;
+        var bookmarks = 0;
+        var index = 0;
+
         new QWebChannel(qt.webChannelTransport, function (channel) {
-            backend = channel.objects.backend;
+            window.backend = channel.objects.backend;
     
-            backend.getBookmarkLength(function(pyval) {
-                var amout_bookmarks = pyval;
-                for (i = 0; i < amout_bookmarks; i++) {
-                    backend.getBookmarkIndex(i, function(pyval) {
+            backend.getBookmarkUrls(function(bookmark_urls) {
+                backend.getBookmarkTitles(function(bookmark_titles) {
+                    backend.getBookmarkFavicons(function(bookmark_favis) {
+                        for (i = 0; i < bookmark_urls.length; i++) {
+                            bookmark_url = bookmark_urls[i];
+                            bookmark_title = bookmark_titles[i]
+                            bookmark_favi = bookmark_favis[i]
+
+                            var ul = document.getElementById("bookmark-list");
+                            var li = document.createElement("li");
+                            var im = document.createElement("img");
+                            var au = document.createElement("a");
+                            var an = document.createElement("a");
+
+                            im.setAttribute("class", "favicon");
+                            im.setAttribute("src", bookmark_favi);
+                            im.setAttribute("alt", "bookmark icon");
+
+                            au.setAttribute("href", bookmark_url);
+                            au.setAttribute("class", "url");
+                            au.appendChild(document.createTextNode(bookmark_url))
+
+                            an.setAttribute("href", bookmark_url);
+                            an.setAttribute("class", "name");
+                            an.appendChild(document.createTextNode(bookmark_title))
+
+                            li.appendChild(im);
+                            li.appendChild(an);
+                            li.appendChild(au);
+                            ul.appendChild(li);
+                        }
+                    });
+                });
+            });
+            /*
+            backend.getBookmarkIndex(index, function(bookmar_url) {
+                backend.getBookmarkTitle(index, function(bookmark_title) {
+                    backend.getBookmarkFavicon(index, function(bookmark_favi) {
                         var ul = document.getElementById("bookmark-list");
                         var li = document.createElement("li");
+                        var im = document.createElement("img");
+                        var au = document.createElement("a");
                         var an = document.createElement("a");
-                        an.setAttribute("href", pyval);
-                        an.appendChild(document.createTextNode(pyval))
+
+                        im.setAttribute("class", "favicon");
+                        im.setAttribute("src", bookmark_favi);
+                        im.setAttribute("alt", "bookmark icon");
+
+                        au.setAttribute("href", bookmar_url);
+                        au.setAttribute("class", "url");
+                        au.appendChild(document.createTextNode(bookmar_url))
+
+                        an.setAttribute("href", bookmar_url);
+                        an.setAttribute("class", "name");
+                        an.appendChild(document.createTextNode(bookmark_title))
+
+                        li.appendChild(im);
                         li.appendChild(an);
+                        li.appendChild(au);
                         ul.appendChild(li);
                     });
-                }
+                });
             });
+            */
         });
     </script>
 
 </body>
-
 </html>

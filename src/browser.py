@@ -213,6 +213,10 @@ class MainWindow(QMainWindow):
         reopen_tab = QPushButton("", self)
         reopen_tab.setShortcut("Ctrl+Shift+T")
         reopen_tab.clicked.connect(lambda: self.open_last())
+
+        open_bookmarks_page = QPushButton("", self)
+        open_bookmarks_page.setShortcut("Ctrl+Q")
+        open_bookmarks_page.clicked.connect(lambda: self.navigate_to_url("lynx:bookmarks", browser))
         
         max_view = QPushButton("", self)
         max_view.setShortcut("Alt+F")
@@ -233,6 +237,7 @@ class MainWindow(QMainWindow):
         navtb.addWidget(mute_page)
         navtb.addWidget(reload_page)
         navtb.addWidget(reopen_tab)
+        navtb.addWidget(open_bookmarks_page)
         navtb.addWidget(max_view)
         navtb.addWidget(search_text)
         navtb.addWidget(bookmark_page)
@@ -243,6 +248,7 @@ class MainWindow(QMainWindow):
         mute_page.setMaximumWidth(0)
         reload_page.setMaximumWidth(0)
         reopen_tab.setMaximumWidth(0)
+        open_bookmarks_page.setMaximumWidth(0)
         max_view.setMaximumWidth(0)
         search_text.setMaximumWidth(0)
         bookmark_page.setMaximumWidth(0)
@@ -342,7 +348,7 @@ class MainWindow(QMainWindow):
 
     def load_finished(self, urlbar, browser):
         if getPriveleges():
-            QTimer.singleShot(100, setPrivileges)
+            # QTimer.singleShot(500, setPrivileges) # FIXME: Should check when loading is finished
             return
         extension.pageLoad(browser)
 
@@ -353,6 +359,7 @@ class MainWindow(QMainWindow):
         icon = None
         if "lynx:" == urlbar.text()[:5]:
             icon = QIcon("img/search.png")
+        if urlbar.text() == "lynx:home" or urlbar.text() == "lynx:blank":
             urlbar.setText("")
         if "https://" == urlbar.text()[:8]:
             icon = QIcon("img/secure.png")

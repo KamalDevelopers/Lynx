@@ -1,6 +1,8 @@
 import adblock
 from confvar import *
 import bookmark
+import requests
+import favicon
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -27,19 +29,36 @@ class WebChannel(QObject):
         super().__init__()
         setPrivileges([])
 
-    @pyqtSlot(int, result=str)
-    def getBookmarkIndex(self, index):
+    @pyqtSlot(result=list)
+    def getBookmarkFavicons(self):
         if not "bookmarks" in privileges:
             print("Insufficient permissions")
             return
-        return bookmark.getBookmarks()[index]
+        result = []
+        for index in range(0, len(bookmark.getBookmarks())):
+            favi = favicon.get(bookmark.getBookmarks()[index])[0].url
+            result.append(favi)
+        return result 
 
-    @pyqtSlot(result=int)
-    def getBookmarkLength(self):
+    @pyqtSlot(result=list)
+    def getBookmarkTitles(self):
         if not "bookmarks" in privileges:
             print("Insufficient permissions")
             return
-        return int(len(bookmark.getBookmarks()))
+
+        result = []
+        hearders = {'headers':'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:51.0) Gecko/20100101 Firefox/51.0'}
+        for index in range(0, len(bookmark.getBookmarks())):
+            n = requests.get(bookmark.getBookmarks()[index], headers=hearders)
+            result.append(n.text[n.text.find('<title>') + 7 : n.text.find('</title>')])
+        return result
+
+    @pyqtSlot(result=list)
+    def getBookmarkUrls(self):
+        if not "bookmarks" in privileges:
+            print("Insufficient permissions")
+            return
+        return bookmark.getBookmarks()
 
     @pyqtSlot(str, result=str)
     def readFile(self, path):
