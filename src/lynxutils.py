@@ -7,7 +7,10 @@ def decodeLynxUrl(qurl):
         return qurl.toString()
     if str(qurl.toString())[:5] == "lynx:":
         lfile = str(qurl.toString()).split(":")[1]
-        lfile = BROWSER_STYLESHEET + "_" + lfile
+        if os.path.isfile(BASE_PATH + "lynx/" + BROWSER_STYLESHEET + "_" + lfile + ".html"):
+            lfile = BROWSER_STYLESHEET + "_" + lfile
+        elif os.path.isfile(BASE_PATH + "lynx/" + lfile + ".html"):
+            lfile = lfile
         lfile = os.path.abspath(BASE_PATH + "lynx/" + lfile)
     else:
         return qurl.toString()
@@ -20,7 +23,9 @@ def encodeLynxUrl(qurl):
         lfile = lfile[len(lfile)-1]
     else:
         return qurl.toString()
-    return "lynx:" + lfile.split("_")[1][:-5] 
+    if "_" in lfile:
+        return "lynx:" + lfile.split("_")[1][:-5] 
+    return "lynx:" + lfile[:-5]
 
 def checkLynxUrl(qurl):
     if str(qurl.toString())[:5] == "lynx:":

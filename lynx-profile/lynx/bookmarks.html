@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <title>Lynx Bookmarks</title>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        #search {
+            /* background-image: url('resources/search.png'); */
+            background-position: 10px 12px;
+            background-repeat: no-repeat;
+            width: 100%;
+            font-size: 16px;
+            padding: 12px 20px 12px 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+        
+        #bookmark-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #bookmark-list li a {
+            border: 1px solid black;
+            margin-top: 10px;
+            font-family: "Open Sans";
+            background-color: #171717;
+            padding: 12px;
+            text-decoration: none;
+            font-size: 14px;
+            color: #DBDBDB;
+            display: block
+        }
+        
+        #bookmark-lits li a:hover:not(.header) {
+            background-color: #45484D;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+
+    <input type="text" id="search" onkeyup="searchFilter()" placeholder="Search for bookmark" title="Type in bookmark">
+
+    <ul id="bookmark-list">
+        <!-- Bookmarks go Here -->
+    </ul>
+
+    <script>
+        function searchFilter() {
+            var input, filter, ul, li, a, i, txtValue;
+            input = document.getElementById("search");
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("bookmark-list");
+            li = ul.getElementsByTagName("li");
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("a")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+    <script>
+        var backend;
+        new QWebChannel(qt.webChannelTransport, function (channel) {
+            backend = channel.objects.backend;
+    
+            backend.getBookmarkLength(function(pyval) {
+                var amout_bookmarks = pyval;
+                for (i = 0; i < amout_bookmarks; i++) {
+                    backend.getBookmarkIndex(i, function(pyval) {
+                        var ul = document.getElementById("bookmark-list");
+                        var li = document.createElement("li");
+                        var an = document.createElement("a");
+                        an.setAttribute("href", pyval);
+                        an.appendChild(document.createTextNode(pyval))
+                        li.appendChild(an);
+                        ul.appendChild(li);
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

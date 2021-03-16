@@ -186,7 +186,6 @@ class MainWindow(QMainWindow):
         searchbar.returnPressed.connect(lambda: self.search_webview(browser, searchbar.text()))
         searchbar.setFixedHeight(23)
         font = QFont("Noto", 9)
-        searchbar.setStyleSheet("QLineEdit { color: #909090; }")
         searchbar.setFont(font)
         searchbar.hide()
 
@@ -270,12 +269,11 @@ class MainWindow(QMainWindow):
         urlbar.returnPressed.connect(lambda: self.navigate_to_url(urlbar.text(), browser))
         urlbar.setFixedHeight(26)
         font = QFont("Noto", 9)
-        urlbar.setStyleSheet("QLineEdit { color: #909090; }")
         urlbar.setFont(font)
         urlbar.addAction(secure_icon, QLineEdit.LeadingPosition);
 
         completer = QCompleter(bookmark.getBookmarks())
-        urlbar.setCompleter(completer)
+        # urlbar.setCompleter(completer)
         for _ in range(0, 10):
             navtb.addSeparator()
         navtb.addWidget(urlbar)
@@ -326,7 +324,8 @@ class MainWindow(QMainWindow):
         self.fullscreen = 0
         urlbar.setFocus()
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
-        browser.page().loadFinished.connect(lambda: extension.pageLoad(browser))
+        browser.page().loadFinished.connect(lambda: self.load_finished(urlbar, browser))
+        browser.page().loadStarted.connect(lambda: self.load_started(urlbar, browser.page().url().toString(), browser))
         browser.page().urlChanged.connect(lambda qurl, browser = browser: self.update_urlbar(urlbar, qurl))
         browser.page().titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(self.tab_indexes[tab_i], browser.page().title()))
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
@@ -334,6 +333,18 @@ class MainWindow(QMainWindow):
         browser.page().profile().downloadRequested.connect(self.download_item_requested)
 
         urlbar.textEdited.connect(lambda: self.update_index(self.tabs.currentIndex(), tab_i))
+
+    def load_started(self, urlbar, url, browser):
+        if url[:5] == "file:":
+            setPrivileges("*")
+            return
+        setPrivileges()
+
+    def load_finished(self, urlbar, browser):
+        if getPriveleges():
+            QTimer.singleShot(100, setPrivileges)
+            return
+        extension.pageLoad(browser)
 
     def update_urlbar(self, urlbar, qurl):
         url = lxu.encodeLynxUrl(qurl)
@@ -500,6 +511,6 @@ class MainWindow(QMainWindow):
         global progress_color_loading
         if progress < 99:
             percent = progress / 100
-            line_edit.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 ' + progress_color_loading + ', stop: ' + str(percent) + ' ' + progress_color_loading + ', stop: ' + str(percent+ 0.001) + ' rgba(0, 0, 0, 0), stop: 1 #00000005)')
+            line_edit.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 ' + progress_color_loading + ', stop: ' + str(percent) + ' ' + progress_color_loading + ', stop: ' + str(percent + 0.001) + ' rgba(0, 0, 0, 0), stop: 1 #00000005)')
         else:
             line_edit.setStyleSheet('background-color: ;')

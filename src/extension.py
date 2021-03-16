@@ -11,6 +11,7 @@ from PyQt5.QtWebEngineCore import *
 import json
 import os
 import re
+import time
 
 extension_data = {} # Holds the loaded extensions
 preload_data = {}   # Holds the preloaded code of all extensions
@@ -80,8 +81,9 @@ def execute(load_scripts, browser):
 def pageLoad(browser):
     global apiScript
 
-    match = browser.page().url().host().replace("www.", "")
     browser.page().runJavaScript(apiScript)
+    time.sleep(0.01)
+    match = browser.page().url().host().replace("www.", "")
 
     if match in list(extension_data.keys()):
         for load_scripts in extension_data[match]:

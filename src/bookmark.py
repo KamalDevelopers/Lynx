@@ -13,8 +13,6 @@ def getBookmarks():
     return bookmarks
 
 def removeBookmark(url):
-    if "://" in url:
-        url = url.split("://")[1]
     if url not in bookmarks:
         return False
     
@@ -27,8 +25,6 @@ def removeBookmark(url):
     return True
 
 def addBookmark(url, remove=False):
-    if "://" in url:
-        url = url.split("://")[1]
     if url in bookmarks:
         if remove == True:
             removeBookmark(url)

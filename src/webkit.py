@@ -13,7 +13,14 @@ from PyQt5.QtWebEngineCore import *
 privileges = []
 def setPrivileges(p=[]):
     global privileges
+    if p == "*":
+        privileges = ["bookmarks", "filesystem"]
+        return
     privileges = p
+
+def getPriveleges():
+    global privileges
+    return privileges
 
 class WebChannel(QObject):
     def __init__(self):
@@ -26,6 +33,13 @@ class WebChannel(QObject):
             print("Insufficient permissions")
             return
         return bookmark.getBookmarks()[index]
+
+    @pyqtSlot(result=int)
+    def getBookmarkLength(self):
+        if not "bookmarks" in privileges:
+            print("Insufficient permissions")
+            return
+        return int(len(bookmark.getBookmarks()))
 
     @pyqtSlot(str, result=str)
     def readFile(self, path):
@@ -63,4 +77,3 @@ class RequestInterceptor(QWebEngineUrlRequestInterceptor):
         if BROWSER_HTTPS_ONLY:
             if url[:5] == "http:":
                 info.redirect(QUrl(url.replace("http:", "https:")))
-
