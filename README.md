@@ -31,19 +31,25 @@ Lynx offers customizability and configuration through the `config.ini` file insi
 Here you may change everything from privacy preferences to themes and webkit settings.
 Lynx also comes bundled with multiple extensions, to disable/enable these check out their json files.
 
+## Installation
+
+First install PyOpenGL manually for your platform, then you can install Lynx.
+```
+git clone https://github.com/KamalDevelopers/Lynx.git && cd Lynx
+pip3 install -r requirements.txt
+python3 run.py
+```
+
+To build Lynx into a package you can run:
+`python3 build.py`
+
 ## License
 
 Distributed under the Unlicense License. See `LICENSE` for more information.
 
 
-## Lynx Screenshot
+## Screenshot
 ***
 <p align="center">
-  <img src="https://i.imgur.com/K4Rp65J.png">
-</p>
-
-## Lynx Stealth Screenshot
-***
-<p align="center">
-  <img src="https://i.imgur.com/GatoQXA.png">
+  <img src="https://i.postimg.cc/8zB88ZfG/Screenshot-2021-03-16-09-50-54.png">
 </p>
