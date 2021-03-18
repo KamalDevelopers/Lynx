@@ -27,7 +27,7 @@ html body {
     margin-top: 10px;
     border-radius: 10px;
     font-family: "Open Sans";
-    background-color: #181717;
+    background-color: #191b1c;
     padding: 8px;
     font-size: 17px;
     font-family: Arial,Helvetica,sans-serif;
@@ -42,7 +42,7 @@ html body {
 }
 
 .name {
-    color: white;
+    color: #d9d9d9;
     width: 80%;
     overflow: hidden;
     height: 25px;
@@ -53,7 +53,7 @@ html body {
 }
 
 .url {
-    color: #272727;
+    color: #464646;
     height: 25px;
     width: 80%;
     margin-left: 70px;

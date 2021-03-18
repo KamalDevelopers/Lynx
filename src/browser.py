@@ -215,7 +215,7 @@ class MainWindow(QMainWindow):
         reopen_tab.clicked.connect(lambda: self.open_last())
 
         open_bookmarks_page = QPushButton("", self)
-        open_bookmarks_page.setShortcut("Ctrl+Q")
+        open_bookmarks_page.setShortcut("Alt+B")
         open_bookmarks_page.clicked.connect(lambda: self.navigate_to_url("lynx:bookmarks", browser))
         
         max_view = QPushButton("", self)
@@ -228,7 +228,7 @@ class MainWindow(QMainWindow):
         search_text.clicked.connect(lambda: self.open_searchbar(browser, searchbar))
         
         bookmark_page = QPushButton("", self)
-        bookmark_page.setShortcut("Ctrl+D")
+        bookmark_page.setShortcut("Ctrl+B")
         bookmark_page.clicked.connect(lambda: bookmark.addBookmark(browser.page().url().toString(), True))
         
         navtb.addWidget(zoom_in)
