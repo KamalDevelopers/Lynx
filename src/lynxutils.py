@@ -6,12 +6,13 @@ def decodeLynxUrl(qurl):
     if qurl.toString() == "lynx:blank":
         return qurl.toString()
     if str(qurl.toString())[:5] == "lynx:":
+        base = qurl.toString().replace("lynx:", "")
         lfile = str(qurl.toString()).split(":")[1]
-        if os.path.isfile(BASE_PATH + "lynx/" + BROWSER_STYLESHEET + "_" + lfile + ".html"):
+        if os.path.isfile(BASE_PATH + "lynx/" + base + "/" + BROWSER_STYLESHEET + "_" + lfile + ".html"):
             lfile = BROWSER_STYLESHEET + "_" + lfile
-        elif os.path.isfile(BASE_PATH + "lynx/" + lfile + ".html"):
+        elif os.path.isfile(BASE_PATH + "lynx/" + base + "/" + lfile + ".html"):
             lfile = lfile
-        lfile = os.path.abspath(BASE_PATH + "lynx/" + lfile)
+        lfile = os.path.abspath(BASE_PATH + "lynx/" + base + "/" + lfile)
     else:
         return qurl.toString()
     lfile = lfile.replace("\\", "/")
