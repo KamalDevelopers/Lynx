@@ -76,6 +76,12 @@ class WebChannel(QObject):
         with open(BASE_PATH + path, "w") as F:
             F.write(data)
 
+    @pyqtSlot(result=str)
+    def locale(self):
+        if not sparse(BROWSER_LOCALE):
+            return "en_US"
+        return BROWSER_LOCALE
+
 class CustomWebEnginePage(QWebEnginePage):
     # Hook the "add_new_tab" method 
     def set_add_new_tab_h(self, _add_new_tab):

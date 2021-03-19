@@ -1,15 +1,22 @@
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="bookmarks.css">
     <link rel="stylesheet" href="plastic_bookmarks.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
     <link rel="icon" type="image/png" href="../lynx_logo.png" sizes="32x32" />
     <title>Lynx Bookmarks</title>
 </head>
 <body>
-    <input type="text" id="search" onkeyup="searchFilter()" placeholder="Search for bookmark" title="Type in bookmark"><br><br><br>
+    <span lang="en_US" style="display: none;">
+        <input type="text" id="search" onkeyup="searchFilter()" placeholder="Search for bookmark" title="Type in bookmark"><br><br><br>
+    </span>
+    <span lang="sv_SE" style="display: none;">
+        <input type="text" id="search" onkeyup="searchFilter()" placeholder="Sök efter bokmärkte" title="Type in bookmark"><br><br><br>
+    </span>
+
     <ul id="bookmark-list"></ul>
     <script src="bookmarks.js" language="javascript"></script>
 </body>

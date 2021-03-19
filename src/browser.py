@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
         self.shortcut_changetab_b = QShortcut(QKeySequence("Ctrl+H"), self)
         self.shortcut_store_session = QShortcut(QKeySequence("Alt+X"), self)
 
-        self.shortcut_store_session.activated.connect(lambda: bookmark.store_session(self.current_urls()))
+        self.shortcut_store_session.activated.connect(lambda: bookmark.storeSession(self.current_urls()))
         self.shortcut_closetab.activated.connect(self.close_current_tab)
         self.shortcut_changetab_f.activated.connect(self.tab_change_forward)
         self.shortcut_changetab_b.activated.connect(self.tab_change_back)
@@ -354,7 +354,6 @@ class MainWindow(QMainWindow):
 
     def load_finished(self, urlbar, browser):
         if getPriveleges():
-            # QTimer.singleShot(500, setPrivileges) # FIXME: Should check when loading is finished
             return
         extension.pageLoad(browser)
 

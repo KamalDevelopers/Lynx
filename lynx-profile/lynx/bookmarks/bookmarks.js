@@ -1,3 +1,11 @@
+function selectLanguage(language) {
+    $("[lang]").each(function () {
+        if ($(this).attr("lang") == language)
+            $(this).show();
+    });
+}
+
+
 function searchFilter() {
     var input, filter, ul, li, a, i, txtValue;
     input = document.getElementById("search");
@@ -56,4 +64,9 @@ new QWebChannel(qt.webChannelTransport, function (channel) {
             });
         });
     });
+
+    backend.locale(function(l) {
+        selectLanguage(l);
+    });
+
 });

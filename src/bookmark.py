@@ -38,6 +38,6 @@ def addBookmark(url, remove=False):
     readBookmarks() 
     return True
 
-def store_session(urls):
+def storeSession(urls):
     with open(BASE_PATH + 'restore.session', 'w') as f:
         f.write(str(urls))
