@@ -119,9 +119,9 @@ class MainWindow(QMainWindow):
 
         # Shortcuts 
         self.shortcut_closetab = QShortcut(QKeySequence("Ctrl+W"), self)
-        self.shortcut_addtab = QShortcut(QKeySequence("Ctrl+H"), self)
-        self.shortcut_changetab_f = QShortcut(QKeySequence("Ctrl+K"), self)
-        self.shortcut_changetab_b = QShortcut(QKeySequence("Ctrl+J"), self)
+        self.shortcut_addtab = QShortcut(QKeySequence("Ctrl+J"), self)
+        self.shortcut_changetab_f = QShortcut(QKeySequence("Ctrl+L"), self)
+        self.shortcut_changetab_b = QShortcut(QKeySequence("Ctrl+H"), self)
         self.shortcut_store_session = QShortcut(QKeySequence("Alt+X"), self)
 
         self.shortcut_store_session.activated.connect(lambda: bookmark.store_session(self.current_urls()))
@@ -214,6 +214,10 @@ class MainWindow(QMainWindow):
         reopen_tab.setShortcut("Ctrl+Shift+T")
         reopen_tab.clicked.connect(lambda: self.open_last())
 
+        close_tab_group = QPushButton("", self)
+        close_tab_group.setShortcut("Alt+W")
+        close_tab_group.clicked.connect(lambda: self.close_current_tab(-2))
+
         open_bookmarks_page = QPushButton("", self)
         open_bookmarks_page.setShortcut("Alt+B")
         open_bookmarks_page.clicked.connect(lambda: self.navigate_to_url("lynx:bookmarks", browser))
@@ -241,6 +245,7 @@ class MainWindow(QMainWindow):
         navtb.addWidget(max_view)
         navtb.addWidget(search_text)
         navtb.addWidget(bookmark_page)
+        navtb.addWidget(close_tab_group)
 
         zoom_in.setMaximumWidth(0)
         zoom_out.setMaximumWidth(0)
@@ -252,6 +257,7 @@ class MainWindow(QMainWindow):
         max_view.setMaximumWidth(0)
         search_text.setMaximumWidth(0)
         bookmark_page.setMaximumWidth(0)
+        close_tab_group.setMaximumWidth(0)
 
         back_btn = QAction(self.tr("Back (Alt+J)"), self)
         icon = QIcon("img/remix/arrow-left-s-line.png")
@@ -484,14 +490,23 @@ class MainWindow(QMainWindow):
             self.add_new_tab(self.last_closed_tab)
 
     def close_current_tab(self, i=-1):
-        if i == -1:
-            i = self.tabs.currentIndex()
+        index = i
+        if i == -1 or i == -2:
+            index = self.tabs.currentIndex()
         if self.tabs.count() < 2:
             sys.exit()
-        self.last_closed_tab = self.tabs.widget(i).findChildren(QWebEngineView)[0].url()
-        self.tabs.widget(i).findChildren(QWebEngineView)[0].page().setParent(None)
-        self.tabs.widget(i).deleteLater()
-        self.tabs.removeTab(i)
+
+        if i == -2:
+            for _ in range(0, index):
+                self.close_current_tab(0)
+            while self.tabs.count() > 1:
+                self.close_current_tab(1)
+            return
+
+        self.last_closed_tab = self.tabs.widget(index).findChildren(QWebEngineView)[0].url()
+        self.tabs.widget(index).findChildren(QWebEngineView)[0].page().setParent(None)
+        self.tabs.widget(index).deleteLater()
+        self.tabs.removeTab(index)
 
     def tab_change_forward(self):
         self.tabs.setCurrentIndex(self.tabs.currentIndex()+1)
