@@ -539,6 +539,7 @@ class MainWindow(QMainWindow):
     def load_progress(self, progress, urlbar, url):
         global progress_color_loading
         if url[:5] == "file:" or not url:
+            urlbar.setStyleSheet('background-color: ;')
             return
         if progress < 99:
             percent = progress / 100

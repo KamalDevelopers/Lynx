@@ -6,7 +6,7 @@ from confvar import *
 def lynxQuit():
     if os.path.isdir("./temp/"):
         shutil.rmtree("./temp")
-    print("Lynx exited...")
+    print("Browser exited successfully")
 
 def decodeLynxUrl(qurl):
     if qurl.toString() == "lynx:blank":
