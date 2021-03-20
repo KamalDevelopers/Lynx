@@ -85,9 +85,14 @@ class MainWindow(QMainWindow):
         if BROWSER_STORAGE:
             QWebEngineProfile.defaultProfile().setPersistentStoragePath(BROWSER_STORAGE)
 
-        self.default_font = QFont(BROWSER_FONT_FAMILY)
-        self.default_font.setPointSize(BROWSER_FONT_SIZE)
-        self.setFont(self.default_font) 
+        try:
+            font_id = QFontDatabase.addApplicationFont("font/" + BROWSER_FONT_FAMILY + ".ttf")
+            font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
+            self.default_font = QFont(font_family)
+            self.default_font.setPixelSize(BROWSER_FONT_SIZE)
+            self.setFont(self.default_font)
+        except:
+            print("Could not load ttf:", "font/" + BROWSER_FONT_FAMILY + ".ttf")
 
         self.tabs = QTabWidget()
         self.tabs.setIconSize(QSize(13, 13))
