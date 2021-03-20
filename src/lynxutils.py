@@ -1,6 +1,12 @@
 import os
+import shutil
 import sys
 from confvar import *
+
+def lynxQuit():
+    if os.path.isdir("./temp/"):
+        shutil.rmtree("./temp")
+    print("Lynx exited...")
 
 def decodeLynxUrl(qurl):
     if qurl.toString() == "lynx:blank":

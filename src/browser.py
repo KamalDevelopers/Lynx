@@ -51,7 +51,6 @@ def launch_stealth(window):
         subprocess.run([sys.executable, exec_file, "-s"])
     else:
         subprocess.run([exec_file, "-s"])
-    sys.exit()
 
 if hasattr(Qt, 'AA_EnableHighDpiScaling'):
     PyQt5.QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -79,8 +78,12 @@ class MainWindow(QMainWindow):
         self.settings.setAttribute(QWebEngineSettings.ScrollAnimatorEnabled, 1)
         self.settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, WEBKIT_JAVASCRIPT_POPUPS_ENABLED)
         QWebEngineProfile.defaultProfile().setRequestInterceptor(interceptor)
+
         if BROWSER_STORE_VISITED_LINKS != True:
             QWebEngineProfile.defaultProfile().clearAllVisitedLinks()
+
+        if BROWSER_STORAGE:
+            QWebEngineProfile.defaultProfile().setPersistentStoragePath(BROWSER_STORAGE)
 
         font = QFont()
         font.setFamily(BROWSER_FONT_FAMILY)
@@ -338,13 +341,16 @@ class MainWindow(QMainWindow):
         browser.page().fullScreenRequested.connect(lambda request: (request.accept(), self.fullscreen_webview(htabbox, browser)))
         browser.page().loadFinished.connect(lambda: self.load_finished(urlbar, browser))
         browser.page().loadStarted.connect(lambda: self.load_started(urlbar, browser.page().url().toString(), browser))
-        browser.page().urlChanged.connect(lambda qurl, browser = browser: self.update_urlbar(urlbar, qurl))
         browser.page().titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(self.tab_indexes[tab_i], browser.page().title()))
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
-        browser.page().loadProgress.connect(lambda p: self.load_progress(p, urlbar))
+        browser.page().loadProgress.connect(lambda p: self.load_progress(p, urlbar, browser.page().url().toString()))
         browser.page().profile().downloadRequested.connect(self.download_item_requested)
 
         urlbar.textEdited.connect(lambda: self.update_index(self.tabs.currentIndex(), tab_i))
+
+    def closeEvent(self, event):
+        lxu.lynxQuit()
+        event.accept()
 
     def load_started(self, urlbar, url, browser):
         if url[:5] == "file:":
@@ -356,6 +362,7 @@ class MainWindow(QMainWindow):
         if getPriveleges():
             return
         extension.pageLoad(browser)
+        self.update_urlbar(urlbar, browser.page().url())
 
     def update_urlbar(self, urlbar, qurl):
         url = lxu.encodeLynxUrl(qurl)
@@ -493,7 +500,8 @@ class MainWindow(QMainWindow):
         if i == -1 or i == -2:
             index = self.tabs.currentIndex()
         if self.tabs.count() < 2:
-            sys.exit()
+            lxu.lynxQuit()
+            QApplication.quit()
 
         if i == -2:
             for _ in range(0, index):
@@ -528,10 +536,12 @@ class MainWindow(QMainWindow):
         _qurl = QUrl(lxu.decodeLynxUrl(_qurl))
         webview.setUrl(_qurl)
 
-    def load_progress(self, progress, line_edit):
+    def load_progress(self, progress, urlbar, url):
         global progress_color_loading
+        if url[:5] == "file:" or not url:
+            return
         if progress < 99:
             percent = progress / 100
-            line_edit.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 ' + progress_color_loading + ', stop: ' + str(percent) + ' ' + progress_color_loading + ', stop: ' + str(percent + 0.001) + ' rgba(0, 0, 0, 0), stop: 1 #00000005)')
+            urlbar.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 ' + progress_color_loading + ', stop: ' + str(percent) + ' ' + progress_color_loading + ', stop: ' + str(percent + 0.001) + ' rgba(0, 0, 0, 0), stop: 1 #00000005)')
         else:
-            line_edit.setStyleSheet('background-color: ;')
+            urlbar.setStyleSheet('background-color: ;')
