@@ -39,7 +39,7 @@ BROWSER_ADBLOCKER = True
 BROWSER_MINER_BLOCKER = True 
 BROWSER_STORE_VISITED_LINKS = False 
 BROWSER_HTTPS_ONLY = False
-BROWSER_AGENT = None 
+BROWSER_AGENT = "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0"
 BROWSER_PROXY = None 
 BROWSER_TS_DISABLED = True 
 
@@ -121,7 +121,7 @@ def confb():
         BROWSER_STORE_VISITED_LINKS = False 
         BROWSER_HTTPS_ONLY = True
         BROWSER_TS_DISABLED = True 
-        BROWSER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" 
+        BROWSER_AGENT = "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0" 
         BROWSER_PROXY = None 
         BROWSER_WINDOW_TITLE = "Lynx Stealth"
         WEBKIT_WEBGL_ENABLED = 0
