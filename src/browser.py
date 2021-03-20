@@ -85,15 +85,12 @@ class MainWindow(QMainWindow):
         if BROWSER_STORAGE:
             QWebEngineProfile.defaultProfile().setPersistentStoragePath(BROWSER_STORAGE)
 
-        font = QFont()
-        font.setFamily(BROWSER_FONT_FAMILY)
-        font.setPointSize(BROWSER_FONT_SIZE)
-        self.setFont(font)
-        
-        font = QFont(BROWSER_FONT_FAMILY, BROWSER_FONT_SIZE)
+        self.default_font = QFont(BROWSER_FONT_FAMILY)
+        self.default_font.setPointSize(BROWSER_FONT_SIZE)
+        self.setFont(self.default_font) 
+
         self.tabs = QTabWidget()
         self.tabs.setIconSize(QSize(13, 13))
-        self.tabs.setFont(font)
         self.tabs.setDocumentMode(True)
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
         self.tabs.setTabsClosable(True)
@@ -188,8 +185,6 @@ class MainWindow(QMainWindow):
         searchbar = QLineEdit()
         searchbar.returnPressed.connect(lambda: self.search_webview(browser, searchbar.text()))
         searchbar.setFixedHeight(23)
-        font = QFont("Noto", 9)
-        searchbar.setFont(font)
         searchbar.hide()
 
         # Hidden Buttons - Keyboard Shortcuts
@@ -283,8 +278,6 @@ class MainWindow(QMainWindow):
         urlbar = QLineEdit()
         urlbar.returnPressed.connect(lambda: self.navigate_to_url(urlbar.text(), browser))
         urlbar.setFixedHeight(26)
-        font = QFont("Noto", 9)
-        urlbar.setFont(font)
         urlbar.addAction(secure_icon, QLineEdit.LeadingPosition);
 
         completer = QCompleter(bookmark.getBookmarks())
