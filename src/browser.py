@@ -342,6 +342,7 @@ class MainWindow(QMainWindow):
         browser.page().titleChanged.connect(lambda _, i = i, browser = browser: self.tabs.setTabText(self.tab_indexes[tab_i], browser.page().title()))
         browser.page().iconChanged.connect(lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page()))
         browser.page().loadProgress.connect(lambda p: self.load_progress(p, urlbar, browser.page().url().toString()))
+        browser.page().urlChanged.connect(lambda qurl, browser = browser: self.update_urlbar(urlbar, qurl))
         browser.page().profile().downloadRequested.connect(self.download_item_requested)
 
         urlbar.textEdited.connect(lambda: self.update_index(self.tabs.currentIndex(), tab_i))
@@ -362,9 +363,12 @@ class MainWindow(QMainWindow):
         extension.pageLoad(browser)
         self.update_urlbar(urlbar, browser.page().url())
 
-    def update_urlbar(self, urlbar, qurl):
+    def update_urlbar(self, urlbar, qurl, icon_update=True):
         url = lxu.encodeLynxUrl(qurl)
         urlbar.setText(url)
+
+        if not icon_update:
+            return
 
         icon = None
         if "lynx:" == urlbar.text()[:5]:
