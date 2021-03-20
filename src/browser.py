@@ -228,7 +228,7 @@ class MainWindow(QMainWindow):
         max_view = QPushButton("", self)
         max_view.setShortcut("Alt+F")
         size = QDesktopWidget().screenGeometry(-1)
-        max_view.clicked.connect(lambda: self.resize(size.width(), size.height()))
+        max_view.clicked.connect(lambda: self.setGeometry(0, 0, size.width(), size.height()))
 
         search_text = QPushButton("", self)
         search_text.setShortcut("Ctrl+F")
