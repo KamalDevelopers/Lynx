@@ -1,9 +1,7 @@
-var cssId = 'cssLynxId';
-
 var backend;
 var adblock_code;
 
-function add_adblocker()
+function add_adblocker(cssId)
 {
     if (!document.getElementById(cssId)) {
         css = document.createElement('style');
@@ -20,7 +18,11 @@ new QWebChannel(qt.webChannelTransport, function (channel) {
 
     backend.readFile("extensions/adblock.css", function(pyval) {
         adblock_code = pyval;
-        add_adblocker();
+        add_adblocker("deflynx");
+    });
+    backend.readFile("adblock/generated.css", function(pyval) {
+        adblock_code = pyval;
+        add_adblocker("pluscsslynx");
     });
 });
 

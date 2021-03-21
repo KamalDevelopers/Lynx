@@ -463,12 +463,7 @@ a[href*="imdb.com/ad/?id="] img[src*="imdb.com/media/"] {
     display: none !important;
 }
 
-.js-sidebar-ads {
-    visibility:hidden !important; 
-    display: none !important;
-}
-
-.results--ads results--ads--main js-results-ads {
+.results--ads .results--ads--main .js-results-ads {
     visibility:hidden !important; 
     display: none !important;
 }
@@ -494,6 +489,21 @@ ytd-companion-slot-renderer {
 }
 
 ytd-banner-promo-renderer.banner-promo-style-type-masthead-v2 .ytd-banner-promo-renderer-background.ytd-banner-promo-renderer {
+    display: none !important;
+    visibility:hidden !important;
+}
+
+.ytp-ad-overlay-slot {
+    display: none !important;
+    visibility:hidden !important;
+}
+
+.ytp-paid-content-overlay {
+    display: none !important;
+    visibility:hidden !important;
+}
+
+.video-ads .ytp-ad-module {
     display: none !important;
     visibility:hidden !important;
 }

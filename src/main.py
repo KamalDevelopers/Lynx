@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 import confvar
 import utils.argparser
@@ -58,7 +59,10 @@ def runbrowser():
 
 
 if __name__ == "__main__":
-    utils.adblock.readBlocker()
+    start_time = time.time()
+    if confvar.BROWSER_ADBLOCKER:
+        utils.adblock.readFilter(confvar.BASE_PATH + "adblock/filter.txt")
+        print("Generated adblock rules: %s seconds" % (time.time() - start_time))
     extension.readExtensions()
     utils.bookmark.readBookmarks()
     runbrowser()
