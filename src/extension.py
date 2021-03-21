@@ -7,9 +7,9 @@ import time
 
 from PyQt5.QtCore import QFile, QIODevice, QTimer
 
-extension_data = {}  # Holds the loaded extensions
-preload_data = {}  # Holds the preloaded code of all extensions
-permissions = {}  # Holds the permissions of each extension
+extension_data = {}
+preload_data = {}
+permissions = {}
 script_list = {}
 
 apiFile = QFile(":/qtwebchannel/qwebchannel.js")

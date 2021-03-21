@@ -1,6 +1,6 @@
-import adblock
+import utils.adblock
+import utils.bookmark
 import confvar
-import bookmark
 import requests
 import favicon
 
@@ -45,8 +45,8 @@ class WebChannel(QObject):
             print("Insufficient permissions")
             return
         result = []
-        for index in range(0, len(bookmark.getBookmarks())):
-            favi = favicon.get(bookmark.getBookmarks()[index])[0].url
+        for index in range(0, len(utils.bookmark.getBookmarks())):
+            favi = favicon.get(utils.bookmark.getBookmarks()[index])[0].url
             result.append(favi)
         return result
 
@@ -60,8 +60,10 @@ class WebChannel(QObject):
         hearders = {
             "headers": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:51.0) Gecko/20100101 Firefox/51.0"
         }
-        for index in range(0, len(bookmark.getBookmarks())):
-            n = requests.get(bookmark.getBookmarks()[index], headers=hearders)
+        for index in range(0, len(utils.bookmark.getBookmarks())):
+            n = requests.get(
+                utils.bookmark.getBookmarks()[index], headers=hearders
+            )
             result.append(
                 n.text[n.text.find("<title>") + 7 : n.text.find("</title>")]
             )
@@ -72,7 +74,7 @@ class WebChannel(QObject):
         if "bookmarks" not in privileges:
             print("Insufficient permissions")
             return
-        return bookmark.getBookmarks()
+        return utils.bookmark.getBookmarks()
 
     @pyqtSlot(str, result=str)
     def readFile(self, path):
@@ -115,7 +117,7 @@ class CustomWebEnginePage(QWebEnginePage):
 class RequestInterceptor(QWebEngineUrlRequestInterceptor):
     def interceptRequest(self, info):
         url = info.requestUrl().toString()
-        if adblock.match(url) is not False:
+        if utils.adblock.match(url) is not False:
             info.block(True)
         if confvar.BROWSER_HTTPS_ONLY:
             if url[:5] == "http:":

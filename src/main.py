@@ -2,11 +2,11 @@ import sys
 import os
 
 import confvar
-import argparser
+import utils.argparser
 
 # Needs to be above local imports
 # If the stealth flag is set then overwrite conf
-args = argparser.parse()
+args = utils.argparser.parse()
 if args.l:
     confvar.locale(args.l)
 if args.t:
@@ -17,9 +17,9 @@ else:
     confvar.stealth(False)
 confvar.confb()
 
-import adblock
+import utils.bookmark
+import utils.adblock
 import extension
-import bookmark
 import browser
 
 from PyQt5.QtWidgets import (
@@ -58,7 +58,7 @@ def runbrowser():
 
 
 if __name__ == "__main__":
-    adblock.readBlocker()
+    utils.adblock.readBlocker()
     extension.readExtensions()
-    bookmark.readBookmarks()
+    utils.bookmark.readBookmarks()
     runbrowser()

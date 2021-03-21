@@ -3,12 +3,12 @@ import sys
 import subprocess
 import platform as arch
 
+import utils.bookmark
+import utils.lynxutils as lxu
 import proxy
-import bookmark
 import confvar
 import extension
 import webkit as wk
-import lynxutils as lxu
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
@@ -184,7 +184,7 @@ class MainWindow(QMainWindow):
         self.shortcut_store_session = QShortcut(QKeySequence("Alt+X"), self)
 
         self.shortcut_store_session.activated.connect(
-            lambda: bookmark.storeSession(self.current_urls())
+            lambda: utils.bookmark.storeSession(self.current_urls())
         )
         self.shortcut_closetab.activated.connect(self.close_current_tab)
         self.shortcut_changetab_f.activated.connect(self.tab_change_forward)
@@ -301,7 +301,9 @@ class MainWindow(QMainWindow):
         bookmark_page = QPushButton("", self)
         bookmark_page.setShortcut("Ctrl+B")
         bookmark_page.clicked.connect(
-            lambda: bookmark.addBookmark(browser.page().url().toString(), True)
+            lambda: utils.bookmark.addBookmark(
+                browser.page().url().toString(), True
+            )
         )
 
         navtb.addWidget(zoom_in)
