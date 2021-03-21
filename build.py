@@ -20,7 +20,6 @@ os.mkdir(fname)
 
 PyInstaller.__main__.run([
     'src/main.py',
-    '--onefile',
     '--noconsole',
     '-isrc/img/icons/logo.ico'
 ])
@@ -43,4 +42,3 @@ shutil.rmtree(fname)
 shutil.rmtree("dist")
 shutil.rmtree("build")
 os.remove("main.spec")
-
