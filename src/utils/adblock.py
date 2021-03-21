@@ -9,7 +9,12 @@ adblock_css_max = 1000
 
 
 def stripRule(rule):
-    rule = rule.replace("//*", "").replace("^", "").replace("*", "").replace("$", "")
+    rule = (
+        rule.replace("//*", "")
+        .replace("^", "")
+        .replace("*", "")
+        .replace("$", "")
+    )
     return rule
 
 
@@ -24,17 +29,26 @@ def readFilter(path, regen=False):
     with open(path) as filterlist:
         for line in parse_filterlist(filterlist):
             if line.type == "filter":
-                if line.selector['type'] == "url-pattern" and len(url_rules) < adblock_url_max:
+                if (
+                    line.selector["type"] == "url-pattern"
+                    and len(url_rules) < adblock_url_max
+                ):
                     url_rules.append(line.text)
-                if line.selector['type'] == "url-regexp" and len(url_rules) < adblock_url_max:
+                if (
+                    line.selector["type"] == "url-regexp"
+                    and len(url_rules) < adblock_url_max
+                ):
                     url_rules.append(line.text)
-                if line.selector['type'] == "css" and len(css_rules) < adblock_css_max:
+                if (
+                    line.selector["type"] == "css"
+                    and len(css_rules) < adblock_css_max
+                ):
                     if line.text[:2] == "##":
                         css_rules.append(stripRule(line.text.split("##")[1]))
 
     url_rules.append("tpc.googlesyndication.com/*")
     adblock_url_rules = AdblockRules(url_rules)
-    adblock_css_rules = ','.join(css_rules) + block
+    adblock_css_rules = ",".join(css_rules) + block
 
     with open(confvar.BASE_PATH + "adblock/generated.css", "w") as F:
         F.write(adblock_css_rules)

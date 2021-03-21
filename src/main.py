@@ -4,6 +4,7 @@ import time
 
 import confvar
 import utils.argparser
+import utils.log
 
 # Needs to be above local imports
 # If the stealth flag is set then overwrite conf
@@ -43,7 +44,10 @@ def runbrowser():
     translator = QTranslator()
     if not confvar.BROWSER_LOCALE:
         confvar.BROWSER_LOCALE = QLocale.system().name()
-    print('Localization loaded:', translator.load(confvar.BROWSER_LOCALE + '.qm', '../localization'), confvar.BROWSER_LOCALE)
+    locale_loaded = translator.load(confvar.BROWSER_LOCALE + '.qm', '../localization')
+    utils.log.msg('INFO')(
+        'Localization loaded: ' + str(locale_loaded) + ' ' + confvar.BROWSER_LOCALE
+    )
     app.installTranslator(translator)
 
     window = browser.MainWindow()
@@ -62,7 +66,8 @@ if __name__ == "__main__":
     start_time = time.time()
     if confvar.BROWSER_ADBLOCKER:
         utils.adblock.readFilter(confvar.BASE_PATH + "adblock/filter.txt")
-        print("Generated adblock rules: %s seconds" % (time.time() - start_time))
+        utils.log.msg('DEBUG')("Generated adblock rules: %s seconds" % (time.time() - start_time))
+
     extension.readExtensions()
     utils.bookmark.readBookmarks()
     runbrowser()

@@ -1,12 +1,13 @@
 import os
 import shutil
 import confvar
+import utils.log
 
 
 def lynxQuit():
     if os.path.isdir("./temp/"):
         shutil.rmtree("./temp")
-    print("Browser exited successfully")
+    utils.log.msg("INFO")("Browser exited successfully")
 
 
 def decodeLynxUrl(qurl):

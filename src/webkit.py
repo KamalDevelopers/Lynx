@@ -42,7 +42,7 @@ class WebChannel(QObject):
     @pyqtSlot(result=list)
     def getBookmarkFavicons(self):
         if "bookmarks" not in privileges:
-            print("Insufficient permissions")
+            # print("Insufficient permissions")
             return
         result = []
         for index in range(0, len(utils.bookmark.getBookmarks())):
@@ -53,7 +53,7 @@ class WebChannel(QObject):
     @pyqtSlot(result=list)
     def getBookmarkTitles(self):
         if "bookmarks" not in privileges:
-            print("Insufficient permissions")
+            # print("Insufficient permissions")
             return
 
         result = []
@@ -72,14 +72,14 @@ class WebChannel(QObject):
     @pyqtSlot(result=list)
     def getBookmarkUrls(self):
         if "bookmarks" not in privileges:
-            print("Insufficient permissions")
+            # print("Insufficient permissions")
             return
         return utils.bookmark.getBookmarks()
 
     @pyqtSlot(str, result=str)
     def readFile(self, path):
         if "filesystem" not in privileges:
-            print("Insufficient permissions")
+            # print("Insufficient permissions")
             return
         with open(confvar.BASE_PATH + path) as F:
             return F.read()
@@ -87,7 +87,7 @@ class WebChannel(QObject):
     @pyqtSlot(str, str)
     def writeFile(self, path, data):
         if "filesystem" not in privileges:
-            print("Insufficient permissions")
+            # print("Insufficient permissions")
             return
         with open(confvar.BASE_PATH + path, "w") as F:
             F.write(data)
@@ -112,6 +112,9 @@ class CustomWebEnginePage(QWebEnginePage):
             self.add_new_tab(QUrl(url), silent=1)
             return False
         return super().acceptNavigationRequest(url, _type, isMainFrame)
+
+    def javaScriptConsoleMessage(self, level, msg, line, sourceID):
+        pass
 
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor):

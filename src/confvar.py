@@ -15,7 +15,6 @@ configur = ConfigParser()
 BASE_PATH = data["package"]["profile"]
 DOWNLOAD_PATH = OS_HOME + "/" + "Downloads/"
 VERSION = data["package"]["version"]
-print(data)
 
 if not os.path.isdir(BASE_PATH):
     print("Failed to find lynx profile")

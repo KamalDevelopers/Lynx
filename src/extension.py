@@ -1,5 +1,6 @@
 import confvar
 import webkit as wk
+import utils.log
 
 import json
 import os
@@ -14,7 +15,7 @@ script_list = {}
 
 apiFile = QFile(":/qtwebchannel/qwebchannel.js")
 if not apiFile.open(QIODevice.ReadOnly):
-    print("Could not open API file")
+    utils.log.msg("ERROR")("Could not open API file")
 
 apiScript = apiFile.readAll().data().decode()
 apiFile.close()
@@ -45,7 +46,7 @@ def readExtension(extension_file):
             if not os.path.isfile(
                 confvar.BASE_PATH + "extensions/" + new_name
             ):
-                print("Transpiling TS code")
+                utils.log.msg("INFO")("Transpiling TS code")
                 os.system(
                     "npx tsc "
                     + confvar.BASE_PATH
@@ -64,7 +65,6 @@ def readExtensions():
     for _, extension_file in enumerate(files):
         if extension_file[-5:] == ".json":
             readExtension(extension_file)
-    print(extension_data, permissions)
 
 
 def javascriptLoad(path):

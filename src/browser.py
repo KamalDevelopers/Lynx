@@ -1,8 +1,10 @@
 import os
 import sys
+import time
 import subprocess
 import platform as arch
 
+import logging
 import utils.bookmark
 import utils.lynxutils as lxu
 import proxy
@@ -139,9 +141,11 @@ class MainWindow(QMainWindow):
             self.default_font.setPixelSize(confvar.BROWSER_FONT_SIZE)
             self.setFont(self.default_font)
         except IndexError:
-            print(
-                "Could not load ttf:",
-                "font/" + confvar.BROWSER_FONT_FAMILY + ".ttf",
+            utils.log.msg("ERROR")(
+                "Could not load ttf:"
+                + " font/"
+                + confvar.BROWSER_FONT_FAMILY
+                + ".ttf"
             )
 
         self.tabs = QTabWidget()
@@ -449,12 +453,18 @@ class MainWindow(QMainWindow):
         event.accept()
 
     def load_started(self, urlbar, url, browser):
+        self.load_start_time = time.time()
         if url[:5] == "file:":
             wk.setPrivileges("*")
             return
         wk.setPrivileges()
 
     def load_finished(self, urlbar, browser):
+        utils.log.msg("DEBUG")(
+            "Loaded webpage in "
+            + str(round(time.time() - self.load_start_time, 3))
+            + " seconds",
+        )
         if wk.getPriveleges():
             return
         extension.pageLoad(browser)
