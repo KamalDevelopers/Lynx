@@ -1,3 +1,6 @@
+import sys
+import os
+
 import confvar
 import argparser
 
@@ -17,37 +20,45 @@ confvar.confb()
 import adblock
 import extension
 import bookmark
-from browser import *
-import threading
-import sys
-import os
+import browser
+
+from PyQt5.QtWidgets import (
+    QApplication,
+)
+from PyQt5.QtCore import (
+    QTranslator,
+    QLocale,
+)
+from PyQt5.QtGui import QIcon
 
 if args.URL:
-    open_url_arg(args.URL)
+    browser.open_url_arg(args.URL)
+
 
 def runbrowser():
     app = QApplication(sys.argv)
     app.setApplicationName(confvar.BROWSER_WINDOW_TITLE)
-    
+
     translator = QTranslator()
     if not confvar.BROWSER_LOCALE:
         confvar.BROWSER_LOCALE = QLocale.system().name()
     print('Localization loaded:', translator.load(confvar.BROWSER_LOCALE + '.qm', '../localization'), confvar.BROWSER_LOCALE)
     app.installTranslator(translator)
-    
-    window = MainWindow()
+
+    window = browser.MainWindow()
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
-  
+
     if os.path.isfile("./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico"):
         app.setWindowIcon(QIcon(os.path.abspath("./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico")))
-    else: 
+    else:
         app.setWindowIcon(QIcon(os.path.abspath('./img/icons/lynx_logo.ico')))
 
-    app.setStyleSheet(open(BASE_PATH + "themes/" + confvar.BROWSER_STYLESHEET + ".qss").read())
+    app.setStyleSheet(open(confvar.BASE_PATH + "themes/" + confvar.BROWSER_STYLESHEET + ".qss").read())
     app.exec_()
+
 
 if __name__ == "__main__":
     adblock.readBlocker()
-    extension.readExtensions() 
+    extension.readExtensions()
     bookmark.readBookmarks()
     runbrowser()
