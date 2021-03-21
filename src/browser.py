@@ -14,14 +14,12 @@ import lynxutils as lxu
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-import PyQt5.QtWebEngineWidgets
-from PyQt5.QtWebEngineWidgets import *
-from PyQt5.QtPrintSupport import *
-from PyQt5.QtWebEngineCore import *
+
+from PyQt5.QtCore import QUrl, QObject, Qt, QEvent, pyqtSignal, pyqtSlot, QTimer
+from PyQt5.QtWidgets import QWidget, QApplication, QDialog, QTabWidget, QLineEdit, QApplication, QFileDialog
+from PyQt5.QtGui import QIcon, QKeySequence, QColor, QFont, QFontDatabase
 from PyQt5.QtWebChannel import QWebChannel
+from PyQt5.QtWebEngineWidgets import QWebEngineSettings, QWebEngineProfile, QWebEnginePage, QWebEngineView, QWebEngineDownloadItem
 
 default_url_open = None 
 downloading_item = False
@@ -53,10 +51,10 @@ def launch_stealth(window):
         subprocess.run([exec_file, "-s"])
 
 if hasattr(Qt, 'AA_EnableHighDpiScaling'):
-    PyQt5.QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
-    PyQt5.QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -283,9 +281,9 @@ class MainWindow(QMainWindow):
         urlbar = QLineEdit()
         urlbar.returnPressed.connect(lambda: self.navigate_to_url(urlbar.text(), browser))
         urlbar.setFixedHeight(26)
-        urlbar.addAction(secure_icon, QLineEdit.LeadingPosition);
+        urlbar.addAction(secure_icon, QLineEdit.LeadingPosition)
 
-        completer = QCompleter(bookmark.getBookmarks())
+        # completer = QCompleter(bookmark.getBookmarks())
         # urlbar.setCompleter(completer)
         for _ in range(0, 10):
             navtb.addSeparator()
@@ -381,7 +379,7 @@ class MainWindow(QMainWindow):
             icon = QIcon("img/unsecure.png")
         if icon != None:
             urlbar.removeAction(urlbar.actions()[0])
-            urlbar.addAction(icon, QLineEdit.LeadingPosition);
+            urlbar.addAction(icon, QLineEdit.LeadingPosition)
 
     def update_index(self, i, ti):
         self.tab_indexes[ti] = i
@@ -527,16 +525,16 @@ class MainWindow(QMainWindow):
         self.tabs.currentWidget().setUrl(QUrl(BROWSER_HOMEPAGE))
 
     def navigate_to_url(self, url, webview):
-        if url == "":
+        if not url:
             return
-        _qurl = QUrl(url)
-        if "." not in url and not lxu.checkLynxUrl(_qurl):
-            _qurl = QUrl("https://duckduckgo.com/?q=" + url)
-        elif "." in url and not lxu.checkLynxUrl(_qurl) and not "file:///" in url:
-            _qurl.setScheme("http")
+        qurl = QUrl(url)
+        if "." not in url and not lxu.checkLynxUrl(qurl):
+            qurl = QUrl("https://duckduckgo.com/?q=" + url)
+        elif "." in url and not lxu.checkLynxUrl(qurl) and not "file:///" in url:
+            qurl.setScheme("http")
 
-        _qurl = QUrl(lxu.decodeLynxUrl(_qurl))
-        webview.setUrl(_qurl)
+        qurl = QUrl(lxu.decodeLynxUrl(qurl))
+        webview.setUrl(qurl)
 
     def load_progress(self, progress, urlbar, url):
         global progress_color_loading

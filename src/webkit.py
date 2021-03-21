@@ -4,13 +4,11 @@ import bookmark
 import requests
 import favicon
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-import PyQt5.QtWebEngineWidgets
-from PyQt5.QtWebEngineWidgets import *
-from PyQt5.QtPrintSupport import *
-from PyQt5.QtWebEngineCore import *
+from PyQt5.QtCore import QUrl, QObject, Qt, QEvent, pyqtSignal, pyqtSlot, QTranslator, QLocale, QSize
+from PyQt5.QtWebEngineWidgets import QWebEngineSettings, QWebEngineProfile, QWebEnginePage
+from PyQt5.QtWebEngineCore import QWebEngineUrlRequestInterceptor
+from PyQt5.QtWidgets import (QWidget, QApplication, QDialog, QTabWidget, QLineEdit, QMainWindow, QAction,
+                             QShortcut, QVBoxLayout, QToolBar, QPushButton, QDesktopWidget, QCompleter)
 
 privileges = []
 def setPrivileges(p=[]):

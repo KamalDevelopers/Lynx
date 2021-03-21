@@ -1,13 +1,8 @@
 from confvar import *
 from webkit import * 
 
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-import PyQt5.QtWebEngineWidgets
-from PyQt5.QtWebEngineWidgets import *
-from PyQt5.QtPrintSupport import *
-from PyQt5.QtWebEngineCore import *
+from PyQt5.QtCore import QFile, QIODevice, QTimer
+
 import json
 import os
 import re
@@ -18,12 +13,12 @@ preload_data = {}   # Holds the preloaded code of all extensions
 permissions = {}    # Holds the permissions of each extension
 script_list = {}
 
-apiFile = QFile(":/qtwebchannel/qwebchannel.js");
+apiFile = QFile(":/qtwebchannel/qwebchannel.js")
 if not apiFile.open(QIODevice.ReadOnly):
     print("Could not open API file")
 
 apiScript = apiFile.readAll().data().decode()
-apiFile.close();
+apiFile.close()
 
 def readExtension(extension_file):
     global extension_data, permissions, script_list 
@@ -37,7 +32,7 @@ def readExtension(extension_file):
     if 'permissions' in data.keys():
         permissions[data['name']] = data['permissions']
 
-    for i, host in enumerate(data['extension']['host']):
+    for _, host in enumerate(data['extension']['host']):
         if data['enabled'] == False:
             return
         if host.replace("www.", "") not in extension_data:
@@ -56,7 +51,7 @@ def readExtension(extension_file):
 
 def readExtensions():
     files = os.listdir(BASE_PATH + "extensions/")
-    for i, extension_file in enumerate(files):
+    for _, extension_file in enumerate(files):
         if extension_file[-5:] == ".json":
             readExtension(extension_file)
     print(extension_data, permissions)
