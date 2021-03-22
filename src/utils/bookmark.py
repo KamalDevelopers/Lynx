@@ -31,7 +31,7 @@ def removeBookmark(url):
 
 def addBookmark(url, remove=False):
     if url in bookmarks:
-        if remove == True:
+        if remove:
             removeBookmark(url)
         return False
 

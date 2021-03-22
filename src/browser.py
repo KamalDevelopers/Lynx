@@ -4,7 +4,6 @@ import time
 import subprocess
 import platform as arch
 
-import logging
 import utils.bookmark
 import utils.lynxutils as lxu
 import proxy
@@ -49,6 +48,10 @@ from PyQt5.QtWebEngineWidgets import (
 default_url_open = None
 downloading_item = False
 download_directory = confvar.DOWNLOAD_PATH
+
+interceptor = wk.RequestInterceptor()
+webchannel = wk.WebChannel()
+
 progress_color_loading = confvar.grab_stylesheet_value(
     "QLineEdit", "background-color"
 )
@@ -69,10 +72,6 @@ def open_folder(path):
 def open_url_arg(url):
     global default_url_open
     default_url_open = url
-
-
-interceptor = wk.RequestInterceptor()
-webchannel = wk.WebChannel()
 
 
 def launch_stealth(window):
@@ -205,7 +204,6 @@ class MainWindow(QMainWindow):
                 self.add_new_tab(QUrl(page))
         else:
             self.add_new_tab()
-        self.show()
 
     def add_new_tab(self, qurl=None, label="New Tab", silent=0):
         global default_url_open
@@ -469,6 +467,8 @@ class MainWindow(QMainWindow):
             return
         extension.pageLoad(browser)
         self.update_urlbar(urlbar, browser.page().url())
+        if self.first_opened:
+            self.show()
 
     def update_urlbar(self, urlbar, qurl, icon_update=True):
         url = lxu.encodeLynxUrl(qurl)
