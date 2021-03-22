@@ -436,7 +436,7 @@ class MainWindow(QMainWindow):
             )
         )
         browser.page().urlChanged.connect(
-            lambda qurl, browser=browser: self.update_urlbar(urlbar, qurl)
+            lambda qurl, browser=browser: self.update_urlbar(urlbar, qurl, 0)
         )
         browser.page().profile().downloadRequested.connect(
             self.download_item_requested
@@ -474,9 +474,6 @@ class MainWindow(QMainWindow):
         url = lxu.encodeLynxUrl(qurl)
         urlbar.setText(url)
 
-        if not icon_update:
-            return
-
         icon = None
         if "lynx:" == urlbar.text()[:5]:
             icon = QIcon("img/search.png")
@@ -484,7 +481,7 @@ class MainWindow(QMainWindow):
             urlbar.setText("")
         if "https://" == urlbar.text()[:8]:
             icon = QIcon("img/secure.png")
-        if "http://" == urlbar.text()[:7]:
+        if "http://" == urlbar.text()[:7] and icon_update:
             icon = QIcon("img/unsecure.png")
         if icon is not None:
             urlbar.removeAction(urlbar.actions()[0])
