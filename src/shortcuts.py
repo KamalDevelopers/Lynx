@@ -1,3 +1,4 @@
+import subprocess
 import utils.bookmark
 
 from PyQt5.QtWidgets import (
@@ -8,6 +9,7 @@ from PyQt5.QtWidgets import (
 
 def shortcuts(window, browser, searchbar):
     shorts = []
+
     zoom_in = QPushButton("", window)
     zoom_in.setShortcut("Ctrl++")
     zoom_in.clicked.connect(lambda: window.zoom(0.1, browser))
@@ -36,6 +38,14 @@ def shortcuts(window, browser, searchbar):
     close_tab_group.setShortcut("Alt+W")
     close_tab_group.clicked.connect(lambda: window.close_current_tab(-2))
 
+    mpv_open = QPushButton("", window)
+    mpv_open.setShortcut("Alt+M")
+    mpv_open.clicked.connect(
+        lambda: subprocess.Popen(
+            "mpv " + browser.page().url().toString(), shell=True
+        )
+    )
+
     open_bookmarks_page = QPushButton("", window)
     open_bookmarks_page.setShortcut("Alt+B")
     open_bookmarks_page.clicked.connect(
@@ -63,6 +73,7 @@ def shortcuts(window, browser, searchbar):
         )
     )
 
+    shorts.append(mpv_open)
     shorts.append(zoom_in)
     shorts.append(zoom_out)
     shorts.append(save_page)
