@@ -42,8 +42,3 @@ def addBookmark(url, remove=False):
         json.dump(data, f, indent=4)
     readBookmarks()
     return True
-
-
-def storeSession(urls):
-    with open(confvar.BASE_PATH + "restore.session", "w") as f:
-        f.write(str(urls))

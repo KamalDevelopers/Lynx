@@ -187,7 +187,7 @@ class MainWindow(QMainWindow):
         self.shortcut_store_session = QShortcut(QKeySequence("Alt+X"), self)
 
         self.shortcut_store_session.activated.connect(
-            lambda: utils.bookmark.storeSession(self.current_urls())
+            lambda: lxu.storeSession(self.current_urls())
         )
         self.shortcut_closetab.activated.connect(self.close_current_tab)
         self.shortcut_changetab_f.activated.connect(self.tab_change_forward)
@@ -211,7 +211,6 @@ class MainWindow(QMainWindow):
         if qurl is None and default_url_open is None:
             if not self.first_opened:
                 qurl = QUrl(confvar.BROWSER_HOMEPAGE)
-                self.first_opened = True
             else:
                 qurl = QUrl(confvar.BROWSER_NEWTAB)
         if default_url_open is not None:
@@ -467,8 +466,10 @@ class MainWindow(QMainWindow):
             return
         extension.pageLoad(browser)
         self.update_urlbar(urlbar, browser.page().url())
-        if self.first_opened:
+
+        if not self.first_opened:
             self.show()
+        self.first_opened = True
 
     def update_urlbar(self, urlbar, qurl, icon_update=True):
         url = lxu.encodeLynxUrl(qurl)

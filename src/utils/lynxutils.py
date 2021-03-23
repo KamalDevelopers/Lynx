@@ -10,6 +10,11 @@ def lynxQuit():
     utils.log.msg("INFO")("Browser exited successfully")
 
 
+def storeSession(urls):
+    with open(confvar.BASE_PATH + "restore.session", "w") as f:
+        f.write(str(urls))
+
+
 def decodeLynxUrl(qurl):
     if qurl.toString() == "lynx:blank":
         return qurl.toString()
