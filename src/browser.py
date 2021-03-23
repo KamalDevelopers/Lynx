@@ -206,6 +206,9 @@ class MainWindow(QMainWindow):
         else:
             self.add_new_tab()
 
+        if arch.system() == "Windows":
+            self.show()
+
     def add_new_tab(self, qurl=None, label="New Tab", silent=0):
         global default_url_open
 
@@ -391,7 +394,7 @@ class MainWindow(QMainWindow):
         extension.pageLoad(browser)
         self.update_urlbar(urlbar, browser.page().url())
 
-        if not self.first_opened or arch.system() == "Windows":
+        if not self.first_opened and arch.system() != "Windows":
             self.show()
         self.first_opened = True
 
