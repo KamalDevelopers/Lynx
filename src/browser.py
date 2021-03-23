@@ -9,6 +9,7 @@ import utils.lynxutils as lxu
 import proxy
 import confvar
 import extension
+import shortcuts
 import webkit as wk
 
 from OpenGL.GL import *
@@ -251,85 +252,8 @@ class MainWindow(QMainWindow):
         searchbar.setFixedHeight(23)
         searchbar.hide()
 
-        # Hidden Buttons - Keyboard Shortcuts
-        zoom_in = QPushButton("", self)
-        zoom_in.setShortcut("Ctrl++")
-        zoom_in.clicked.connect(lambda: self.zoom(0.1, browser))
-
-        zoom_out = QPushButton("", self)
-        zoom_out.setShortcut("Ctrl+0")
-        zoom_out.clicked.connect(lambda: self.zoom(-0.1, browser))
-
-        save_page = QPushButton("", self)
-        save_page.setShortcut("Ctrl+S")
-        save_page.clicked.connect(lambda: self.save_page(browser))
-
-        mute_page = QPushButton("", self)
-        mute_page.setShortcut("Ctrl+M")
-        mute_page.clicked.connect(lambda: self.mute_page(browser))
-
-        reload_page = QPushButton("", self)
-        reload_page.setShortcut("Ctrl+R")
-        reload_page.clicked.connect(lambda: browser.reload())
-
-        reopen_tab = QPushButton("", self)
-        reopen_tab.setShortcut("Ctrl+Shift+T")
-        reopen_tab.clicked.connect(lambda: self.open_last())
-
-        close_tab_group = QPushButton("", self)
-        close_tab_group.setShortcut("Alt+W")
-        close_tab_group.clicked.connect(lambda: self.close_current_tab(-2))
-
-        open_bookmarks_page = QPushButton("", self)
-        open_bookmarks_page.setShortcut("Alt+B")
-        open_bookmarks_page.clicked.connect(
-            lambda: self.navigate_to_url("lynx:bookmarks", browser)
-        )
-
-        max_view = QPushButton("", self)
-        max_view.setShortcut("Alt+F")
-        size = QDesktopWidget().screenGeometry(-1)
-        max_view.clicked.connect(
-            lambda: self.setGeometry(0, 0, size.width(), size.height())
-        )
-
-        search_text = QPushButton("", self)
-        search_text.setShortcut("Ctrl+F")
-        search_text.clicked.connect(
-            lambda: self.open_searchbar(browser, searchbar)
-        )
-
-        bookmark_page = QPushButton("", self)
-        bookmark_page.setShortcut("Ctrl+B")
-        bookmark_page.clicked.connect(
-            lambda: utils.bookmark.addBookmark(
-                browser.page().url().toString(), True
-            )
-        )
-
-        navtb.addWidget(zoom_in)
-        navtb.addWidget(zoom_out)
-        navtb.addWidget(save_page)
-        navtb.addWidget(mute_page)
-        navtb.addWidget(reload_page)
-        navtb.addWidget(reopen_tab)
-        navtb.addWidget(open_bookmarks_page)
-        navtb.addWidget(max_view)
-        navtb.addWidget(search_text)
-        navtb.addWidget(bookmark_page)
-        navtb.addWidget(close_tab_group)
-
-        zoom_in.setMaximumWidth(0)
-        zoom_out.setMaximumWidth(0)
-        save_page.setMaximumWidth(0)
-        mute_page.setMaximumWidth(0)
-        reload_page.setMaximumWidth(0)
-        reopen_tab.setMaximumWidth(0)
-        open_bookmarks_page.setMaximumWidth(0)
-        max_view.setMaximumWidth(0)
-        search_text.setMaximumWidth(0)
-        bookmark_page.setMaximumWidth(0)
-        close_tab_group.setMaximumWidth(0)
+        for s in shortcuts.shortcuts(self, browser, searchbar):
+            navtb.addWidget(s)
 
         back_btn = QAction(self.tr("Back (Alt+J)"), self)
         icon = QIcon("img/remix/arrow-left-s-line.png")
