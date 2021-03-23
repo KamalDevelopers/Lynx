@@ -391,7 +391,7 @@ class MainWindow(QMainWindow):
         extension.pageLoad(browser)
         self.update_urlbar(urlbar, browser.page().url())
 
-        if not self.first_opened:
+        if not self.first_opened or arch.system() == "Windows":
             self.show()
         self.first_opened = True
 

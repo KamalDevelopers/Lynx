@@ -6,3 +6,4 @@ requests
 favicon
 python-abp
 adblockparser
+colorlog
