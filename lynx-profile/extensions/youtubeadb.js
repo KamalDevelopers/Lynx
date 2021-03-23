@@ -1,3 +1,10 @@
+setInterval(function() {
+            var $cross = document.getElementsByClassName("ytp-ad-overlay-close-container")[0];
+            var $skip = document.getElementsByClassName("ytp-ad-skip-button")[0];
+            if ($cross != undefined) $cross.click();
+            if ($skip != undefined) $skip.click()
+            }, 2000);
+
 try {
     //Get every video element on the page and loop through them
     const videos = document.querySelectorAll("video");
@@ -18,7 +25,7 @@ try {
                 console.log("[Pause] Request blocked")
                 //We still pause the video then play to keep the controls correct
                 old_fn.call(this, ...arguments)
-                if(is_paused == false){
+                if (is_paused == false){
                     video.play();
                 }
             } else{
