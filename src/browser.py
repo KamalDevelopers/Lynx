@@ -34,7 +34,6 @@ from PyQt5.QtWidgets import (
     QToolBar,
     QVBoxLayout,
     QPushButton,
-    QDesktopWidget,
 )
 from PyQt5.QtGui import QIcon, QKeySequence, QColor, QFont, QFontDatabase
 from PyQt5.QtWebChannel import QWebChannel
@@ -92,7 +91,7 @@ if hasattr(Qt, "AA_UseHighDpiPixmaps"):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, mouse, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         self.first_opened = False
@@ -206,6 +205,10 @@ class MainWindow(QMainWindow):
         else:
             self.add_new_tab()
 
+        self.mouse_thread = wk.MouseEvents(self, mouse)
+        self.mouse_thread.mouse_state_changed.connect(self.mouse_state)
+        self.mouse_thread.start()
+
         if arch.system() == "Windows":
             self.show()
 
@@ -224,6 +227,8 @@ class MainWindow(QMainWindow):
 
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
         browser = QWebEngineView()
+        self.back = browser.back
+        self.forward = browser.forward
 
         cwe = wk.CustomWebEnginePage(self)
         cwe.set_add_new_tab_h(self.add_new_tab)
@@ -375,6 +380,12 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         lxu.lynxQuit()
         event.accept()
+
+    def mouse_state(self, state):
+        if state == 4:
+            self.back()
+        if state == 5:
+            self.forward()
 
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()

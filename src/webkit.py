@@ -9,6 +9,8 @@ from PyQt5.QtCore import (
     QObject,
     Qt,
     pyqtSlot,
+    QThread,
+    pyqtSignal,
 )
 from PyQt5.QtWebEngineWidgets import (
     QWebEnginePage,
@@ -125,3 +127,29 @@ class RequestInterceptor(QWebEngineUrlRequestInterceptor):
         if confvar.BROWSER_HTTPS_ONLY:
             if url[:5] == "http:":
                 info.redirect(QUrl(url.replace("http:", "https:")))
+
+
+class MouseEvents(QThread):
+    mouse_state_changed = pyqtSignal(int)
+
+    def __init__(self, application, mouse):
+        QThread.__init__(self)
+        self.mouse_buttons = mouse
+        self.app = application
+        self.last_state = 0
+
+    def __del__(self):
+        self.wait()
+
+    def check(self):
+        mouse_state = self.mouse_buttons()
+        if mouse_state != self.last_state:
+            if mouse_state == Qt.BackButton:
+                self.mouse_state_changed.emit(4)
+            if mouse_state == Qt.ForwardButton:
+                self.mouse_state_changed.emit(5)
+            self.last_state = mouse_state
+
+    def run(self):
+        while 1:
+            self.check()

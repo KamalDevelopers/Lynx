@@ -50,7 +50,7 @@ def runbrowser():
     )
     app.installTranslator(translator)
 
-    window = browser.MainWindow()
+    window = browser.MainWindow(app.mouseButtons)
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
 
     if os.path.isfile("./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico"):
