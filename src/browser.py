@@ -91,7 +91,7 @@ if hasattr(Qt, "AA_UseHighDpiPixmaps"):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, mouse, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         self.first_opened = False
@@ -204,10 +204,6 @@ class MainWindow(QMainWindow):
                 self.add_new_tab(QUrl(page))
         else:
             self.add_new_tab()
-
-        self.mouse_thread = wk.MouseEvents(self, mouse)
-        self.mouse_thread.mouse_state_changed.connect(self.mouse_state)
-        self.mouse_thread.start()
 
         if arch.system() == "Windows":
             self.show()
