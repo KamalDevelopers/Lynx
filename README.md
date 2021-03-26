@@ -35,7 +35,8 @@ Lynx also comes bundled with multiple extensions, to disable/enable these check 
 
 First install PyOpenGL manually for your platform, then you can install Lynx.
 ```
-git clone https://github.com/KamalDevelopers/Lynx.git && cd Lynx
+git clone https://github.com/KamalDevelopers/Lynx.git
+cd Lynx
 pip3 install -r requirements.txt
 python3 run.py
 ```
