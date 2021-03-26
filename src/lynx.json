@@ -1,6 +1,6 @@
 {
-   "package": {
-      "profile": "../lynx-profile/",
-      "version": "0.1.0"
-   }
+    "package": {
+        "profile": "../lynx-profile/",
+        "version": "1.0.{git-commit-hash}"
+    }
 }

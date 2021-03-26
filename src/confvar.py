@@ -2,19 +2,21 @@ import os
 import sys
 import json
 import platform
+import utils.version
 from os.path import expanduser
 from configparser import ConfigParser
 
 with open("lynx.json") as f:
     data = json.load(f)
 
+configur = ConfigParser()
+
+STEALTH_FLAG = 0
 CURRENT_OS = platform.system()
 OS_HOME = expanduser("~")
-STEALTH_FLAG = 0
-configur = ConfigParser()
-BASE_PATH = data["package"]["profile"]
 DOWNLOAD_PATH = OS_HOME + "/" + "Downloads/"
-VERSION = data["package"]["version"]
+BASE_PATH = data["package"]["profile"]
+VERSION = utils.version.version()
 
 if not os.path.isdir(BASE_PATH):
     print("Failed to find lynx profile")

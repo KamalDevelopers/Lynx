@@ -18,6 +18,7 @@ if args.s:
 else:
     confvar.stealth(False)
 confvar.confb()
+print("Lynx Version", confvar.VERSION)
 
 import utils.bookmark
 import utils.adblock
@@ -66,7 +67,7 @@ if __name__ == "__main__":
     start_time = time.time()
     if confvar.BROWSER_ADBLOCKER:
         utils.adblock.readFilter(confvar.BASE_PATH + "adblock/filter.txt")
-        utils.log.msg('DEBUG')("Generated adblock rules: %s seconds" % (time.time() - start_time))
+        utils.log.msg('DEBUG')("Generated adblock rules: %s seconds" % round(time.time() - start_time, 4))
 
     extension.readExtensions()
     utils.bookmark.readBookmarks()
