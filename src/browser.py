@@ -210,7 +210,8 @@ class MainWindow(QMainWindow):
         else:
             self.add_new_tab()
 
-        self.show()
+        if arch.system() == "Windows":
+            self.show()
 
     def add_new_tab(self, qurl=None, label="New Tab", silent=0):
         global default_url_open
@@ -233,14 +234,11 @@ class MainWindow(QMainWindow):
         cwe = wk.CustomWebEnginePage(self)
         cwe.set_add_new_tab_h(self.add_new_tab)
         browser.setPage(cwe)
-
+        browser.page().setBackgroundColor(QColor(webkit_background_color))
         browser.channel = QWebChannel()
         browser.channel.registerObject("backend", webchannel)
         browser.page().setWebChannel(browser.channel)
-
-        browser.page().setBackgroundColor(QColor(webkit_background_color))
-        if qurl.toString() != "lynx:blank":
-            browser.setUrl(QUrl(qurl))
+        browser.setUrl(QUrl(qurl))
 
         if confvar.BROWSER_AGENT is not None:
             browser.page().profile().setHttpUserAgent(confvar.BROWSER_AGENT)
@@ -340,6 +338,7 @@ class MainWindow(QMainWindow):
 
         self.fullscreen = 0
         urlbar.setFocus()
+
         browser.page().fullScreenRequested.connect(
             lambda request: (
                 request.accept(),
@@ -402,26 +401,30 @@ class MainWindow(QMainWindow):
         wk.setPrivileges()
 
     def load_finished(self, urlbar, browser):
-        utils.log.msg("DEBUG")(
-            "Loaded webpage in "
-            + str(round(time.time() - self.load_start_time, 3))
-            + " seconds",
-        )
-        if wk.getPriveleges():
-            return
-        extension.pageLoad(browser)
-        self.update_urlbar(urlbar, browser.page().url())
+        if browser.page().url().toString() != "lynx:blank":
+            utils.log.msg("DEBUG")(
+                "Loaded webpage in "
+                + str(round(time.time() - self.load_start_time, 3))
+                + " seconds",
+            )
 
         if not self.first_opened and arch.system() != "Windows":
             self.show()
+
         self.first_opened = True
         browser.setFocus()
+
+        if wk.getPriveleges():
+            return
+
+        extension.pageLoad(browser)
+        # self.update_urlbar(urlbar, browser.page().url())
 
     def update_urlbar(self, urlbar, qurl, icon_update=True):
         url = lxu.encodeLynxUrl(qurl)
         urlbar.setText(url)
-
         icon = None
+
         if "lynx:" == urlbar.text()[:5]:
             icon = QIcon("img/search.png")
         if urlbar.text() == "lynx:home" or urlbar.text() == "lynx:blank":
