@@ -1,8 +1,10 @@
 import os
 import sys
 import time
+import validators
 import subprocess
 import platform as arch
+from urllib.parse import urlparse
 
 import utils.bookmark
 import utils.lynxutils as lxu
@@ -52,10 +54,10 @@ download_directory = confvar.DOWNLOAD_PATH
 interceptor = wk.RequestInterceptor()
 webchannel = wk.WebChannel()
 
-progress_color_loading = confvar.grab_stylesheet_value(
+progress_color_loading = confvar.stylesheet_value(
     "QLineEdit", "background-color"
 )
-webkit_background_color = confvar.grab_stylesheet_value(
+webkit_background_color = confvar.stylesheet_value(
     "Background", "background-color"
 )
 
@@ -137,8 +139,11 @@ class MainWindow(QMainWindow):
             )
             font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
             self.default_font = QFont(font_family)
-            self.default_font.setPixelSize(confvar.BROWSER_FONT_SIZE)
+            self.default_font.setPixelSize(11)
             self.setFont(self.default_font)
+            utils.log.msg("INFO")(
+                "Loaded ttf:" + " font/" + confvar.BROWSER_FONT_FAMILY
+            )
         except IndexError:
             utils.log.msg("ERROR")(
                 "Could not load ttf:"
@@ -205,8 +210,7 @@ class MainWindow(QMainWindow):
         else:
             self.add_new_tab()
 
-        if arch.system() == "Windows":
-            self.show()
+        self.show()
 
     def add_new_tab(self, qurl=None, label="New Tab", silent=0):
         global default_url_open
@@ -244,7 +248,7 @@ class MainWindow(QMainWindow):
 
         htabbox = QVBoxLayout()
         navtb = QToolBar(self.tr("Navigation"))
-        navtb.addSeparator()
+        # navtb.addSeparator()
         navtb.setMovable(False)
         navtb.setMaximumHeight(35)
         navtb.setIconSize(QSize(10, 10))
@@ -294,6 +298,7 @@ class MainWindow(QMainWindow):
         urlbar_focus.setShortcut("Ctrl+U")
         urlbar_focus.clicked.connect(lambda: urlbar.setFocus())
         urlbar_focus.setMaximumWidth(0)
+
         for _ in range(0, 20):
             navtb.addSeparator()
         navtb.addWidget(urlbar_focus)
@@ -309,7 +314,7 @@ class MainWindow(QMainWindow):
         stealth_btn.setShortcut("Alt+S")
         icon = QIcon("img/remix/spy-line.png")
         stealth_btn.setIcon(icon)
-        stealth_btn.triggered.connect(lambda: launch_stealth(self))
+        stealth_btn.triggered.connect(lambda: self.launch_stealth())
         if not confvar.STEALTH_FLAG:
             navtb.addAction(stealth_btn)
 
@@ -372,10 +377,16 @@ class MainWindow(QMainWindow):
         urlbar.textEdited.connect(
             lambda: self.update_index(self.tabs.currentIndex(), tab_i)
         )
+        urlbar.textChanged.connect(lambda: self.shorten_url(urlbar))
 
     def closeEvent(self, event):
         lxu.lynxQuit()
         event.accept()
+
+    def launch_stealth(self):
+        self.close_current_tab(-2)
+        self.close_current_tab()
+        launch_stealth(self)
 
     def mouse_state(self, state):
         if state == 4:
@@ -404,6 +415,7 @@ class MainWindow(QMainWindow):
         if not self.first_opened and arch.system() != "Windows":
             self.show()
         self.first_opened = True
+        browser.setFocus()
 
     def update_urlbar(self, urlbar, qurl, icon_update=True):
         url = lxu.encodeLynxUrl(qurl)
@@ -421,6 +433,16 @@ class MainWindow(QMainWindow):
         if icon is not None:
             urlbar.removeAction(urlbar.actions()[0])
             urlbar.addAction(icon, QLineEdit.LeadingPosition)
+
+    def shorten_url(self, urlbar):
+        text = urlbar.text()
+        if validators.url(text):
+            url = urlparse(text)
+            if confvar.BROWSER_SHORT_URL > 0:
+                text = text.replace(url.params, "")
+            if confvar.BROWSER_SHORT_URL > 1:
+                text = text.replace(url.query, "")
+        urlbar.setText(text)
 
     def update_index(self, i, ti):
         self.tab_indexes[ti] = i
@@ -622,7 +644,8 @@ class MainWindow(QMainWindow):
         if progress < 99:
             percent = progress / 100
             urlbar.setStyleSheet(
-                "background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 "
+                "background: qlineargradient(x1:0, y1:0, x2:1, y2:0,"
+                + "stop: 0 "
                 + progress_color_loading
                 + ", stop: "
                 + str(percent)

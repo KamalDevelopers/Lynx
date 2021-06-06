@@ -32,7 +32,7 @@ from PyQt5.QtCore import (
     QTranslator,
     QLocale,
 )
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFontDatabase
 
 if args.URL:
     browser.open_url_arg(args.URL)
@@ -40,26 +40,48 @@ if args.URL:
 
 def runbrowser():
     app = QApplication(sys.argv)
+    QFontDatabase.addApplicationFont(
+        "font/" + confvar.BROWSER_FONT_FAMILY + ".ttf"
+    )
     app.setApplicationName(confvar.BROWSER_WINDOW_TITLE)
 
     translator = QTranslator()
     if not confvar.BROWSER_LOCALE:
         confvar.BROWSER_LOCALE = QLocale.system().name()
-    locale_loaded = translator.load(confvar.BROWSER_LOCALE + '.qm', '../localization')
-    utils.log.msg('INFO')(
-        'Localization loaded: ' + str(locale_loaded) + ' ' + confvar.BROWSER_LOCALE
+    locale_loaded = translator.load(
+        confvar.BROWSER_LOCALE + ".qm", "../localization"
+    )
+    utils.log.msg("INFO")(
+        "Localization loaded: "
+        + str(locale_loaded)
+        + " "
+        + confvar.BROWSER_LOCALE
     )
     app.installTranslator(translator)
 
     window = browser.MainWindow()
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
 
-    if os.path.isfile("./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico"):
-        app.setWindowIcon(QIcon(os.path.abspath("./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico")))
+    if os.path.isfile(
+        "./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico"
+    ):
+        app.setWindowIcon(
+            QIcon(
+                os.path.abspath(
+                    "./img/icons/"
+                    + confvar.BROWSER_STYLESHEET
+                    + "-lynx_logo.ico"
+                )
+            )
+        )
     else:
-        app.setWindowIcon(QIcon(os.path.abspath('./img/icons/lynx_logo.ico')))
+        app.setWindowIcon(QIcon(os.path.abspath("./img/icons/lynx_logo.ico")))
 
-    app.setStyleSheet(open(confvar.BASE_PATH + "themes/" + confvar.BROWSER_STYLESHEET + ".qss").read())
+    confvar.stylesheet_value(
+        "QLineEdit", "font-family", confvar.BROWSER_FONT_FAMILY
+    )
+    # app.setStyleSheet(open(confvar.BASE_PATH + "themes/" + confvar.BROWSER_STYLESHEET + ".qss").read())
+    app.setStyleSheet(confvar.style())
     app.exec_()
 
 
@@ -67,7 +89,10 @@ if __name__ == "__main__":
     start_time = time.time()
     if confvar.BROWSER_ADBLOCKER:
         utils.adblock.readFilter(confvar.BASE_PATH + "adblock/filter.txt")
-        utils.log.msg('DEBUG')("Generated adblock rules: %s seconds" % round(time.time() - start_time, 4))
+        utils.log.msg("DEBUG")(
+            "Generated adblock rules: %s seconds"
+            % round(time.time() - start_time, 4)
+        )
 
     extension.readExtensions()
     utils.bookmark.readBookmarks()

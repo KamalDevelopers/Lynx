@@ -274,6 +274,10 @@ QLineEdit {
     border-style: solid;
     border: 1px solid #202224;
     border-radius: 2px;
+    color: #888;
+}
+
+QLineEdit:focus {
     color: #CACACA;
 }
 

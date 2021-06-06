@@ -7,3 +7,4 @@ favicon
 python-abp
 adblockparser
 colorlog
+validators
