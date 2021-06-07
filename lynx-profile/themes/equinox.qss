@@ -662,6 +662,7 @@ QLabel {
 }
 
 QTabWidget {
+    color: #CECECE;
     border: 0px transparent black;
 }
 

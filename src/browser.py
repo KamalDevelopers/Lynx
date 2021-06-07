@@ -26,6 +26,7 @@ from PyQt5.QtCore import (
     QTimer,
     QSize,
     QRect,
+    QRectF,
 )
 from PyQt5.QtWidgets import (
     QWidget,
@@ -47,7 +48,9 @@ from PyQt5.QtGui import (
     QColor,
     QFont,
     QFontDatabase,
-    QCursor
+    QCursor,
+    QPainterPath,
+    QRegion,
 )
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWebEngineWidgets import (
@@ -233,6 +236,8 @@ class MainWindow(QMainWindow):
             self.add_new_tab()
 
         if arch.system() == "Windows":
+            if confvar.BROWSER_BORDERLESS:
+                self.round_corners()
             self.show()
 
     @property
@@ -317,8 +322,6 @@ class MainWindow(QMainWindow):
         exit_btn.triggered.connect(lambda: self.close())
 
         navtb.addAction(exit_btn)
-        # for _ in range(0, 10):
-            # navtb.addSeparator()
         navtb.addAction(back_btn)
         navtb.addAction(next_btn)
 
@@ -417,15 +420,23 @@ class MainWindow(QMainWindow):
         browser.page().profile().downloadRequested.connect(
             self.download_item_requested
         )
-
         urlbar.textEdited.connect(
             lambda: self.update_index(self.tabs.currentIndex(), tab_i)
         )
-        urlbar.textChanged.connect(lambda: self.shorten_url(urlbar))
+        urlbar.textChanged.connect(
+            lambda: self.shorten_url(urlbar)
+        )
 
     def closeEvent(self, event):
         lxu.lynxQuit()
         event.accept()
+
+    def round_corners(self):
+        radius = 8
+        path = QPainterPath()
+        path.addRoundedRect(QRectF(self.rect()), radius, radius)
+        mask = QRegion(path.toFillPolygon().toPolygon())
+        self.setMask(mask)
 
     def launch_stealth(self):
         self.close_current_tab(-2)
@@ -733,3 +744,5 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
         self.update_grips()
+        if arch.system() == "Windows" and confvar.BROWSER_BORDERLESS:
+            self.round_corners()
