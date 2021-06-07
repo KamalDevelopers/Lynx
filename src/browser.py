@@ -309,6 +309,16 @@ class MainWindow(QMainWindow):
         next_btn.setStatusTip("Forward to next page")
         next_btn.setShortcut("Alt+K")
         next_btn.triggered.connect(lambda: browser.forward())
+
+        icon = QIcon("img/remix/close-line.png")
+        exit_btn = QAction(self.tr("Exit Browser (Ctrl+Q)"), self)
+        exit_btn.setShortcut("Ctrl+Q")
+        exit_btn.setIcon(icon)
+        exit_btn.triggered.connect(lambda: self.close())
+
+        navtb.addAction(exit_btn)
+        # for _ in range(0, 10):
+            # navtb.addSeparator()
         navtb.addAction(back_btn)
         navtb.addAction(next_btn)
 
@@ -343,9 +353,9 @@ class MainWindow(QMainWindow):
         navtb.addAction(add_tab_btn)
         navtb.addAction(self.download_btn)
 
+        icon = QIcon("img/remix/spy-line.png")
         stealth_btn = QAction(self.tr("Stealth Mode (Alt+S)"), self)
         stealth_btn.setShortcut("Alt+S")
-        icon = QIcon("img/remix/spy-line.png")
         stealth_btn.setIcon(icon)
         stealth_btn.triggered.connect(lambda: self.launch_stealth())
         if not confvar.STEALTH_FLAG:
