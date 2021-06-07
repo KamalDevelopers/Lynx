@@ -41,6 +41,7 @@ from PyQt5.QtWidgets import (
     QSizeGrip,
     QVBoxLayout,
     QPushButton,
+    QDesktopWidget,
 )
 from PyQt5.QtGui import (
     QIcon,
@@ -422,8 +423,7 @@ class MainWindow(QMainWindow):
         lxu.lynxQuit()
         event.accept()
 
-    def round_corners(self):
-        radius = 8
+    def round_corners(self, radius=8):
         path = QPainterPath()
         path.addRoundedRect(QRectF(self.rect()), radius, radius)
         mask = QRegion(path.toFillPolygon().toPolygon())
@@ -775,7 +775,16 @@ class MainWindow(QMainWindow):
         self.setCursor(QCursor(Qt.ArrowCursor))
 
     def resizeEvent(self, event):
+        size = QDesktopWidget().screenGeometry(-1)
+        width = event.size().width()
+        height = event.size().height()
+
         QMainWindow.resizeEvent(self, event)
         self.update_grips()
+
+        if size.width() == width and height == size.height():
+            self.round_corners(0)
+            return
+
         if arch.system() == "Windows" and confvar.BROWSER_BORDERLESS:
             self.round_corners()
