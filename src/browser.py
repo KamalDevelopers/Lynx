@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
-        self._grip_size = 5
+        self._grip_size = 8
         self.source_code = False
         self.first_opened = False
         self.last_closed_tab = None
@@ -107,7 +107,9 @@ class MainWindow(QMainWindow):
                 SideGrip(self, Qt.RightEdge),
                 SideGrip(self, Qt.BottomEdge),
             ]
-            self.corner_grips = [QSizeGrip(self) for i in range(2)]
+            self.corner_grips = []
+            # Activate corner grips
+            # self.corner_grips = [QSizeGrip(self) for i in range(2)]
 
         if confvar.BROWSER_PROXY:
             proxy.setProxy(confvar.BROWSER_PROXY)
@@ -373,6 +375,9 @@ class MainWindow(QMainWindow):
         self.fullscreen = 0
         urlbar.setFocus()
 
+        if qurl and "lynx:" != qurl.toString()[:5]:
+            urlbar.setText(qurl.toString())
+
         browser.page().fullScreenRequested.connect(
             lambda request: (
                 request.accept(),
@@ -449,7 +454,7 @@ class MainWindow(QMainWindow):
         current_url = page.url().toString()
 
         if action == QWebEnginePage.OpenLinkInNewTab:
-            self.add_new_tab(url, silent=1)
+            self.add_new_tab(url)
         if action == QWebEnginePage.OpenLinkInNewWindow:
             lxu.launchLynx(url.toString())
         if action == QWebEnginePage.ViewSource:

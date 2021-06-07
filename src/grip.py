@@ -11,17 +11,19 @@ def update(window):
         -window.grip_size, -window.grip_size
     )
 
-    window.corner_grips[0].setGeometry(
-        QtCore.QRect(outRect.topLeft(), in_rect.topLeft()))
-    window.corner_grips[1].setGeometry(
-        QtCore.QRect(outRect.topRight(), in_rect.topRight()).normalized())
+    if len(window.corner_grips) >= 2:
+        window.corner_grips[0].setGeometry(
+            QtCore.QRect(outRect.topLeft(), in_rect.topLeft()))
+        window.corner_grips[1].setGeometry(
+            QtCore.QRect(outRect.topRight(), in_rect.topRight()).normalized())
 
-    """
-    window.corner_grips[2].setGeometry(
-        QtCore.QRect(in_rect.bottomRight(), outRect.bottomRight()))
-    window.corner_grips[3].setGeometry(
-        QtCore.QRect(outRect.bottomLeft(), in_rect.bottomLeft()).normalized())
-    """
+    if len(window.corner_grips) >= 4:
+        window.corner_grips[2].setGeometry(
+            QtCore.QRect(in_rect.bottomRight(), outRect.bottomRight()))
+        window.corner_grips[3].setGeometry(
+            QtCore.QRect(
+                outRect.bottomLeft(), in_rect.bottomLeft()
+            ).normalized())
 
     window.side_grips[0].setGeometry(
         0, in_rect.top(), window.grip_size, in_rect.height())
@@ -33,6 +35,7 @@ def update(window):
     window.side_grips[3].setGeometry(
         window.grip_size, in_rect.top() + in_rect.height(),
         in_rect.width(), window.grip_size)
+
     [grip.raise_() for grip in window.side_grips + window.corner_grips]
 
 
