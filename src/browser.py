@@ -94,6 +94,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         self._grip_size = 5
+        self.source_code = False
         self.first_opened = False
         self.last_closed_tab = None
         self.tab_indexes = []
@@ -700,6 +701,8 @@ class MainWindow(QMainWindow):
             return
 
         if url[:12] == "view-source:":
+            if not self.source_code:
+                return
             with open(confvar.BASE_PATH + "lynx/view-source.html") as f:
                 content = f.read()
             with open("./temp/temp-view.html", "w") as f:
