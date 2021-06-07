@@ -1,6 +1,6 @@
 <br />
 <p align="center">
-    <img src="https://i.postimg.cc/9Q4tkX70/lynx-logo.png" alt="Logo" width="80" height="80">
+    <img src="https://i.postimg.cc/VNFwYy3r/lynx-logo.png" alt="Logo" width="100" height="100">
 
   <h3 align="center">Lynx Browser</h3>
 
