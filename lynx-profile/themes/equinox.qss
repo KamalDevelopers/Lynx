@@ -274,11 +274,12 @@ QLineEdit {
     border-style: solid;
     border: 1px solid #202224;
     border-radius: 2px;
-    color: #888;
+    color: #9f9f9f;
 }
 
 QLineEdit:focus {
-    color: #CACACA;
+    border-color: #18465d;
+    color: #CECECE;
 }
 
 QAbstractItemView QLineEdit {
