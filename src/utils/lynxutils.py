@@ -1,13 +1,42 @@
 import os
+import sys
 import shutil
+import subprocess
 import confvar
 import utils.log
+import platform as arch
 
 
 def lynxQuit():
     if os.path.isdir("./temp/"):
         shutil.rmtree("./temp")
     utils.log.msg("INFO")("Browser exited successfully")
+
+
+def launchLynx(url=""):
+    exec_file = sys.argv[0]
+    if ".py" in exec_file:
+        subprocess.Popen([sys.executable, exec_file, url])
+    else:
+        subprocess.Popen([exec_file, url])
+
+
+def launchStealth(window):
+    exec_file = sys.argv[0]
+    window.close()
+    if ".py" in exec_file:
+        subprocess.run([sys.executable, exec_file, "-s"])
+    else:
+        subprocess.run([exec_file, "-s"])
+
+
+def openFolder(path):
+    if arch.system() == "Windows":
+        os.startfile(path)
+    elif arch.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
 
 
 def storeSession(urls):

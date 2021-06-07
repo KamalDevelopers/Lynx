@@ -9,6 +9,7 @@ from PyQt5.QtCore import (
     QObject,
     Qt,
     pyqtSlot,
+    pyqtSignal,
 )
 from PyQt5.QtWebEngineWidgets import (
     QWebEnginePage,
@@ -100,6 +101,8 @@ class WebChannel(QObject):
 
 
 class CustomWebEnginePage(QWebEnginePage):
+    actionSignal = pyqtSignal(QWebEnginePage.WebAction, QWebEnginePage)
+
     # Hook the "add_new_tab" method
     def set_add_new_tab_h(self, _add_new_tab):
         self.add_new_tab = _add_new_tab
@@ -112,6 +115,9 @@ class CustomWebEnginePage(QWebEnginePage):
             self.add_new_tab(QUrl(url), silent=1)
             return False
         return super().acceptNavigationRequest(url, _type, isMainFrame)
+
+    def triggerAction(self, action, checked=False):
+        self.actionSignal.emit(action, self)
 
     def javaScriptConsoleMessage(self, level, msg, line, sourceID):
         pass

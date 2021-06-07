@@ -57,6 +57,7 @@ from PyQt5.QtWebEngineWidgets import (
     QWebEngineSettings,
     QWebEngineProfile,
     QWebEngineView,
+    QWebEnginePage,
     QWebEngineDownloadItem,
 )
 
@@ -76,27 +77,9 @@ webkit_background_color = confvar.stylesheet_value(
 )
 
 
-def open_folder(path):
-    if arch.system() == "Windows":
-        os.startfile(path)
-    elif arch.system() == "Darwin":
-        subprocess.Popen(["open", path])
-    else:
-        subprocess.Popen(["xdg-open", path])
-
-
 def open_url_arg(url):
     global default_url_open
     default_url_open = url
-
-
-def launch_stealth(window):
-    exec_file = sys.argv[0]
-    window.close()
-    if ".py" in exec_file:
-        subprocess.run([sys.executable, exec_file, "-s"])
-    else:
-        subprocess.run([exec_file, "-s"])
 
 
 if hasattr(Qt, "AA_EnableHighDpiScaling"):
@@ -272,6 +255,7 @@ class MainWindow(QMainWindow):
         self.forward = browser.forward
 
         cwe = wk.CustomWebEnginePage(self)
+        cwe.actionSignal.connect(self.handle_action)
         cwe.set_add_new_tab_h(self.add_new_tab)
         browser.setPage(cwe)
         browser.page().setBackgroundColor(QColor(webkit_background_color))
@@ -361,6 +345,7 @@ class MainWindow(QMainWindow):
         stealth_btn.setShortcut("Alt+S")
         stealth_btn.setIcon(icon)
         stealth_btn.triggered.connect(lambda: self.launch_stealth())
+
         if not confvar.STEALTH_FLAG:
             navtb.addAction(stealth_btn)
 
@@ -441,7 +426,34 @@ class MainWindow(QMainWindow):
     def launch_stealth(self):
         self.close_current_tab(-2)
         self.close_current_tab()
-        launch_stealth(self)
+        lxu.launchStealth(self)
+
+    def set_source(self, html):
+        self.source_code = html
+
+    def view_source(self, page, url):
+        page.toHtml(
+            lambda html: self.set_source(html)
+        )
+        self.view_source_url = "view-source:" + url
+        QTimer.singleShot(
+            100,
+            lambda: self.navigate_to_url(
+                "view-source:" + url, page
+            )
+        )
+
+    def handle_action(self, action, page):
+        url = page.contextMenuData().linkUrl()
+        current_url = page.url().toString()
+
+        if action == QWebEnginePage.OpenLinkInNewTab:
+            self.add_new_tab(url, silent=1)
+        if action == QWebEnginePage.OpenLinkInNewWindow:
+            lxu.launchLynx(url.toString())
+        if action == QWebEnginePage.ViewSource:
+            if "file://" not in current_url:
+                self.view_source(page, current_url)
 
     def mouse_state(self, state):
         if state == 4:
@@ -477,6 +489,10 @@ class MainWindow(QMainWindow):
         # self.update_urlbar(urlbar, browser.page().url())
 
     def update_urlbar(self, urlbar, qurl, icon_update=True):
+        if "file:///" in qurl.toString():
+            if "temp-view.html" in qurl.toString():
+                urlbar.setText(self.view_source_url)
+                return
         url = lxu.encodeLynxUrl(qurl)
         urlbar.setText(url)
         icon = None
@@ -588,7 +604,7 @@ class MainWindow(QMainWindow):
 
     def download_pressed(self):
         global download_directory
-        open_folder(download_directory)
+        lxu.openFolder(download_directory)
 
     def download_item_requested(self, download):
         global download_directory, downloading_item
@@ -682,6 +698,15 @@ class MainWindow(QMainWindow):
     def navigate_to_url(self, url, webview):
         if not url:
             return
+
+        if url[:12] == "view-source:":
+            with open(confvar.BASE_PATH + "lynx/view-source.html") as f:
+                content = f.read()
+            with open("./temp/temp-view.html", "w") as f:
+                content = content.replace("{source}", self.source_code)
+                f.write(content)
+            url = "file:///" + os.path.abspath("./temp/temp-view.html")
+
         qurl = QUrl(url)
         if "." not in url and not lxu.checkLynxUrl(qurl):
             qurl = QUrl("https://duckduckgo.com/?q=" + url)

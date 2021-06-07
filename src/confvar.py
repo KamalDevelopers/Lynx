@@ -19,6 +19,9 @@ DOWNLOAD_PATH = OS_HOME + "/" + "Downloads/"
 BASE_PATH = data["package"]["profile"]
 VERSION = utils.version.version()
 
+if not os.path.isdir("./temp"):
+    os.mkdir("./temp")
+
 if not os.path.isdir(BASE_PATH):
     print("Failed to find lynx profile")
     sys.exit()
