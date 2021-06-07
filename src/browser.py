@@ -13,6 +13,8 @@ import confvar
 import extension
 import shortcuts
 import webkit as wk
+import grip
+from grip import SideGrip
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
@@ -23,6 +25,7 @@ from PyQt5.QtCore import (
     Qt,
     QTimer,
     QSize,
+    QRect,
 )
 from PyQt5.QtWidgets import (
     QWidget,
@@ -34,10 +37,18 @@ from PyQt5.QtWidgets import (
     QAction,
     QShortcut,
     QToolBar,
+    QSizeGrip,
     QVBoxLayout,
     QPushButton,
 )
-from PyQt5.QtGui import QIcon, QKeySequence, QColor, QFont, QFontDatabase
+from PyQt5.QtGui import (
+    QIcon,
+    QKeySequence,
+    QColor,
+    QFont,
+    QFontDatabase,
+    QCursor
+)
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWebEngineWidgets import (
     QWebEngineSettings,
@@ -96,9 +107,20 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
+        self._grip_size = 5
         self.first_opened = False
         self.last_closed_tab = None
         self.tab_indexes = []
+
+        if confvar.BROWSER_BORDERLESS:
+            self.setWindowFlags(Qt.FramelessWindowHint)
+            self.side_grips = [
+                SideGrip(self, Qt.LeftEdge),
+                SideGrip(self, Qt.TopEdge),
+                SideGrip(self, Qt.RightEdge),
+                SideGrip(self, Qt.BottomEdge),
+            ]
+            self.corner_grips = [QSizeGrip(self) for i in range(2)]
 
         if confvar.BROWSER_PROXY:
             proxy.setProxy(confvar.BROWSER_PROXY)
@@ -212,6 +234,19 @@ class MainWindow(QMainWindow):
 
         if arch.system() == "Windows":
             self.show()
+
+    @property
+    def grip_size(self):
+        return self._grip_size
+
+    def set_grip_size(self, size):
+        if size == self._grip_size:
+            return
+        self._grip_size = max(2, size)
+        self.update_grips()
+
+    def update_grips(self):
+        grip.update(self)
 
     def add_new_tab(self, qurl=None, label="New Tab", silent=0):
         global default_url_open
@@ -407,12 +442,12 @@ class MainWindow(QMainWindow):
                 + str(round(time.time() - self.load_start_time, 3))
                 + " seconds",
             )
+            browser.setFocus()
 
         if not self.first_opened and arch.system() != "Windows":
             self.show()
 
         self.first_opened = True
-        browser.setFocus()
 
         if wk.getPriveleges():
             return
@@ -597,9 +632,7 @@ class MainWindow(QMainWindow):
         if i == -1 or i == -2:
             index = self.tabs.currentIndex()
         if self.tabs.count() < 2:
-            lxu.lynxQuit()
-            QApplication.quit()
-
+            self.close()
         if i == -2:
             for _ in range(0, index):
                 self.close_current_tab(0)
@@ -641,7 +674,7 @@ class MainWindow(QMainWindow):
 
     def load_progress(self, progress, urlbar, url):
         global progress_color_loading
-        if url[:5] == "file:" or not url:
+        if url[:5] == "file:" or not url or url == "lynx:blank":
             urlbar.setStyleSheet("background-color: ;")
             return
         if progress < 99:
@@ -660,3 +693,33 @@ class MainWindow(QMainWindow):
             )
         else:
             urlbar.setStyleSheet("background-color: ;")
+
+    def mousePressEvent(self, event):
+        self.m_flag = False
+        if event.button() == Qt.LeftButton:
+            self.m_flag = True
+            self.m_Position = event.globalPos()-self.pos()
+            event.accept()
+            self.setCursor(QCursor(Qt.OpenHandCursor))
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            if self.isMaximized():
+                self.showNormal()
+                return
+            self.showMaximized()
+        if event.button() == Qt.RightButton:
+            self.showMinimized()
+
+    def mouseMoveEvent(self, event):
+        if self.m_flag:
+            self.move(event.globalPos()-self.m_Position)
+        event.accept()
+
+    def mouseReleaseEvent(self, event):
+        self.m_flag = False
+        self.setCursor(QCursor(Qt.ArrowCursor))
+
+    def resizeEvent(self, event):
+        QMainWindow.resizeEvent(self, event)
+        self.update_grips()

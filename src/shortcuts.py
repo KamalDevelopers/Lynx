@@ -1,5 +1,6 @@
 import subprocess
 import utils.bookmark
+import utils.lynxutils as lxu
 
 from PyQt5.QtWidgets import (
     QPushButton,
@@ -37,6 +38,10 @@ def shortcuts(window, browser, searchbar):
     close_tab_group = QPushButton("", window)
     close_tab_group.setShortcut("Alt+W")
     close_tab_group.clicked.connect(lambda: window.close_current_tab(-2))
+
+    close_browser = QPushButton("", window)
+    close_browser.setShortcut("Ctrl+Q")
+    close_browser.clicked.connect(lambda: window.close())
 
     mpv_open = QPushButton("", window)
     mpv_open.setShortcut("Alt+M")
@@ -85,6 +90,7 @@ def shortcuts(window, browser, searchbar):
     shorts.append(search_text)
     shorts.append(bookmark_page)
     shorts.append(close_tab_group)
+    shorts.append(close_browser)
 
     for s in shorts:
         s.setMaximumWidth(0)
