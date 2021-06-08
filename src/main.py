@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import (
     QApplication,
 )
 from PyQt5.QtCore import (
+    Qt,
     QTranslator,
     QLocale,
 )
@@ -81,6 +82,7 @@ def runbrowser():
         "QLineEdit", "font-family", confvar.BROWSER_FONT_FAMILY
     )
     # app.setStyleSheet(open(confvar.BASE_PATH + "themes/" + confvar.BROWSER_STYLESHEET + ".qss").read())
+    app.setAttribute(Qt.AA_DontShowIconsInMenus, True)
     app.setStyleSheet(confvar.style())
     app.exec_()
 
