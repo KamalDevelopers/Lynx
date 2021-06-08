@@ -294,14 +294,14 @@ class MainWindow(QMainWindow):
         back_btn.setIcon(icon)
         back_btn.setStatusTip("Back to previous page")
         back_btn.setShortcut("Alt+J")
-        back_btn.triggered.connect(lambda: browser.back())
+        back_btn.triggered.connect(lambda: browser.history().back())
 
         next_btn = QAction(self.tr("Forward (Alt+K)"), self)
         icon = QIcon("img/remix/arrow-right-s-line.png")
         next_btn.setIcon(icon)
         next_btn.setStatusTip("Forward to next page")
         next_btn.setShortcut("Alt+K")
-        next_btn.triggered.connect(lambda: browser.forward())
+        next_btn.triggered.connect(lambda: browser.history().forward())
 
         icon = QIcon("img/remix/close-line.png")
         exit_btn = QAction(self.tr("Exit Browser (Ctrl+Q)"), self)
