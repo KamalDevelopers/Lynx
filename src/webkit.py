@@ -118,6 +118,7 @@ class CustomWebEnginePage(QWebEnginePage):
 
     def triggerAction(self, action, checked=False):
         self.actionSignal.emit(action, self)
+        return super().triggerAction(action, checked)
 
     def javaScriptConsoleMessage(self, level, msg, line, sourceID):
         pass

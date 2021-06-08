@@ -21,6 +21,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
 from PyQt5.QtCore import (
+    QEvent,
     QSettings,
     QPoint,
     QUrl,
@@ -46,6 +47,7 @@ from PyQt5.QtWidgets import (
     QDesktopWidget,
 )
 from PyQt5.QtGui import (
+    QKeyEvent,
     QIcon,
     QKeySequence,
     QColor,
@@ -262,10 +264,8 @@ class MainWindow(QMainWindow):
             default_url_open = None
 
         qurl = QUrl(lxu.decodeLynxUrl(qurl))
-        browser = QWebEngineView()
-        self.back = browser.back
-        self.forward = browser.forward
 
+        browser = QWebEngineView()
         cwe = wk.CustomWebEnginePage(self)
         cwe.actionSignal.connect(self.handle_action)
         cwe.set_add_new_tab_h(self.add_new_tab)
@@ -454,22 +454,16 @@ class MainWindow(QMainWindow):
         )
 
     def handle_action(self, action, page):
-        url = page.contextMenuData().linkUrl()
-        current_url = page.url().toString()
-
         if action == QWebEnginePage.OpenLinkInNewTab:
+            url = page.contextMenuData().linkUrl()
             self.add_new_tab(url)
         if action == QWebEnginePage.OpenLinkInNewWindow:
+            url = page.contextMenuData().linkUrl()
             lxu.launchLynx(url.toString())
         if action == QWebEnginePage.ViewSource:
+            current_url = page.url().toString()
             if "file://" not in current_url:
                 self.view_source(page, current_url)
-
-    def mouse_state(self, state):
-        if state == 4:
-            self.back()
-        if state == 5:
-            self.forward()
 
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()
