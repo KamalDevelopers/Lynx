@@ -32,7 +32,6 @@ from PyQt5.QtCore import (
     Qt,
     QTranslator,
     QLocale,
-    QSize,
 )
 from PyQt5.QtGui import QIcon, QFontDatabase
 
@@ -64,14 +63,20 @@ def runbrowser():
     window = browser.MainWindow()
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
 
-    app_icon = QIcon()
-    app_icon.addFile('img/icons/16x16.ico', QSize(16,16))
-    app_icon.addFile('img/icons/24x24.ico', QSize(24,24))
-    app_icon.addFile('img/icons/32x32.ico', QSize(32,32))
-    app_icon.addFile('img/icons/48x48.ico', QSize(48,48))
-    app_icon.addFile('img/icons/256x256.ico', QSize(256,256))
-    window.setWindowIcon(app_icon)
-    app.setWindowIcon(app_icon)
+    if os.path.isfile(
+        "./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico"
+    ):
+        app.setWindowIcon(
+            QIcon(
+                os.path.abspath(
+                    "./img/icons/"
+                    + confvar.BROWSER_STYLESHEET
+                    + "-lynx_logo.ico"
+                )
+            )
+        )
+    else:
+        app.setWindowIcon(QIcon(os.path.abspath("./img/icons/lynx_logo.ico")))
 
     confvar.stylesheet_value(
         "QLineEdit", "font-family", confvar.BROWSER_FONT_FAMILY
