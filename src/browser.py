@@ -21,6 +21,8 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
 from PyQt5.QtCore import (
+    QSettings,
+    QPoint,
     QUrl,
     Qt,
     QTimer,
@@ -112,6 +114,10 @@ class MainWindow(QMainWindow):
             # Activate corner grips
             # self.corner_grips = [QSizeGrip(self) for i in range(2)]
 
+        self.qtsettings = QSettings('KamalDevelopers', 'Lynx')
+        self.resize(self.qtsettings.value("size", QSize(1280, 720)))
+        self.move(self.qtsettings.value("pos", QPoint(50, 50)))
+
         if confvar.BROWSER_PROXY:
             proxy.setProxy(confvar.BROWSER_PROXY)
 
@@ -135,7 +141,9 @@ class MainWindow(QMainWindow):
             QWebEngineSettings.JavascriptCanOpenWindows,
             confvar.WEBKIT_JAVASCRIPT_POPUPS_ENABLED,
         )
-        QWebEngineProfile.defaultProfile().setRequestInterceptor(interceptor)
+        QWebEngineProfile.defaultProfile().setUrlRequestInterceptor(
+            interceptor
+        )
 
         if confvar.BROWSER_STORE_VISITED_LINKS is not True:
             QWebEngineProfile.defaultProfile().clearAllVisitedLinks()
@@ -418,10 +426,6 @@ class MainWindow(QMainWindow):
         urlbar.textChanged.connect(
             lambda: self.shorten_url(urlbar)
         )
-
-    def closeEvent(self, event):
-        lxu.lynxQuit()
-        event.accept()
 
     def round_corners(self, radius=8):
         path = QPainterPath()
@@ -748,6 +752,12 @@ class MainWindow(QMainWindow):
         else:
             urlbar.setStyleSheet("background-color: ;")
 
+    def closeEvent(self, event):
+        self.qtsettings.setValue("size", self.size())
+        self.qtsettings.setValue("pos", self.pos())
+        lxu.lynxQuit()
+        event.accept()
+
     def mousePressEvent(self, event):
         self.m_flag = False
         if event.button() == Qt.LeftButton:
@@ -757,9 +767,16 @@ class MainWindow(QMainWindow):
             self.setCursor(QCursor(Qt.OpenHandCursor))
 
     def mouseDoubleClickEvent(self, event):
+        size = QDesktopWidget().screenGeometry(-1)
+        width = self.size().width()
+        height = self.size().height()
+
         if event.button() == Qt.LeftButton:
             if self.isMaximized():
                 self.showNormal()
+                return
+            if size.width() == width and height == size.height():
+                self.setGeometry(50, 50, 1280, 720)
                 return
             self.showMaximized()
         if event.button() == Qt.RightButton:
