@@ -21,7 +21,7 @@ def shortcuts(window, browser, searchbar):
 
     save_page = QPushButton("", window)
     save_page.setShortcut("Ctrl+S")
-    save_page.clicked.connect(lambda: window.save_page(browser))
+    save_page.clicked.connect(lambda: window.save_page(browser.page()))
 
     mute_page = QPushButton("", window)
     mute_page.setShortcut("Ctrl+M")

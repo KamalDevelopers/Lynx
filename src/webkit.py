@@ -102,6 +102,7 @@ class WebChannel(QObject):
 
 class CustomWebEnginePage(QWebEnginePage):
     actionSignal = pyqtSignal(QWebEnginePage.WebAction, QWebEnginePage)
+    ignored_action = False
 
     # Hook the "add_new_tab" method
     def set_add_new_tab_h(self, _add_new_tab):
@@ -116,8 +117,14 @@ class CustomWebEnginePage(QWebEnginePage):
             return False
         return super().acceptNavigationRequest(url, _type, isMainFrame)
 
+    def ignoreAction(self):
+        self.ignored_action = True
+
     def triggerAction(self, action, checked=False):
         self.actionSignal.emit(action, self)
+        if self.ignored_action:
+            self.ignored_action = False
+            return
         return super().triggerAction(action, checked)
 
     def javaScriptConsoleMessage(self, level, msg, line, sourceID):

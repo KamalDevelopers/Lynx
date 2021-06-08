@@ -454,6 +454,9 @@ class MainWindow(QMainWindow):
         )
 
     def handle_action(self, action, page):
+        if action == QWebEnginePage.SavePage:
+            self.save_page(page)
+            page.ignoreAction()
         if action == QWebEnginePage.OpenLinkInNewTab:
             url = page.contextMenuData().linkUrl()
             self.add_new_tab(url)
@@ -638,16 +641,20 @@ class MainWindow(QMainWindow):
                 changezoom = browser.zoomFactor() + value
         browser.setZoomFactor(changezoom)
 
-    def save_page(self, browser):
+    def download_page(self, dest, html):
+        with open(dest[0], "w") as F:
+            F.write(html)
+
+    def save_page(self, page):
         destination = QFileDialog.getSaveFileName(
             self,
             self.tr("Save Page"),
-            confvar.DOWNLOAD_PATH + browser.page().title() + ".html",
+            confvar.DOWNLOAD_PATH + page.title() + ".html",
             "*.html",
         )
-        if destination:
-            browser.page().save(
-                destination[0], QWebEngineDownloadItem.SingleHtmlSaveFormat
+        if destination[0]:
+            page.toHtml(
+                lambda html: self.download_page(destination, html)
             )
 
     def mute_page(self, browser):
