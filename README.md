@@ -9,8 +9,6 @@
     <br />
     <a href="https://github.com/KamalDevelopers/Lynx/issues">Requests</a>
     ·
-    <a href="https://github.com/KamalDevelopers/Phoenix-Search">Phoenix Search</a>
-    ·
     <a href="https://github.com/KamalDevelopers/Lynx/issues">Report Bug</a>
   </p>
 </p>
@@ -33,7 +31,7 @@ Lynx also comes bundled with multiple extensions, to disable/enable these check 
 
 ## Installation
 
-Install PyOpenGL manually for your platform. Also install Zenit if you are a linux user.
+Install PyOpenGL manually for your platform. Also install Zenit if you are a Linux user.
 ```
 git clone https://github.com/KamalDevelopers/Lynx.git
 cd Lynx
