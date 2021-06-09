@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="home.css">
+    <link rel="icon" type="image/png" href="../lynx_logo.png" sizes="32x32" />
+    <title>Lynx Home</title>
+    <style>
+        html, body {
+            background-color: #121213 !important;
+        }
+        #searchbox {
+            background-color: #1c1b1b !important;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        function onSearch() { window.location.href = "https://duckduckgo.com/?q=" + document.getElementById("searchbox").value; };
+    </script>
+
+    <div id="container">
+        <center>
+            <img width=100 src="../lynx_logo.png">
+        </center>
+             
+        <center>
+            <input name="url" id="searchbox" type="text" onkeydown="if (event.keyCode == 13) { onSearch(); }"  autocomplete="off" placeholder="Search" />
+        </center>
+        
+        <script type="text/javascript">
+            document.getElementsByName("url")[0].focus();
+        </script>
+    </div>
+</body>
+</html>
