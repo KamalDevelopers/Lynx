@@ -10,10 +10,11 @@ import utils.lynxutils as lxu
 import proxy
 import confvar
 import extension
-import shortcuts
 import webkit as wk
-from grip import SideGrip
-from events import EventHandler
+
+import qt.shortcuts as shortcuts
+from qt.grip import SideGrip
+from qt.events import EventHandler
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
