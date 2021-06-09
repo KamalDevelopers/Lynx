@@ -10,6 +10,8 @@ import platform as arch
 def lynxQuit():
     if os.path.isdir("./temp/"):
         shutil.rmtree("./temp")
+    if os.path.isdir("./temp/"):
+        os.remove("./temp")
     utils.log.msg("INFO")("Browser exited successfully")
 
 

@@ -17,7 +17,7 @@ if args.s:
     confvar.stealth()
 else:
     confvar.stealth(False)
-confvar.confb()
+confvar.configure()
 print("Lynx Version", confvar.VERSION)
 
 import utils.bookmark
