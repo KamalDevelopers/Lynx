@@ -31,7 +31,7 @@ Lynx also comes bundled with multiple extensions, to disable/enable these check 
 
 ## Installation
 
-Install PyOpenGL manually for your platform. Also install Zenit if you are a Linux user.
+Install PyOpenGL manually for your platform. Also install Zenity if you are a Linux user.
 ```
 git clone https://github.com/KamalDevelopers/Lynx.git
 cd Lynx
