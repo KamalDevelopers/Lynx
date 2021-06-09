@@ -78,12 +78,12 @@ def runbrowser():
     else:
         app.setWindowIcon(QIcon(os.path.abspath("./img/icons/lynx_logo.ico")))
 
-    confvar.stylesheet_value(
+    confvar.style.value(
         "QLineEdit", "font-family", confvar.BROWSER_FONT_FAMILY
     )
     # app.setStyleSheet(open(confvar.BASE_PATH + "themes/" + confvar.BROWSER_STYLESHEET + ".qss").read())
     app.setAttribute(Qt.AA_DontShowIconsInMenus, True)
-    app.setStyleSheet(confvar.style())
+    app.setStyleSheet(confvar.style.get())
     app.exec_()
 
 

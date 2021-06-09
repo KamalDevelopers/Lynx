@@ -2,15 +2,19 @@ import os
 import sys
 import json
 import platform
-import utils.version
 from os.path import expanduser
 from configparser import ConfigParser
+
+import utils.version
+import utils.log
+from utils.stylesheet import StyleSheet
+
 
 with open("lynx.json") as f:
     data = json.load(f)
 
 configur = ConfigParser()
-stylesheet_all = ""
+style = None
 
 STEALTH_FLAG = 0
 CURRENT_OS = platform.system()
@@ -23,7 +27,9 @@ if not os.path.isdir("./temp"):
     os.mkdir("./temp")
 
 if not os.path.isdir(BASE_PATH):
-    print("Failed to find lynx profile")
+    utils.log.msg("ERROR")(
+        "Failed to find lynx profile"
+    )
     sys.exit()
 
 BROWSER_OPEN_URLS = []
@@ -91,42 +97,10 @@ def sparse(string):
         return None
     return string
 
-
-def style():
-    return stylesheet_all
-
-
-def stylesheet_value(element, rule, alter=None):
-    global stylesheet_all
-    path = BASE_PATH + "themes/" + BROWSER_STYLESHEET + ".qss"
-
-    with open(path) as F:
-        style = F.read()
-        stylesheet_all = style
-
-    lines = style.split("\n")
-    search = False
-    changed = False
-
-    for i, line in enumerate(lines):
-        if element == line.replace(" ", "").replace("{", ""):
-            search = True
-        if "}" in line:
-            search = False
-        if search:
-            if line.split(":")[0].replace(" ", "") == rule:
-                if alter is not None:
-                    if not changed:
-                        lines[i] = rule + ":" + alter + ";"
-                    stylesheet_all = " ".join(lines)
-                return line.split(":")[1].replace(" ", "").replace(";", "")
-            elif alter is not None and not changed:
-                changed = True
-                lines[i + 1] = rule + ":" + alter + ";" + lines[i + 1]
-
-
-def confb():
+def configure():
     global configur
+    global style
+
     global BROWSER_WINDOW_TITLE, BROWSER_HOMEPAGE, BROWSER_NEWTAB, \
         BROWSER_FONT_FAMILY, BROWSER_STYLESHEET, BROWSER_ADBLOCKER, \
         BROWSER_STORAGE, BROWSER_HTTPS_ONLY, BROWSER_AGENT, \
@@ -188,8 +162,13 @@ def confb():
         WEBKIT_PLUGINS_ENABLED = 0
         WEBKIT_JAVASCRIPT_POPUPS_ENABLED = 0
 
+    with open(BASE_PATH + "themes/" + BROWSER_STYLESHEET + ".qss") as f:
+        style = StyleSheet(f.read())
+
 
 try:
-    confb()
+    configure()
 except:
-    print("Could not load configurations from profile")
+    utils.log.msg("ERROR")(
+        "Failed to load configuration from profile"
+    )

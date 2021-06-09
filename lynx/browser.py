@@ -5,12 +5,13 @@ import platform as arch
 from urllib.parse import urlparse
 from subprocess import Popen, PIPE
 
-import utils.bookmark
-import utils.lynxutils as lxu
 import proxy
 import confvar
 import extension
 import webkit as wk
+import utils.log
+import utils.bookmark
+import utils.lynxutils as lxu
 
 import qt.shortcuts as shortcuts
 from qt.grip import SideGrip
@@ -68,10 +69,10 @@ download_directory = confvar.DOWNLOAD_PATH
 interceptor = wk.RequestInterceptor()
 webchannel = wk.WebChannel()
 
-progress_color_loading = confvar.stylesheet_value(
+progress_color_loading = confvar.style.value(
     "QLineEdit", "background-color"
 )
-webkit_background_color = confvar.stylesheet_value(
+webkit_background_color = confvar.style.value(
     "Background", "background-color"
 )
 
