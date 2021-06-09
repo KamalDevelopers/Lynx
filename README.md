@@ -33,7 +33,7 @@ Lynx also comes bundled with multiple extensions, to disable/enable these check 
 
 ## Installation
 
-First install PyOpenGL manually for your platform, then you can install Lynx.
+Install PyOpenGL manually for your platform. Also install Zenit if you are a linux user.
 ```
 git clone https://github.com/KamalDevelopers/Lynx.git
 cd Lynx
@@ -47,7 +47,7 @@ To build Lynx into a package you can run:
 ## Screenshot
 ***
 <p align="center">
-  <img src="https://i.postimg.cc/8zB88ZfG/Screenshot-2021-03-16-09-50-54.png">
+  <img src="https://i.postimg.cc/4xPDJ1gZ/screenshot.png">
 </p>
 
 
