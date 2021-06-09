@@ -3,6 +3,7 @@ import time
 import validators
 import platform as arch
 from urllib.parse import urlparse
+from subprocess import Popen, PIPE
 
 import utils.bookmark
 import utils.lynxutils as lxu
@@ -612,14 +613,29 @@ class MainWindow(QMainWindow):
     def download_item_requested(self, download):
         global download_directory, downloading_item
         if not downloading_item:
-            path = str(
-                QFileDialog.getSaveFileName(
+            if arch.system() == "Linux":
+                cmdlist = [
+                    "zenity", "--file-selection",
+                    "--save", "--confirm-overwrite",
+                    '--file-filter=All Files(*)',
+                    '--filename='
+                    + confvar.DOWNLOAD_PATH
+                    + os.path.basename(download.path()),
+                    '--title=Select File'
+                ]
+                process = Popen(cmdlist, stdout=PIPE, stderr=PIPE)
+                stdout, stderr = process.communicate()
+                stdout, stderr = stdout.decode(), stderr.decode()
+                path = stdout.strip()
+            else:
+                path = str(QFileDialog.getSaveFileName(
                     self,
                     "Open file",
                     confvar.DOWNLOAD_PATH + os.path.basename(download.path()),
-                    "All Files(*)",
-                )[0]
-            )
+                    "All Files(*)"
+                )[0])
+            if not path:
+                return
             download.downloadProgress.connect(self.download_item_progress)
             download.setPath(path)
             if download.path() == path:
@@ -642,12 +658,26 @@ class MainWindow(QMainWindow):
             F.write(html)
 
     def save_page(self, page):
-        destination = QFileDialog.getSaveFileName(
-            self,
-            self.tr("Save Page"),
-            confvar.DOWNLOAD_PATH + page.title() + ".html",
-            "*.html",
-        )
+        if arch.system() == "Linux":
+            cmdlist = [
+                "zenity", "--file-selection",
+                "--save", "--confirm-overwrite",
+                '--file-filter=*.html',
+                '--filename='
+                + confvar.DOWNLOAD_PATH + page.title() + ".html",
+                '--title=Select File'
+            ]
+            process = Popen(cmdlist, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            stdout, stderr = stdout.decode(), stderr.decode()
+            destination = (stdout.strip(), False)
+        else:
+            destination = QFileDialog.getSaveFileName(
+                self,
+                self.tr("Save Page"),
+                confvar.DOWNLOAD_PATH + page.title() + ".html",
+                "*.html", options=QFileDialog.DontUseCustomDirectoryIcons
+            )
         if destination[0]:
             page.toHtml(
                 lambda html: self.download_page(destination[0], html)
