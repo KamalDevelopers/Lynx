@@ -1,42 +1,8 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
 import confvar
-
-
-def update(window):
-    if not confvar.BROWSER_BORDERLESS:
-        return
-    outRect = window.rect()
-    in_rect = outRect.adjusted(
-        window.grip_size, window.grip_size,
-        -window.grip_size, -window.grip_size
-    )
-
-    if len(window.corner_grips) >= 2:
-        window.corner_grips[0].setGeometry(
-            QtCore.QRect(outRect.topLeft(), in_rect.topLeft()))
-        window.corner_grips[1].setGeometry(
-            QtCore.QRect(outRect.topRight(), in_rect.topRight()).normalized())
-
-    if len(window.corner_grips) >= 4:
-        window.corner_grips[2].setGeometry(
-            QtCore.QRect(in_rect.bottomRight(), outRect.bottomRight()))
-        window.corner_grips[3].setGeometry(
-            QtCore.QRect(
-                outRect.bottomLeft(), in_rect.bottomLeft()
-            ).normalized())
-
-    window.side_grips[0].setGeometry(
-        0, in_rect.top(), window.grip_size, in_rect.height())
-    window.side_grips[1].setGeometry(
-        in_rect.left(), 0, in_rect.width(), window.grip_size)
-    window.side_grips[2].setGeometry(
-        in_rect.left() + in_rect.width(),
-        in_rect.top(), window.grip_size, in_rect.height())
-    window.side_grips[3].setGeometry(
-        window.grip_size, in_rect.top() + in_rect.height(),
-        in_rect.width(), window.grip_size)
-
-    [grip.raise_() for grip in window.side_grips + window.corner_grips]
+from PyQt5 import (
+    QtCore,
+    QtWidgets,
+)
 
 
 class SideGrip(QtWidgets.QWidget):
@@ -91,3 +57,39 @@ class SideGrip(QtWidgets.QWidget):
 
     def mouseReleaseEvent(self, event):
         self.mousePos = None
+
+    def update(window):
+        if not confvar.BROWSER_BORDERLESS:
+            return
+        outRect = window.rect()
+        in_rect = outRect.adjusted(
+            window.grip_size, window.grip_size,
+            -window.grip_size, -window.grip_size
+        )
+
+        if len(window.corner_grips) >= 2:
+            window.corner_grips[0].setGeometry(
+                QtCore.QRect(outRect.topLeft(), in_rect.topLeft()))
+            window.corner_grips[1].setGeometry(
+                QtCore.QRect(outRect.topRight(), in_rect.topRight()).normalized())
+
+        if len(window.corner_grips) >= 4:
+            window.corner_grips[2].setGeometry(
+                QtCore.QRect(in_rect.bottomRight(), outRect.bottomRight()))
+            window.corner_grips[3].setGeometry(
+                QtCore.QRect(
+                    outRect.bottomLeft(), in_rect.bottomLeft()
+                ).normalized())
+
+        window.side_grips[0].setGeometry(
+            0, in_rect.top(), window.grip_size, in_rect.height())
+        window.side_grips[1].setGeometry(
+            in_rect.left(), 0, in_rect.width(), window.grip_size)
+        window.side_grips[2].setGeometry(
+            in_rect.left() + in_rect.width(),
+            in_rect.top(), window.grip_size, in_rect.height())
+        window.side_grips[3].setGeometry(
+            window.grip_size, in_rect.top() + in_rect.height(),
+            in_rect.width(), window.grip_size)
+
+        [grip.raise_() for grip in window.side_grips + window.corner_grips]

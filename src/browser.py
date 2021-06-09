@@ -1,8 +1,6 @@
 import os
-import sys
 import time
 import validators
-import subprocess
 import platform as arch
 from urllib.parse import urlparse
 
@@ -13,22 +11,20 @@ import confvar
 import extension
 import shortcuts
 import webkit as wk
-import grip
 from grip import SideGrip
+from events import EventHandler
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
 from PyQt5.QtCore import (
-    QEvent,
     QSettings,
     QPoint,
     QUrl,
     Qt,
     QTimer,
     QSize,
-    QRect,
     QRectF,
 )
 from PyQt5.QtWidgets import (
@@ -41,19 +37,15 @@ from PyQt5.QtWidgets import (
     QAction,
     QShortcut,
     QToolBar,
-    QSizeGrip,
     QVBoxLayout,
     QPushButton,
-    QDesktopWidget,
 )
 from PyQt5.QtGui import (
-    QKeyEvent,
     QIcon,
     QKeySequence,
     QColor,
     QFont,
     QFontDatabase,
-    QCursor,
     QPainterPath,
     QRegion,
 )
@@ -106,6 +98,8 @@ class MainWindow(QMainWindow):
 
         if confvar.BROWSER_BORDERLESS:
             self.setWindowFlags(Qt.FramelessWindowHint)
+            # Activate corner grips
+            # self.corner_grips = [QSizeGrip(self) for i in range(2)]
             self.side_grips = [
                 SideGrip(self, Qt.LeftEdge),
                 SideGrip(self, Qt.TopEdge),
@@ -113,8 +107,9 @@ class MainWindow(QMainWindow):
                 SideGrip(self, Qt.BottomEdge),
             ]
             self.corner_grips = []
-            # Activate corner grips
-            # self.corner_grips = [QSizeGrip(self) for i in range(2)]
+
+        self.event_handler = EventHandler(self)
+        self.event_handler.register()
 
         self.qtsettings = QSettings('KamalDevelopers', 'Lynx')
         self.resize(self.qtsettings.value("size", QSize(1280, 720)))
@@ -236,19 +231,6 @@ class MainWindow(QMainWindow):
             if confvar.BROWSER_BORDERLESS:
                 self.round_corners()
             self.show()
-
-    @property
-    def grip_size(self):
-        return self._grip_size
-
-    def set_grip_size(self, size):
-        if size == self._grip_size:
-            return
-        self._grip_size = max(2, size)
-        self.update_grips()
-
-    def update_grips(self):
-        grip.update(self)
 
     def add_new_tab(self, qurl=None, label="New Tab", silent=0):
         global default_url_open
@@ -426,6 +408,19 @@ class MainWindow(QMainWindow):
         urlbar.textChanged.connect(
             lambda: self.shorten_url(urlbar)
         )
+
+    @property
+    def grip_size(self):
+        return self._grip_size
+
+    def set_grip_size(self, size):
+        if size == self._grip_size:
+            return
+        self._grip_size = max(2, size)
+        SideGrip.update(self)
+
+    def update_grips(self):
+        SideGrip.update(self)
 
     def round_corners(self, radius=8):
         path = QPainterPath()
@@ -642,7 +637,7 @@ class MainWindow(QMainWindow):
         browser.setZoomFactor(changezoom)
 
     def download_page(self, dest, html):
-        with open(dest[0], "w") as F:
+        with open(dest, "w") as F:
             F.write(html)
 
     def save_page(self, page):
@@ -654,7 +649,7 @@ class MainWindow(QMainWindow):
         )
         if destination[0]:
             page.toHtml(
-                lambda html: self.download_page(destination, html)
+                lambda html: self.download_page(destination[0], html)
             )
 
     def mute_page(self, browser):
@@ -752,57 +747,3 @@ class MainWindow(QMainWindow):
             )
         else:
             urlbar.setStyleSheet("background-color: ;")
-
-    def closeEvent(self, event):
-        self.qtsettings.setValue("size", self.size())
-        self.qtsettings.setValue("pos", self.pos())
-        lxu.lynxQuit()
-        event.accept()
-
-    def mousePressEvent(self, event):
-        self.m_flag = False
-        if event.button() == Qt.LeftButton:
-            self.m_flag = True
-            self.m_Position = event.globalPos()-self.pos()
-            event.accept()
-            self.setCursor(QCursor(Qt.OpenHandCursor))
-
-    def mouseDoubleClickEvent(self, event):
-        size = QDesktopWidget().screenGeometry(-1)
-        width = self.size().width()
-        height = self.size().height()
-
-        if event.button() == Qt.LeftButton:
-            if self.isMaximized():
-                self.showNormal()
-                return
-            if size.width() == width and height == size.height():
-                self.setGeometry(50, 50, 1280, 720)
-                return
-            self.showMaximized()
-        if event.button() == Qt.RightButton:
-            self.showMinimized()
-
-    def mouseMoveEvent(self, event):
-        if self.m_flag:
-            self.move(event.globalPos()-self.m_Position)
-        event.accept()
-
-    def mouseReleaseEvent(self, event):
-        self.m_flag = False
-        self.setCursor(QCursor(Qt.ArrowCursor))
-
-    def resizeEvent(self, event):
-        size = QDesktopWidget().screenGeometry(-1)
-        width = event.size().width()
-        height = event.size().height()
-
-        QMainWindow.resizeEvent(self, event)
-        self.update_grips()
-
-        if size.width() == width and height == size.height():
-            self.round_corners(0)
-            return
-
-        if arch.system() == "Windows" and confvar.BROWSER_BORDERLESS:
-            self.round_corners()
