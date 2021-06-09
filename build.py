@@ -49,13 +49,13 @@ exit = input()
 if str(exit) == "n":
     sys.exit()
 
-version = gversion("src/lynx.json")
+version = gversion("lynx/lynx.json")
 zips = "Lynx " + str(platform.system()) + " " + version
 fname = "Lynx"
 os.mkdir(fname)
 
 PyInstaller.__main__.run(
-    ["src/main.py", "--noconsole", "--onefile", "-isrc/img/icons/logo.ico"]
+    ["lynx/main.py", "--noconsole", "--onefile", "-ilynx/img/icons/logo.ico"]
 )
 
 # Rename Executable
@@ -65,12 +65,12 @@ if platform.system() == "Windows":
     shutil.move("dist/main.exe", "./" + fname + "/Lynx.exe")
 
 # Copy Files
-shutil.copytree("src/font", "./" + fname + "/font")
-shutil.copytree("src/img", "./" + fname + "/img")
+shutil.copytree("lynx/font", "./" + fname + "/font")
+shutil.copytree("lynx/img", "./" + fname + "/img")
 shutil.copytree("lynx-profile", "./" + fname + "/lynx-profile")
 
 # Write Package Info
-package(version, "src/lynx.json", "./" + fname + "/lynx.json", "lynx-profile/")
+package(version, "lynx/lynx.json", "./" + fname + "/lynx.json", "lynx-profile/")
 
 # Create Zip
 zipf = zipfile.ZipFile(zips, "w", zipfile.ZIP_DEFLATED, compresslevel=1)

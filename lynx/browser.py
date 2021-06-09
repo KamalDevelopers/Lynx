@@ -612,36 +612,41 @@ class MainWindow(QMainWindow):
 
     def download_item_requested(self, download):
         global download_directory, downloading_item
-        if not downloading_item:
-            if arch.system() == "Linux":
-                cmdlist = [
-                    "zenity", "--file-selection",
-                    "--save", "--confirm-overwrite",
-                    '--file-filter=All Files(*)',
-                    '--filename='
-                    + confvar.DOWNLOAD_PATH
-                    + os.path.basename(download.path()),
-                    '--title=Select File'
-                ]
-                process = Popen(cmdlist, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = process.communicate()
-                stdout, stderr = stdout.decode(), stderr.decode()
-                path = stdout.strip()
-            else:
-                path = str(QFileDialog.getSaveFileName(
-                    self,
-                    "Open file",
-                    confvar.DOWNLOAD_PATH + os.path.basename(download.path()),
-                    "All Files(*)"
-                )[0])
-            if not path:
-                return
-            download.downloadProgress.connect(self.download_item_progress)
-            download.setPath(path)
-            if download.path() == path:
-                download_directory = os.path.dirname(path)
-            downloading_item = True
-            download.accept()
+
+        if downloading_item:
+            return
+
+        if arch.system() == "Linux":
+            cmdlist = [
+                "zenity", "--file-selection",
+                "--save", "--confirm-overwrite",
+                '--file-filter=All Files(*)',
+                '--filename='
+                + confvar.DOWNLOAD_PATH
+                + os.path.basename(download.path()),
+                '--title=Select File'
+            ]
+            process = Popen(cmdlist, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            stdout, stderr = stdout.decode(), stderr.decode()
+            path = stdout.strip()
+        else:
+            path = str(QFileDialog.getSaveFileName(
+                self,
+                "Open file",
+                confvar.DOWNLOAD_PATH + os.path.basename(download.path()),
+                "All Files(*)"
+            )[0])
+
+        if not path:
+            return
+
+        download.downloadProgress.connect(self.download_item_progress)
+        download.setPath(path)
+        if download.path() == path:
+            download_directory = os.path.dirname(path)
+        downloading_item = True
+        download.accept()
 
     def zoom(self, value, browser):
         changezoom = 0
