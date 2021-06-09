@@ -715,6 +715,7 @@ class MainWindow(QMainWindow):
                 content = content.replace("{source}", self.source_code)
                 f.write(content)
             url = "file:///" + os.path.abspath("./temp/temp-view.html")
+            url = url.replace("\\", "/")
 
         qurl = QUrl(url)
         if "." not in url and not lxu.checkLynxUrl(qurl):
