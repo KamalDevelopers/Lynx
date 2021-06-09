@@ -368,6 +368,7 @@ class MainWindow(QMainWindow):
 
         if qurl and "lynx:" != qurl.toString()[:5]:
             urlbar.setText(qurl.toString())
+        self.update_urlbar(urlbar, qurl, 0)
 
         browser.page().fullScreenRequested.connect(
             lambda request: (
