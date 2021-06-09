@@ -1,4 +1,5 @@
 import platform as arch
+import confvar
 import utils.lynxutils as lxu
 
 from PyQt5.QtGui import QCursor
