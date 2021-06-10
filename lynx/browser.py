@@ -397,7 +397,7 @@ class MainWindow(QMainWindow):
             )
         )
         browser.page().urlChanged.connect(
-            lambda qurl, browser=browser: self.update_urlbar(urlbar, qurl, 0)
+            lambda qurl, browser=browser: self.update_urlbar(urlbar, qurl)
         )
         browser.page().profile().downloadRequested.connect(
             self.download_item_requested
