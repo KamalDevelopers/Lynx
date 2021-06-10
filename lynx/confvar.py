@@ -118,7 +118,10 @@ def configure():
     BROWSER_STORE_VISITED_LINKS = configur.getboolean(
         "BROWSER", "STORE_VISITED_LINKS"
     )
-    BROWSER_AGENT = sparse(configur.get("BROWSER", "AGENT"))
+
+    if sparse(configur.get("BROWSER", "AGENT")):
+        BROWSER_AGENT = sparse(configur.get("BROWSER", "AGENT"))
+
     BROWSER_PROXY = sparse(configur.get("BROWSER", "PROXY"))
     BROWSER_SHORT_URL = configur.getint("BROWSER", "SHORT_URL")
     BROWSER_TS_DISABLED = configur.getboolean("BROWSER", "TS_DISABLED")
