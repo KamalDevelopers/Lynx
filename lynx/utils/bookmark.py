@@ -4,7 +4,7 @@ import json
 bookmarks = []
 
 
-def readBookmarks():
+def read_bookmarks():
     global bookmarks
 
     with open(confvar.BASE_PATH + "bookmarks.json") as f:
@@ -12,11 +12,11 @@ def readBookmarks():
     bookmarks = data["bookmarks"]
 
 
-def getBookmarks():
+def get_bookmarks():
     return bookmarks
 
 
-def removeBookmark(url):
+def remove_bookmarks(url):
     if url not in bookmarks:
         return False
 
@@ -25,14 +25,14 @@ def removeBookmark(url):
     data["bookmarks"] = bookmarks
     with open(confvar.BASE_PATH + "bookmarks.json", "w") as f:
         json.dump(data, f, indent=4)
-    readBookmarks()
+    read_bookmarks()
     return True
 
 
-def addBookmark(url, remove=False):
+def add_bookmark(url, remove=False):
     if url in bookmarks:
         if remove:
-            removeBookmark(url)
+            remove_bookmarks(url)
         return False
 
     data = {}
@@ -40,5 +40,5 @@ def addBookmark(url, remove=False):
     data["bookmarks"] = bookmarks
     with open(confvar.BASE_PATH + "bookmarks.json", "w") as f:
         json.dump(data, f, indent=4)
-    readBookmarks()
+    read_bookmarks()
     return True

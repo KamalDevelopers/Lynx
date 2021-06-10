@@ -21,7 +21,7 @@ apiScript = apiFile.readAll().data().decode()
 apiFile.close()
 
 
-def readExtension(extension_file):
+def read_extension(extension_file):
     global extension_data, permissions, script_list
 
     with open(confvar.BASE_PATH + "extensions/" + extension_file) as f:
@@ -60,14 +60,14 @@ def readExtension(extension_file):
         )
 
 
-def readExtensions():
+def read_extensions():
     files = os.listdir(confvar.BASE_PATH + "extensions/")
     for _, extension_file in enumerate(files):
         if extension_file[-5:] == ".json":
-            readExtension(extension_file)
+            read_extension(extension_file)
 
 
-def javascriptLoad(path):
+def javascript_load(path):
     global preload_data
 
     if path not in list(preload_data.keys()):
@@ -78,7 +78,7 @@ def javascriptLoad(path):
 
 
 def execute(load_scripts, browser):
-    js_code = javascriptLoad(confvar.BASE_PATH + "extensions/" + load_scripts)
+    js_code = javascript_load(confvar.BASE_PATH + "extensions/" + load_scripts)
     if script_list[load_scripts] in list(permissions.keys()):
         wk.setPrivileges(permissions[script_list[load_scripts]])
 
@@ -87,7 +87,7 @@ def execute(load_scripts, browser):
     QTimer.singleShot(500, wk.setPrivileges)
 
 
-def pageLoad(browser):
+def on_page_load(browser):
     global apiScript
 
     browser.page().runJavaScript(apiScript)

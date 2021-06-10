@@ -7,15 +7,15 @@ import utils.log
 import platform as arch
 
 
-def lynxQuit():
+def lynx_quit():
     if os.path.isdir("./temp/"):
         shutil.rmtree("./temp")
     if os.path.isdir("./temp/"):
         os.remove("./temp")
-    utils.log.msg("INFO")("Browser exited successfully")
+    utils.log.dbg("INFO")("Browser exited successfully")
 
 
-def launchLynx(url=""):
+def launch_lynx(url=""):
     exec_file = sys.argv[0]
     if ".py" in exec_file:
         subprocess.Popen([sys.executable, exec_file, url])
@@ -23,7 +23,7 @@ def launchLynx(url=""):
         subprocess.Popen([exec_file, url])
 
 
-def launchStealth(window):
+def launch_stealth(window):
     exec_file = sys.argv[0]
     window.close()
     if ".py" in exec_file:
@@ -32,7 +32,7 @@ def launchStealth(window):
         subprocess.run([exec_file, "-s"])
 
 
-def openFolder(path):
+def open_folder(path):
     if arch.system() == "Windows":
         os.startfile(path)
     elif arch.system() == "Darwin":
@@ -41,12 +41,12 @@ def openFolder(path):
         subprocess.Popen(["xdg-open", path])
 
 
-def storeSession(urls):
+def store_session(urls):
     with open(confvar.BASE_PATH + "restore.session", "w") as f:
         f.write(str(urls))
 
 
-def decodeLynxUrl(qurl):
+def decode_lynx_url(qurl):
     if qurl.toString() == "lynx:blank":
         return qurl.toString()
     if str(qurl.toString())[:5] == "lynx:":
@@ -76,7 +76,7 @@ def decodeLynxUrl(qurl):
     return "file:///" + lfile + ".html"
 
 
-def encodeLynxUrl(qurl):
+def encode_lynx_url(qurl):
     if str(qurl.toString())[:8] == "file:///" and "lynx/" in qurl.toString():
         lfile = str(qurl.toString()).split("/")
         lfile = lfile[len(lfile) - 1]
@@ -87,7 +87,7 @@ def encodeLynxUrl(qurl):
     return "lynx:" + lfile[:-5]
 
 
-def checkLynxUrl(qurl):
+def check_lynx_url(qurl):
     if str(qurl.toString())[:5] == "lynx:":
         return True
     return False

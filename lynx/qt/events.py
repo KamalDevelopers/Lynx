@@ -18,7 +18,7 @@ class EventHandler:
     def closeEvent(self, event):
         self.window.qtsettings.setValue("size", self.window.size())
         self.window.qtsettings.setValue("pos", self.window.pos())
-        lxu.lynxQuit()
+        lxu.lynx_quit()
         event.accept()
 
     def mousePressEvent(self, event):

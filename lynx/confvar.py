@@ -27,7 +27,7 @@ if not os.path.isdir("./temp"):
     os.mkdir("./temp")
 
 if not os.path.isdir(BASE_PATH):
-    utils.log.msg("ERROR")(
+    utils.log.dbg("ERROR")(
         "Failed to find lynx profile"
     )
     sys.exit()
@@ -169,6 +169,6 @@ def configure():
 try:
     configure()
 except:
-    utils.log.msg("ERROR")(
+    utils.log.dbg("ERROR")(
         "Failed to load configuration from profile"
     )

@@ -69,7 +69,7 @@ def shortcuts(window, browser, searchbar):
     bookmark_page = QPushButton("", window)
     bookmark_page.setShortcut("Ctrl+B")
     bookmark_page.clicked.connect(
-        lambda: utils.bookmark.addBookmark(
+        lambda: utils.bookmark.add_bookmark(
             browser.page().url().toString(), True
         )
     )

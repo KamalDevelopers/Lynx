@@ -8,7 +8,7 @@ adblock_url_max = 2000
 adblock_css_max = 1000
 
 
-def stripRule(rule):
+def strip_rule(rule):
     rule = (
         rule.replace("//*", "")
         .replace("^", "")
@@ -18,7 +18,7 @@ def stripRule(rule):
     return rule
 
 
-def readFilter(path, regen=False):
+def read_filter(path, regen=False):
     global adblock_url_rules
     global adblock_css_rules
 
@@ -44,7 +44,7 @@ def readFilter(path, regen=False):
                     and len(css_rules) < adblock_css_max
                 ):
                     if line.text[:2] == "##":
-                        css_rules.append(stripRule(line.text.split("##")[1]))
+                        css_rules.append(strip_rule(line.text.split("##")[1]))
 
     url_rules.append("tpc.googlesyndication.com/*")
     adblock_url_rules = AdblockRules(url_rules)

@@ -10,7 +10,9 @@ LOG_LEVELS = {
     "INFO": logging.INFO,
 }
 
-LOGFORMAT = "  %(log_color)s %(levelname)-8s%(reset)s %(log_color)s{%(filename)s:%(lineno)s} : %(message)s%(reset)s"
+LOGFORMAT = \
+    "  %(log_color)s %(levelname)-8s%(reset)s" + \
+    " %(log_color)s{%(filename)s:%(lineno)s} : %(message)s%(reset)s"
 
 file_handler = logging.FileHandler(filename="lynx.log")
 formatter = ColoredFormatter(LOGFORMAT)
@@ -22,14 +24,15 @@ handlers = [file_handler, stream]
 
 logging.basicConfig(
     level=logging.INFO,
-    format="[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s",
+    format="[%(asctime)s] {%(filename)s:%(lineno)d}" +
+           " %(levelname)s - %(message)s",
     handlers=handlers,
 )
 
 log = logging.getLogger("pythonConfig")
 
 
-def msg(level):
+def dbg(level):
     global logger
 
     log.setLevel(LOG_LEVELS[level])

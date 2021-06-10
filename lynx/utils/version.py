@@ -14,3 +14,6 @@ def version():
         )
 
     return data["package"]["version"]
+
+
+print("Lynx Version", version())

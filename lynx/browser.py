@@ -145,7 +145,7 @@ class MainWindow(QMainWindow):
             interceptor
         )
 
-        if confvar.BROWSER_STORE_VISITED_LINKS is not True:
+        if confvar.BROWSER_STORE_VISITED_LINKS is False:
             QWebEngineProfile.defaultProfile().clearAllVisitedLinks()
 
         if confvar.BROWSER_STORAGE:
@@ -161,11 +161,11 @@ class MainWindow(QMainWindow):
             self.default_font = QFont(font_family)
             self.default_font.setPixelSize(11)
             self.setFont(self.default_font)
-            utils.log.msg("INFO")(
+            utils.log.dbg("INFO")(
                 "Loaded ttf:" + " font/" + confvar.BROWSER_FONT_FAMILY
             )
         except IndexError:
-            utils.log.msg("ERROR")(
+            utils.log.dbg("ERROR")(
                 "Could not load ttf:"
                 + " font/"
                 + confvar.BROWSER_FONT_FAMILY
@@ -212,7 +212,7 @@ class MainWindow(QMainWindow):
         self.shortcut_store_session = QShortcut(QKeySequence("Alt+X"), self)
 
         self.shortcut_store_session.activated.connect(
-            lambda: lxu.storeSession(self.current_urls())
+            lambda: lxu.store_session(self.current_urls())
         )
         self.shortcut_closetab.activated.connect(self.close_current_tab)
         self.shortcut_changetab_f.activated.connect(self.tab_change_forward)
@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
             qurl.setScheme("http")
             default_url_open = None
 
-        qurl = QUrl(lxu.decodeLynxUrl(qurl))
+        qurl = QUrl(lxu.decode_lynx_url(qurl))
 
         browser = QWebEngineView()
         cwe = wk.CustomWebEnginePage(self)
@@ -315,7 +315,7 @@ class MainWindow(QMainWindow):
         urlbar.setFixedHeight(26)
         urlbar.addAction(secure_icon, QLineEdit.LeadingPosition)
 
-        # completer = QCompleter(bookmark.getBookmarks())
+        # completer = QCompleter(bookmark.get_bookmarks())
         # urlbar.setCompleter(completer)
         for _ in range(0, 10):
             navtb.addSeparator()
@@ -369,7 +369,7 @@ class MainWindow(QMainWindow):
         self.fullscreen = 0
         urlbar.setFocus()
 
-        if qurl and "lynx:" != qurl.toString()[:5]:
+        if qurl and qurl.toString()[:5] != "lynx:":
             urlbar.setText(qurl.toString())
         self.update_urlbar(urlbar, qurl, 0)
 
@@ -435,7 +435,7 @@ class MainWindow(QMainWindow):
     def launch_stealth(self):
         self.close_current_tab(-2)
         self.close_current_tab()
-        lxu.launchStealth(self)
+        lxu.launch_stealth(self)
 
     def set_source(self, html):
         self.source_code = html
@@ -461,7 +461,7 @@ class MainWindow(QMainWindow):
             self.add_new_tab(url)
         if action == QWebEnginePage.OpenLinkInNewWindow:
             url = page.contextMenuData().linkUrl()
-            lxu.launchLynx(url.toString())
+            lxu.launch_lynx(url.toString())
         if action == QWebEnginePage.ViewSource:
             current_url = page.url().toString()
             if "file://" not in current_url:
@@ -476,7 +476,7 @@ class MainWindow(QMainWindow):
 
     def load_finished(self, urlbar, browser):
         if browser.page().url().toString() != "lynx:blank":
-            utils.log.msg("DEBUG")(
+            utils.log.dbg("DEBUG")(
                 "Loaded webpage in "
                 + str(round(time.time() - self.load_start_time, 3))
                 + " seconds",
@@ -491,7 +491,7 @@ class MainWindow(QMainWindow):
         if wk.getPriveleges():
             return
 
-        extension.pageLoad(browser)
+        extension.on_page_load(browser)
         # self.update_urlbar(urlbar, browser.page().url())
 
     def update_urlbar(self, urlbar, qurl, icon_update=True):
@@ -499,7 +499,7 @@ class MainWindow(QMainWindow):
             if "temp-view.html" in qurl.toString():
                 urlbar.setText(self.view_source_url)
                 return
-        url = lxu.encodeLynxUrl(qurl)
+        url = lxu.encode_lynx_url(qurl)
         urlbar.setText(url)
         icon = None
 
@@ -610,7 +610,7 @@ class MainWindow(QMainWindow):
 
     def download_pressed(self):
         global download_directory
-        lxu.openFolder(download_directory)
+        lxu.open_folder(download_directory)
 
     def download_item_requested(self, download):
         global download_directory, downloading_item
@@ -755,14 +755,14 @@ class MainWindow(QMainWindow):
             url = url.replace("\\", "/")
 
         qurl = QUrl(url)
-        if "." not in url and not lxu.checkLynxUrl(qurl):
+        if "." not in url and not lxu.check_lynx_url(qurl):
             qurl = QUrl("https://duckduckgo.com/?q=" + url)
         elif (
-            "." in url and not lxu.checkLynxUrl(qurl) and "file:///" not in url
+            "." in url and not lxu.check_lynx_url(qurl) and "file:///" not in url
         ):
             qurl.setScheme("http")
 
-        qurl = QUrl(lxu.decodeLynxUrl(qurl))
+        qurl = QUrl(lxu.decode_lynx_url(qurl))
         webview.setUrl(qurl)
 
     def load_progress(self, progress, urlbar, url):

@@ -46,8 +46,8 @@ class WebChannel(QObject):
             # print("Insufficient permissions")
             return
         result = []
-        for index in range(0, len(utils.bookmark.getBookmarks())):
-            favi = favicon.get(utils.bookmark.getBookmarks()[index])[0].url
+        for index in range(0, len(utils.bookmark.get_bookmarks())):
+            favi = favicon.get(utils.bookmark.get_bookmarks()[index])[0].url
             result.append(favi)
         return result
 
@@ -61,9 +61,9 @@ class WebChannel(QObject):
         hearders = {
             "headers": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:51.0) Gecko/20100101 Firefox/51.0"
         }
-        for index in range(0, len(utils.bookmark.getBookmarks())):
+        for index in range(0, len(utils.bookmark.get_bookmarks())):
             n = requests.get(
-                utils.bookmark.getBookmarks()[index], headers=hearders
+                utils.bookmark.get_bookmarks()[index], headers=hearders
             )
             result.append(
                 n.text[n.text.find("<title>") + 7 : n.text.find("</title>")]
@@ -75,7 +75,7 @@ class WebChannel(QObject):
         if "bookmarks" not in privileges:
             # print("Insufficient permissions")
             return
-        return utils.bookmark.getBookmarks()
+        return utils.bookmark.get_bookmarks()
 
     @pyqtSlot(str, result=str)
     def readFile(self, path):
