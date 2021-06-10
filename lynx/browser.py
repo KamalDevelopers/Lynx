@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
         self.tabs.tabBar().setAutoHide(1)
 
         self.js_btn_enable = QAction(
-            self.tr("Disable Javascript (Alt+Ctrl+A)"), self
+            self.tr("Disable Javascript") + " " + "(Alt+Ctrl+A)", self
         )
         self.js_btn_enable.setShortcut("Alt+Ctrl+A")
         icon = QIcon("img/js_enabled.png")
@@ -186,7 +186,7 @@ class MainWindow(QMainWindow):
         self.js_btn_enable.triggered.connect(lambda: self.javascript_toggle())
 
         self.js_btn_disable = QAction(
-            self.tr("Enable Javascript (Alt+Ctrl+S)"), self
+            self.tr("Enable Javascript") + " " + "(Alt+Ctrl+S)", self
         )
         self.js_btn_disable.setShortcut("Alt+Ctrl+S")
         icon = QIcon("img/js_disabled.png")
@@ -194,7 +194,7 @@ class MainWindow(QMainWindow):
         self.js_btn_disable.setVisible(False)
         self.js_btn_disable.triggered.connect(lambda: self.javascript_toggle())
 
-        self.download_btn = QAction(self.tr("Downloads (Alt+D)"), self)
+        self.download_btn = QAction(self.tr("Downloads") + " " + "(Alt+D)", self)
         self.download_btn.setShortcut("Alt+D")
         icon = QIcon("img/download-item/download-idle.png")
         self.download_btn.setIcon(icon)
@@ -278,20 +278,20 @@ class MainWindow(QMainWindow):
         for s in shortcuts.shortcuts(self, browser, searchbar):
             navtb.addWidget(s)
 
-        back_btn = QAction(self.tr("Back (Alt+J)"), self)
+        back_btn = QAction(self.tr("Back") + " " + "(Alt+J)", self)
         icon = QIcon("img/remix/arrow-left-s-line.png")
         back_btn.setIcon(icon)
         back_btn.setShortcut("Alt+J")
         back_btn.triggered.connect(lambda: browser.history().back())
 
-        next_btn = QAction(self.tr("Forward (Alt+K)"), self)
+        next_btn = QAction(self.tr("Forward") + " " + "(Alt+K)", self)
         icon = QIcon("img/remix/arrow-right-s-line.png")
         next_btn.setIcon(icon)
         next_btn.setShortcut("Alt+K")
         next_btn.triggered.connect(lambda: browser.history().forward())
 
         icon = QIcon("img/remix/close-line.png")
-        exit_btn = QAction(self.tr("Exit Browser (Ctrl+Q)"), self)
+        exit_btn = QAction(self.tr("Exit Browser") + " " + "(Ctrl+Q)", self)
         exit_btn.setShortcut("Ctrl+Q")
         exit_btn.setIcon(icon)
         exit_btn.triggered.connect(lambda: self.close())
@@ -324,7 +324,7 @@ class MainWindow(QMainWindow):
             navtb.addSeparator()
         navtb.addWidget(urlbar_focus)
 
-        add_tab_btn = QAction(self.tr("Add Tab (Ctrl+H)"), self)
+        add_tab_btn = QAction(self.tr("Add Tab") + " " + "(Ctrl+H)", self)
         icon = QIcon("img/remix/add-line.png")
         add_tab_btn.setIcon(icon)
         add_tab_btn.triggered.connect(lambda: self.add_new_tab())
@@ -332,7 +332,7 @@ class MainWindow(QMainWindow):
         navtb.addAction(self.download_btn)
 
         icon = QIcon("img/remix/spy-line.png")
-        stealth_btn = QAction(self.tr("Stealth Mode (Alt+S)"), self)
+        stealth_btn = QAction(self.tr("Stealth Mode") + " " + "(Alt+S)", self)
         stealth_btn.setShortcut("Alt+S")
         stealth_btn.setIcon(icon)
         stealth_btn.triggered.connect(lambda: self.launch_stealth())
