@@ -1,5 +1,9 @@
+import platform as arch
+from subprocess import Popen, PIPE
+
 import utils.adblock
 import utils.bookmark
+import utils.mime
 import confvar
 import requests
 import favicon
@@ -126,6 +130,37 @@ class CustomWebEnginePage(QWebEnginePage):
             self.ignored_action = False
             return
         return super().triggerAction(action, checked)
+
+    def chooseFiles(self, mode, oldFiles, acceptMimeTypes):
+        if arch.system() != "Linux":
+            return super().chooseFiles(mode, oldFiles, acceptMimeTypes)
+
+        if mode:
+            multiple_files = "--multiple"
+        else:
+            multiple_files = ""
+
+        if acceptMimeTypes:
+            extensions = utils.mime.get_extensions(acceptMimeTypes)
+            file_filter = "Accepted Files | " + ' '.join(extensions)
+        else:
+            file_filter = "All files | *"
+
+        cmdlist = [
+            "zenity",
+            multiple_files,
+            "--file-selection",
+            "--file-filter=" +
+            file_filter,
+            "--filename="
+            + confvar.DOWNLOAD_PATH,
+            "--title=Select File",
+        ]
+        process = Popen(cmdlist, stdout=PIPE, stderr=PIPE)
+        stdout, stderr = process.communicate()
+        stdout, stderr = stdout.decode(), stderr.decode()
+        path = stdout.strip()
+        return [path]
 
     def javaScriptConsoleMessage(self, level, msg, line, sourceID):
         pass

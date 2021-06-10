@@ -613,7 +613,7 @@ class MainWindow(QMainWindow):
                 "--file-selection",
                 "--save",
                 "--confirm-overwrite",
-                "--file-filter=All Files(*)",
+                "--file-filter=All files | *",
                 "--filename="
                 + confvar.DOWNLOAD_PATH
                 + os.path.basename(download.path()),
@@ -629,7 +629,7 @@ class MainWindow(QMainWindow):
                     self,
                     "Open file",
                     confvar.DOWNLOAD_PATH + os.path.basename(download.path()),
-                    "All Files(*)",
+                    "All files | *",
                 )[0]
             )
 
