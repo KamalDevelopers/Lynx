@@ -364,7 +364,7 @@ class MainWindow(QMainWindow):
 
         if qurl and qurl.toString()[:5] != "lynx:":
             urlbar.setText(qurl.toString())
-        self.update_urlbar(urlbar, qurl, 0)
+        self.update_urlbar(urlbar, qurl)
 
         browser.page().fullScreenRequested.connect(
             lambda request: (
@@ -473,33 +473,37 @@ class MainWindow(QMainWindow):
             self.show()
 
         self.first_opened = True
+        self.update_urlbar_icon(urlbar)
 
         if wk.get_privileges():
             return
 
         extension.on_page_load(browser)
-        # self.update_urlbar(urlbar, browser.page().url())
 
-    def update_urlbar(self, urlbar, qurl, icon_update=True):
+    def update_urlbar_icon(self, urlbar):
+        icon = None
+
+        if urlbar.text()[:5] == "lynx:" \
+           or urlbar.text()[:12] == "view-source:" \
+           or not urlbar.text():
+            icon = QIcon("img/search.png")
+        if "https://" == urlbar.text()[:8]:
+            icon = QIcon("img/secure.png")
+        if "http://" == urlbar.text()[:7]:
+            icon = QIcon("img/unsecure.png")
+        if icon is not None:
+            urlbar.removeAction(urlbar.actions()[0])
+            urlbar.addAction(icon, QLineEdit.LeadingPosition)
+
+    def update_urlbar(self, urlbar, qurl):
         if "file:///" in qurl.toString():
             if "temp-view.html" in qurl.toString():
                 urlbar.setText(self.view_source_url)
                 return
         url = lxu.encode_lynx_url(qurl)
         urlbar.setText(url)
-        icon = None
-
-        if "lynx:" == urlbar.text()[:5]:
-            icon = QIcon("img/search.png")
         if urlbar.text() == "lynx:home" or urlbar.text() == "lynx:blank":
             urlbar.setText("")
-        if "https://" == urlbar.text()[:8]:
-            icon = QIcon("img/secure.png")
-        if "http://" == urlbar.text()[:7] and icon_update:
-            icon = QIcon("img/unsecure.png")
-        if icon is not None:
-            urlbar.removeAction(urlbar.actions()[0])
-            urlbar.addAction(icon, QLineEdit.LeadingPosition)
 
     def shorten_url(self, urlbar):
         text = urlbar.text()
