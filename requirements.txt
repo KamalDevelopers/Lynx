@@ -2,8 +2,6 @@ pyqt5
 PyQtWebEngine
 configparser
 argparse
-requests
-favicon
 python-abp
 adblockparser
 colorlog

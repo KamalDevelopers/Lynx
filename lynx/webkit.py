@@ -6,8 +6,6 @@ import utils.adblock
 import utils.bookmark
 import utils.mime
 import confvar
-import requests
-import favicon
 
 from PyQt5.QtNetwork import QNetworkProxy
 from PyQt5.QtCore import (
@@ -67,9 +65,8 @@ class WebChannel(QObject):
             # print("Insufficient permissions")
             return
         result = []
-        for index in range(0, len(utils.bookmark.get_bookmarks())):
-            favi = favicon.get(utils.bookmark.get_bookmarks()[index])[0].url
-            result.append(favi)
+        for bookmark in utils.bookmark.get_bookmarks():
+            result.append(bookmark[1])
         return result
 
     @pyqtSlot(result=list)
@@ -79,16 +76,8 @@ class WebChannel(QObject):
             return
 
         result = []
-        hearders = {
-            "headers": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:51.0) Gecko/20100101 Firefox/51.0"
-        }
-        for index in range(0, len(utils.bookmark.get_bookmarks())):
-            n = requests.get(
-                utils.bookmark.get_bookmarks()[index], headers=hearders
-            )
-            result.append(
-                n.text[n.text.find("<title>") + 7 : n.text.find("</title>")]
-            )
+        for bookmark in utils.bookmark.get_bookmarks():
+            result.append(bookmark[2])
         return result
 
     @pyqtSlot(result=list)
@@ -96,7 +85,11 @@ class WebChannel(QObject):
         if "bookmarks" not in privileges:
             # print("Insufficient permissions")
             return
-        return utils.bookmark.get_bookmarks()
+
+        result = []
+        for bookmark in utils.bookmark.get_bookmarks():
+            result.append(bookmark[0])
+        return result
 
     @pyqtSlot(str, result=str)
     def readFile(self, path):

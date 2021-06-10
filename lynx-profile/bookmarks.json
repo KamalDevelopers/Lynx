@@ -1,5 +1,9 @@
 {
     "bookmarks": [
-        "https://github.com/KamalDevelopers/Lynx"
+        [
+            "https://github.com/KamalDevelopers/Lynx",
+            "https://github.githubassets.com/favicons/favicon.png",
+            "GitHub - KamalDevelopers/Lynx: A futuristic, light and fast browser. Written using Qt and Webkit."
+        ]
     ]
 }

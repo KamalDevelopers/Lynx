@@ -70,7 +70,9 @@ def shortcuts(window, browser, searchbar):
     bookmark_page.setShortcut("Ctrl+B")
     bookmark_page.clicked.connect(
         lambda: utils.bookmark.add_bookmark(
-            browser.page().url().toString(), True
+            browser.page().url().toString(),
+            browser.page().iconUrl().toString(),
+            browser.page().title()
         )
     )
 

@@ -16,12 +16,19 @@ def get_bookmarks():
     return bookmarks
 
 
-def remove_bookmarks(url):
-    if url not in bookmarks:
+def has_bookmark(url):
+    for i, bookmark in enumerate(bookmarks):
+        if bookmark[0] == url:
+            return i
+    return None
+
+
+def remove_bookmark(url):
+    if has_bookmark(url) is None:
         return False
 
     data = {}
-    bookmarks.remove(url)
+    del bookmarks[has_bookmark(url)]
     data["bookmarks"] = bookmarks
     with open(confvar.BASE_PATH + "bookmarks.json", "w") as f:
         json.dump(data, f, indent=4)
@@ -29,14 +36,13 @@ def remove_bookmarks(url):
     return True
 
 
-def add_bookmark(url, remove=False):
-    if url in bookmarks:
-        if remove:
-            remove_bookmarks(url)
+def add_bookmark(url, icon_url, title):
+    if has_bookmark(url) is not None:
+        remove_bookmark(url)
         return False
 
     data = {}
-    bookmarks.append(url)
+    bookmarks.append([url, icon_url, title])
     data["bookmarks"] = bookmarks
     with open(confvar.BASE_PATH + "bookmarks.json", "w") as f:
         json.dump(data, f, indent=4)
