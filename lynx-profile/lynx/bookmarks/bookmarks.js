@@ -23,50 +23,48 @@ function searchFilter() {
     }
 }
 
-var backend;
-var bookmarks = 0;
-var index = 0;
-
 new QWebChannel(qt.webChannelTransport, function (channel) {
     window.backend = channel.objects.backend;
 
-    backend.getBookmarkUrls(function(bookmark_urls) {
-        backend.getBookmarkTitles(function(bookmark_titles) {
-            backend.getBookmarkFavicons(function(bookmark_favis) {
-                for (i = 0; i < bookmark_urls.length; i++) {
-                    bookmark_url = bookmark_urls[i];
-                    bookmark_title = bookmark_titles[i]
-                    bookmark_favi = bookmark_favis[i]
+    async function get_bookmarks() {
+        let urls = await backend.getBookmarkUrls();
+        let titles = await backend.getBookmarkTitles();
+        let favicons = await backend.getBookmarkFavicons();
+        return [urls, titles, favicons];
+    }
 
-                    var ul = document.getElementById("bookmark-list");
-                    var li = document.createElement("li");
-                    var im = document.createElement("img");
-                    var au = document.createElement("a");
-                    var an = document.createElement("a");
+    async function execute() {
+        let result = await get_bookmarks();
+        bookmark_url = result[0];
+        bookmark_title = result[1]
+        bookmark_favi = result[2]
 
-                    im.setAttribute("class", "favicon");
-                    im.setAttribute("src", bookmark_favi);
-                    im.setAttribute("alt", "bookmark icon");
+        var ul = document.getElementById("bookmark-list");
+        var li = document.createElement("li");
+        var im = document.createElement("img");
+        var au = document.createElement("a");
+        var an = document.createElement("a");
 
-                    au.setAttribute("href", bookmark_url);
-                    au.setAttribute("class", "url");
-                    au.appendChild(document.createTextNode(bookmark_url))
+        im.setAttribute("class", "favicon");
+        im.setAttribute("src", bookmark_favi);
+        im.setAttribute("alt", "bookmark icon");
 
-                    an.setAttribute("href", bookmark_url);
-                    an.setAttribute("class", "name");
-                    an.appendChild(document.createTextNode(bookmark_title))
+        au.setAttribute("href", bookmark_url);
+        au.setAttribute("class", "url");
+        au.appendChild(document.createTextNode(bookmark_url))
 
-                    li.appendChild(im);
-                    li.appendChild(an);
-                    li.appendChild(au);
-                    ul.appendChild(li);
-                }
-            });
-        });
-    });
+        an.setAttribute("href", bookmark_url);
+        an.setAttribute("class", "name");
+        an.appendChild(document.createTextNode(bookmark_title))
+
+        li.appendChild(im);
+        li.appendChild(an);
+        li.appendChild(au);
+        ul.appendChild(li);
+    }
+    execute();
 
     backend.locale(function(l) {
         selectLanguage(l);
     });
-
 });
