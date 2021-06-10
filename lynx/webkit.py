@@ -1,4 +1,5 @@
 import platform as arch
+from urllib.parse import urlparse
 from subprocess import Popen, PIPE
 
 import utils.adblock
@@ -8,6 +9,7 @@ import confvar
 import requests
 import favicon
 
+from PyQt5.QtNetwork import QNetworkProxy
 from PyQt5.QtCore import (
     QUrl,
     QObject,
@@ -26,7 +28,11 @@ from PyQt5.QtWidgets import (
 privileges = []
 
 
-def setPrivileges(p=[]):
+def get_privileges():
+    return privileges
+
+
+def set_privileges(p=[]):
     global privileges
     if p == "*":
         privileges = ["bookmarks", "filesystem"]
@@ -34,15 +40,26 @@ def setPrivileges(p=[]):
     privileges = p
 
 
-def getPriveleges():
-    global privileges
-    return privileges
+def set_proxy(string_proxy):
+    proxy = QNetworkProxy()
+    urlinfo = urlparse(string_proxy)
+
+    if urlinfo.scheme == "socks5":
+        proxy.setType(QNetworkProxy.Socks5Proxy)
+
+    elif urlinfo.scheme == "http":
+        proxy.setType(QNetworkProxy.HttpProxy)
+
+    proxy.setHostName(urlinfo.hostname)
+    proxy.setPort(urlinfo.port)
+
+    QNetworkProxy.setApplicationProxy(proxy)
 
 
 class WebChannel(QObject):
     def __init__(self):
         super().__init__()
-        setPrivileges([])
+        set_privileges([])
 
     @pyqtSlot(result=list)
     def getBookmarkFavicons(self):

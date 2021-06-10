@@ -80,11 +80,11 @@ def javascript_load(path):
 def execute(load_scripts, browser):
     js_code = javascript_load(confvar.BASE_PATH + "extensions/" + load_scripts)
     if script_list[load_scripts] in list(permissions.keys()):
-        wk.setPrivileges(permissions[script_list[load_scripts]])
+        wk.set_privileges(permissions[script_list[load_scripts]])
 
     browser.page().runJavaScript(js_code, 0)
     # FIXME: This should wait for the JS to execute
-    QTimer.singleShot(500, wk.setPrivileges)
+    QTimer.singleShot(500, wk.set_privileges)
 
 
 def on_page_load(browser):

@@ -5,7 +5,6 @@ import platform as arch
 from urllib.parse import urlparse
 from subprocess import Popen, PIPE
 
-import proxy
 import confvar
 import extension
 import webkit as wk
@@ -115,7 +114,7 @@ class MainWindow(QMainWindow):
         self.move(self.qtsettings.value("pos", QPoint(50, 50)))
 
         if confvar.BROWSER_PROXY:
-            proxy.setProxy(confvar.BROWSER_PROXY)
+            wk.set_proxy(confvar.BROWSER_PROXY)
 
         self.settings = QWebEngineSettings.defaultSettings()
         self.settings.setAttribute(
@@ -457,9 +456,9 @@ class MainWindow(QMainWindow):
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()
         if url[:5] == "file:":
-            wk.setPrivileges("*")
+            wk.set_privileges("*")
             return
-        wk.setPrivileges()
+        wk.set_privileges()
 
     def load_finished(self, urlbar, browser):
         if browser.page().url().toString() != "lynx:blank":
@@ -475,7 +474,7 @@ class MainWindow(QMainWindow):
 
         self.first_opened = True
 
-        if wk.getPriveleges():
+        if wk.get_privileges():
             return
 
         extension.on_page_load(browser)
