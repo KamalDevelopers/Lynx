@@ -69,12 +69,8 @@ download_directory = confvar.DOWNLOAD_PATH
 interceptor = wk.RequestInterceptor()
 webchannel = wk.WebChannel()
 
-progress_color_loading = confvar.style.value(
-    "QLineEdit", "background-color"
-)
-webkit_background_color = confvar.style.value(
-    "Background", "background-color"
-)
+progress_color_loading = confvar.style.value("QLineEdit", "background-color")
+webkit_background_color = confvar.style.value("Background", "background-color")
 
 
 def open_url_arg(url):
@@ -114,7 +110,7 @@ class MainWindow(QMainWindow):
         self.event_handler = EventHandler(self)
         self.event_handler.register()
 
-        self.qtsettings = QSettings('KamalDevelopers', 'Lynx')
+        self.qtsettings = QSettings("KamalDevelopers", "Lynx")
         self.resize(self.qtsettings.value("size", QSize(1280, 720)))
         self.move(self.qtsettings.value("pos", QPoint(50, 50)))
 
@@ -409,9 +405,7 @@ class MainWindow(QMainWindow):
         urlbar.textEdited.connect(
             lambda: self.update_index(self.tabs.currentIndex(), tab_i)
         )
-        urlbar.textChanged.connect(
-            lambda: self.shorten_url(urlbar)
-        )
+        urlbar.textChanged.connect(lambda: self.shorten_url(urlbar))
 
     @property
     def grip_size(self):
@@ -441,15 +435,10 @@ class MainWindow(QMainWindow):
         self.source_code = html
 
     def view_source(self, page, url):
-        page.toHtml(
-            lambda html: self.set_source(html)
-        )
+        page.toHtml(lambda html: self.set_source(html))
         self.view_source_url = "view-source:" + url
         QTimer.singleShot(
-            100,
-            lambda: self.navigate_to_url(
-                "view-source:" + url, page
-            )
+            100, lambda: self.navigate_to_url("view-source:" + url, page)
         )
 
     def handle_action(self, action, page):
@@ -620,25 +609,29 @@ class MainWindow(QMainWindow):
 
         if arch.system() == "Linux":
             cmdlist = [
-                "zenity", "--file-selection",
-                "--save", "--confirm-overwrite",
-                '--file-filter=All Files(*)',
-                '--filename='
+                "zenity",
+                "--file-selection",
+                "--save",
+                "--confirm-overwrite",
+                "--file-filter=All Files(*)",
+                "--filename="
                 + confvar.DOWNLOAD_PATH
                 + os.path.basename(download.path()),
-                '--title=Select File'
+                "--title=Select File",
             ]
             process = Popen(cmdlist, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
             stdout, stderr = stdout.decode(), stderr.decode()
             path = stdout.strip()
         else:
-            path = str(QFileDialog.getSaveFileName(
-                self,
-                "Open file",
-                confvar.DOWNLOAD_PATH + os.path.basename(download.path()),
-                "All Files(*)"
-            )[0])
+            path = str(
+                QFileDialog.getSaveFileName(
+                    self,
+                    "Open file",
+                    confvar.DOWNLOAD_PATH + os.path.basename(download.path()),
+                    "All Files(*)",
+                )[0]
+            )
 
         if not path:
             return
@@ -667,12 +660,13 @@ class MainWindow(QMainWindow):
     def save_page(self, page):
         if arch.system() == "Linux":
             cmdlist = [
-                "zenity", "--file-selection",
-                "--save", "--confirm-overwrite",
-                '--file-filter=*.html',
-                '--filename='
-                + confvar.DOWNLOAD_PATH + page.title() + ".html",
-                '--title=Select File'
+                "zenity",
+                "--file-selection",
+                "--save",
+                "--confirm-overwrite",
+                "--file-filter=*.html",
+                "--filename=" + confvar.DOWNLOAD_PATH + page.title() + ".html",
+                "--title=Select File",
             ]
             process = Popen(cmdlist, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate()
@@ -683,12 +677,11 @@ class MainWindow(QMainWindow):
                 self,
                 self.tr("Save Page"),
                 confvar.DOWNLOAD_PATH + page.title() + ".html",
-                "*.html", options=QFileDialog.DontUseCustomDirectoryIcons
+                "*.html",
+                options=QFileDialog.DontUseCustomDirectoryIcons,
             )
         if destination[0]:
-            page.toHtml(
-                lambda html: self.download_page(destination[0], html)
-            )
+            page.toHtml(lambda html: self.download_page(destination[0], html))
 
     def mute_page(self, browser):
         if browser.page().isAudioMuted():
@@ -758,7 +751,9 @@ class MainWindow(QMainWindow):
         if "." not in url and not lxu.check_lynx_url(qurl):
             qurl = QUrl("https://duckduckgo.com/?q=" + url)
         elif (
-            "." in url and not lxu.check_lynx_url(qurl) and "file:///" not in url
+            "." in url
+            and not lxu.check_lynx_url(qurl)
+            and "file:///" not in url
         ):
             qurl.setScheme("http")
 
