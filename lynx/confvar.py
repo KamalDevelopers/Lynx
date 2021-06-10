@@ -68,23 +68,12 @@ WEBKIT_JAVASCRIPT_POPUPS_ENABLED = 1
 
 def alter_value(cat, var, val):
     global configur
+    val = str(val)
     configur.read(BASE_PATH + "config.ini")
     BROWSER = configur[cat]
     BROWSER[var] = val
     with open(BASE_PATH + "config.ini", "w") as conf:
         configur.write(conf)
-
-
-def stealth(mode=True):
-    alter_value("BROWSER", "stealth", str(mode))
-
-
-def locale(loc):
-    alter_value("BROWSER", "locale", str(loc))
-
-
-def theme(t):
-    alter_value("BROWSER", "stylesheet", str(t))
 
 
 def sparse(string):
@@ -96,6 +85,7 @@ def sparse(string):
     ):
         return None
     return string
+
 
 def configure():
     global configur
@@ -154,8 +144,9 @@ def configure():
         BROWSER_STORE_VISITED_LINKS = False
         BROWSER_HTTPS_ONLY = True
         BROWSER_TS_DISABLED = True
-        BROWSER_AGENT = \
+        BROWSER_AGENT = (
             "Mozilla/5.0 (Windows NT 10.0;rv:78.0) Gecko/20100101 Firefox/78.0"
+        )
         BROWSER_PROXY = None
         BROWSER_WINDOW_TITLE = "Lynx Stealth"
         WEBKIT_WEBGL_ENABLED = 0

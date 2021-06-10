@@ -6,20 +6,20 @@ class ArgumentParser:
     def __init__(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("URL", nargs="?")
-        parser.add_argument("-s", action="store_true")
-        parser.add_argument("-l", type=str)
-        parser.add_argument("-t", type=str)
+        parser.add_argument("-s", "--stealth", action="store_true")
+        parser.add_argument("-l", "--locale", type=str)
+        parser.add_argument("-t", "--theme", type=str)
+        parser.add_argument("-a", "--agent", type=str)
         self.args = parser.parse_args()
 
     def load(self):
-        if self.args.l:
-            confvar.locale(self.args.l)
-        if self.args.t:
-            confvar.theme(self.args.t)
-        if self.args.s:
-            confvar.stealth()
-        else:
-            confvar.stealth(False)
+        if self.args.locale:
+            confvar.alter_value("BROWSER", "locale", self.args.locale)
+        if self.args.theme:
+            confvar.alter_value("BROWSER", "stylesheet", self.args.theme)
+        if self.args.agent:
+            confvar.alter_value("BROWSER", "agent", self.args.agent)
+        confvar.alter_value("BROWSER", "stealth", self.args.stealth)
         confvar.configure()
 
     def get(self):
