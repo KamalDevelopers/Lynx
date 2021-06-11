@@ -89,6 +89,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
+        self.hide()
         self._grip_size = 8
         self.source_code = False
         self.first_opened = False
@@ -229,7 +230,7 @@ class MainWindow(QMainWindow):
         if arch.system() == "Windows":
             if confvar.BROWSER_BORDERLESS:
                 self.round_corners()
-            self.show()
+        self.show()
 
     def add_new_tab(self, qurl=None, label="New Tab", silent=0):
         global default_url_open
@@ -466,9 +467,6 @@ class MainWindow(QMainWindow):
                 + " seconds",
             )
             browser.setFocus()
-
-        if not self.first_opened and arch.system() != "Windows":
-            self.show()
 
         self.first_opened = True
         self.update_urlbar_icon(urlbar)

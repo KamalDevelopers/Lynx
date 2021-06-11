@@ -4,7 +4,15 @@ html body {
     background-color: #202124;
 }
 
+@keyframes fade {
+   0% {opacity: 0;}
+   100% {opacity: 1;}
+}
+
 #container {
+    opacity: 1;
+    animation: fade 0.5s linear;
+
     width: 600px;
     margin: 0 auto;
     margin-top: 200px;
