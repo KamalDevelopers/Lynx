@@ -1,6 +1,7 @@
 import os
 import time
 import validators
+import scripts
 import platform as arch
 from urllib.parse import urlparse
 from subprocess import Popen, PIPE
@@ -455,13 +456,10 @@ class MainWindow(QMainWindow):
 
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()
-        if url[:5] == "file:":
-            wk.set_privileges("*")
-            return
-        wk.set_privileges()
 
     def load_finished(self, urlbar, browser):
-        if browser.page().url().toString() != "lynx:blank":
+        url = browser.page().url().toString()
+        if url != "lynx:blank":
             utils.log.dbg("DEBUG")(
                 "Loaded webpage in "
                 + str(round(time.time() - self.load_start_time, 3))
@@ -475,10 +473,19 @@ class MainWindow(QMainWindow):
         self.first_opened = True
         self.update_urlbar_icon(urlbar)
 
-        if wk.get_privileges():
+        if url[:5] != "file:":
+            extension.on_page_load(browser)
             return
 
-        extension.on_page_load(browser)
+        if os.path.isfile(url[7:].replace(".html", ".js")):
+            script_id = scripts.get_database().create(
+                ["bookmarks", "filesystem"]
+            )
+
+            with open(url[7:].replace(".html", ".js")) as f:
+                js_code = f.read().replace("{id}", script_id)
+            browser.page().runJavaScript(js_code, 0)
+            return
 
     def update_urlbar_icon(self, urlbar):
         icon = None

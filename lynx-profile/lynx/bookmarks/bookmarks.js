@@ -27,9 +27,9 @@ new QWebChannel(qt.webChannelTransport, function (channel) {
     window.backend = channel.objects.backend;
 
     async function get_bookmarks() {
-        let urls = await backend.getBookmarkUrls();
-        let titles = await backend.getBookmarkTitles();
-        let favicons = await backend.getBookmarkFavicons();
+        let urls = await backend.getBookmarkUrls({id});
+        let titles = await backend.getBookmarkTitles({id});
+        let favicons = await backend.getBookmarkFavicons({id});
         return [urls, titles, favicons];
     }
 
@@ -64,7 +64,7 @@ new QWebChannel(qt.webChannelTransport, function (channel) {
     }
     execute();
 
-    backend.locale(function(l) {
+    backend.locale({id}, function(l) {
         selectLanguage(l);
     });
 });

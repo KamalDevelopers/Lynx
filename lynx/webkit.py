@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 import utils.adblock
 import utils.bookmark
 import utils.mime
+import scripts
 import confvar
 
 from PyQt5.QtNetwork import QNetworkProxy
@@ -22,20 +23,6 @@ from PyQt5.QtWebEngineCore import QWebEngineUrlRequestInterceptor
 from PyQt5.QtWidgets import (
     QApplication,
 )
-
-privileges = []
-
-
-def get_privileges():
-    return privileges
-
-
-def set_privileges(p=[]):
-    global privileges
-    if p == "*":
-        privileges = ["bookmarks", "filesystem"]
-        return
-    privileges = p
 
 
 def set_proxy(string_proxy):
@@ -57,22 +44,28 @@ def set_proxy(string_proxy):
 class WebChannel(QObject):
     def __init__(self):
         super().__init__()
-        set_privileges([])
 
-    @pyqtSlot(result=list)
-    def getBookmarkFavicons(self):
-        if "bookmarks" not in privileges:
-            # print("Insufficient permissions")
+    @pyqtSlot(int, result=list)
+    def getBookmarkFavicons(self, script_id):
+        if "bookmarks" not in scripts.get_database().get(script_id):
+            utils.log.dbg("WARNING")(
+                "Script id: " +
+                str(script_id) + " invalid permissions"
+            )
             return
+
         result = []
         for bookmark in utils.bookmark.get_bookmarks():
             result.append(bookmark[1])
         return result
 
-    @pyqtSlot(result=list)
-    def getBookmarkTitles(self):
-        if "bookmarks" not in privileges:
-            # print("Insufficient permissions")
+    @pyqtSlot(int, result=list)
+    def getBookmarkTitles(self, script_id):
+        if "bookmarks" not in scripts.get_database().get(script_id):
+            utils.log.dbg("WARNING")(
+                "Script id: " +
+                str(script_id) + " invalid permissions"
+            )
             return
 
         result = []
@@ -80,10 +73,13 @@ class WebChannel(QObject):
             result.append(bookmark[2])
         return result
 
-    @pyqtSlot(result=list)
-    def getBookmarkUrls(self):
-        if "bookmarks" not in privileges:
-            # print("Insufficient permissions")
+    @pyqtSlot(int, result=list)
+    def getBookmarkUrls(self, script_id):
+        if "bookmarks" not in scripts.get_database().get(script_id):
+            utils.log.dbg("WARNING")(
+                "Script id: " +
+                str(script_id) + " invalid permissions"
+            )
             return
 
         result = []
@@ -91,24 +87,32 @@ class WebChannel(QObject):
             result.append(bookmark[0])
         return result
 
-    @pyqtSlot(str, result=str)
-    def readFile(self, path):
-        if "filesystem" not in privileges:
-            # print("Insufficient permissions")
+    @pyqtSlot(int, str, result=str)
+    def readFile(self, script_id, path):
+        if "filesystem" not in scripts.get_database().get(script_id):
+            utils.log.dbg("WARNING")(
+                "Script id: " +
+                str(script_id) + " invalid permissions"
+            )
             return
+
         with open(confvar.BASE_PATH + path) as F:
             return F.read()
 
-    @pyqtSlot(str, str)
-    def writeFile(self, path, data):
-        if "filesystem" not in privileges:
-            # print("Insufficient permissions")
+    @pyqtSlot(int, str, str)
+    def writeFile(self, script_id, path, data):
+        if "filesystem" not in scripts.get_database().get(script_id):
+            utils.log.dbg("WARNING")(
+                "Script id: " +
+                str(script_id) + " invalid permissions"
+            )
             return
+
         with open(confvar.BASE_PATH + path, "w") as F:
             F.write(data)
 
-    @pyqtSlot(result=str)
-    def locale(self):
+    @pyqtSlot(int, result=str)
+    def locale(self, script_id):
         if not confvar.sparse(confvar.BROWSER_LOCALE):
             return "en_US"
         return confvar.BROWSER_LOCALE
@@ -172,8 +176,8 @@ class CustomWebEnginePage(QWebEnginePage):
         path = stdout.strip()
         return [path]
 
-    def javaScriptConsoleMessage(self, level, msg, line, sourceID):
-        pass
+    def javaScriptConsoleMessage(self, level, msg, linenumber, source_id):
+        print('%s:%s: %s' % (source_id, linenumber, msg))
 
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor):

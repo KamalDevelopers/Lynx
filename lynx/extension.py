@@ -1,4 +1,5 @@
 import confvar
+import scripts
 import webkit as wk
 import utils.log
 
@@ -13,12 +14,13 @@ preload_data = {}
 permissions = {}
 script_list = {}
 
-apiFile = QFile(":/qtwebchannel/qwebchannel.js")
-if not apiFile.open(QIODevice.ReadOnly):
-    utils.log.msg("ERROR")("Could not open API file")
+api_file = QFile(":/qtwebchannel/qwebchannel.js")
+if not api_file.open(QIODevice.ReadOnly):
+    utils.log.dbg("ERROR")("Could not open API file")
 
-apiScript = apiFile.readAll().data().decode()
-apiFile.close()
+scripts.ScriptDatabase()
+api_script = api_file.readAll().data().decode()
+api_file.close()
 
 
 def read_extension(extension_file):
@@ -79,18 +81,21 @@ def javascript_load(path):
 
 def execute(load_scripts, browser):
     js_code = javascript_load(confvar.BASE_PATH + "extensions/" + load_scripts)
-    if script_list[load_scripts] in list(permissions.keys()):
-        wk.set_privileges(permissions[script_list[load_scripts]])
+    script_id = "-1"
 
+    if script_list[load_scripts] in list(permissions.keys()):
+        script_id = scripts.get_database().create(
+            permissions[script_list[load_scripts]]
+        )
+
+    js_code = js_code.replace("{id}", script_id)
     browser.page().runJavaScript(js_code, 0)
-    # FIXME: This should wait for the JS to execute
-    QTimer.singleShot(500, wk.set_privileges)
 
 
 def on_page_load(browser):
-    global apiScript
+    global api_script
 
-    browser.page().runJavaScript(apiScript)
+    browser.page().runJavaScript(api_script)
     time.sleep(0.01)
     match = browser.page().url().host().replace("www.", "")
 
