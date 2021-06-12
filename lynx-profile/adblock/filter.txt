@@ -21319,6 +21319,7 @@ zzzzz4.52896368.com
 ! Yavli.com
 ! uponit adservers
 
+##ytd-promoted-sparkles-text-search-renderer
 ###A9AdsMiddleBoxTop
 ###A9AdsOutOfStockWidgetTop
 ###A9AdsServicesWidgetTop
