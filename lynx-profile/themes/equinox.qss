@@ -686,11 +686,11 @@ QTabBar:focus {
 }
 
 QTabBar::close-button {
-    image: url(img/close_white.png);
+    image: url({path}/images/close_white.png);
 }
 
 QTabBar::close-button:hover {
-    image: url(img/hover_close_white.png);
+    image: url({path}/images/hover_close_white.png);
 }
 
 QTabBar::close-button:pressed {

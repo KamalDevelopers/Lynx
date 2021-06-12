@@ -1,6 +1,9 @@
+import confvar
+
+
 class StyleSheet:
     def __init__(self, style):
-        self.style = style
+        self.style = style.replace("{path}", confvar.BASE_PATH + "/themes")
 
     def get(self):
         return self.style
