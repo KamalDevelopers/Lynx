@@ -45,15 +45,9 @@ def read_extension(path, extension_file):
             new_name = data["extension"]["js"].replace(".ts", ".js")
             if confvar.BROWSER_TS_DISABLED:
                 return
-            if not os.path.isfile(
-                path + new_name
-            ):
+            if not os.path.isfile(path + new_name):
                 utils.log.msg("INFO")("Transpiling TS code")
-                os.system(
-                    "npx tsc "
-                    + path
-                    + data["extension"]["js"]
-                )
+                os.system("npx tsc " + path + data["extension"]["js"])
             data["extension"]["js"] = new_name
 
         script_list[path + data["extension"]["js"]] = data["name"]

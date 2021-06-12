@@ -97,7 +97,8 @@ class WebChannel(QObject):
 
         if not os.path.isfile(path):
             utils.log.dbg("WARNING")(
-                "Script id: " + str(script_id)
+                "Script id: "
+                + str(script_id)
                 + " tried to access invalid path: "
                 + path
             )
@@ -116,7 +117,7 @@ class WebChannel(QObject):
             description=desc,
             icon_path=icon_path,
             duration=duration,
-            urgency='normal'
+            urgency="normal",
         ).send()
 
     @pyqtSlot(int, str, str)
@@ -129,7 +130,8 @@ class WebChannel(QObject):
 
         if not os.path.isfile(path):
             utils.log.dbg("WARNING")(
-                "Script id: " + str(script_id)
+                "Script id: "
+                + str(script_id)
                 + " tried to access invalid path: "
                 + path
             )

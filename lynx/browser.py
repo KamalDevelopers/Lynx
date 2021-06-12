@@ -182,36 +182,58 @@ class MainWindow(QMainWindow):
         self.tabs.tabBar().setAutoHide(1)
 
         self.js_btn_enable = QAction(
-            self.tr("Disable Javascript") + " " + "(Alt+Ctrl+A)", self
+            self.tr("Disable Javascript")
+            + " ("
+            + shortcuts.shortcut("enable_js")
+            + ")",
+            self,
         )
-        self.js_btn_enable.setShortcut("Alt+Ctrl+A")
+        self.js_btn_enable.setShortcut(shortcuts.shortcut("enable_js"))
         icon = QIcon(":/images/js_enabled.png")
         self.js_btn_enable.setIcon(icon)
         self.js_btn_enable.triggered.connect(lambda: self.javascript_toggle())
 
         self.js_btn_disable = QAction(
-            self.tr("Enable Javascript") + " " + "(Alt+Ctrl+S)", self
+            self.tr("Enable Javascript")
+            + " ("
+            + shortcuts.shortcut("disable_js")
+            + ")",
+            self,
         )
-        self.js_btn_disable.setShortcut("Alt+Ctrl+S")
+        self.js_btn_disable.setShortcut(shortcuts.shortcut("disable_js"))
         icon = QIcon(":/images/js_disabled.png")
         self.js_btn_disable.setIcon(icon)
         self.js_btn_disable.setVisible(False)
         self.js_btn_disable.triggered.connect(lambda: self.javascript_toggle())
 
         self.download_btn = QAction(
-            self.tr("Downloads") + " " + "(Alt+D)", self
+            self.tr("Downloads")
+            + " ("
+            + shortcuts.shortcut("open_downloads")
+            + ")",
+            self,
         )
-        self.download_btn.setShortcut("Alt+D")
+        self.download_btn.setShortcut(shortcuts.shortcut("open_downloads"))
         icon = QIcon(":/images/download-idle.png")
         self.download_btn.setIcon(icon)
         self.download_btn.triggered.connect(lambda: self.download_pressed())
 
         # Shortcuts
-        self.shortcut_closetab = QShortcut(QKeySequence("Ctrl+W"), self)
-        self.shortcut_addtab = QShortcut(QKeySequence("Ctrl+J"), self)
-        self.shortcut_changetab_f = QShortcut(QKeySequence("Ctrl+L"), self)
-        self.shortcut_changetab_b = QShortcut(QKeySequence("Ctrl+H"), self)
-        self.shortcut_store_session = QShortcut(QKeySequence("Alt+X"), self)
+        self.shortcut_closetab = QShortcut(
+            QKeySequence(shortcuts.shortcut("close_tab")), self
+        )
+        self.shortcut_addtab = QShortcut(
+            QKeySequence(shortcuts.shortcut("add_tab")), self
+        )
+        self.shortcut_changetab_f = QShortcut(
+            QKeySequence(shortcuts.shortcut("goto_tab_right")), self
+        )
+        self.shortcut_changetab_b = QShortcut(
+            QKeySequence(shortcuts.shortcut("goto_tab_left")), self
+        )
+        self.shortcut_store_session = QShortcut(
+            QKeySequence(shortcuts.shortcut("store_session")), self
+        )
 
         self.shortcut_store_session.activated.connect(
             lambda: lxu.store_session(self.current_urls())
@@ -280,24 +302,39 @@ class MainWindow(QMainWindow):
         searchbar.setFixedHeight(23)
         searchbar.hide()
 
-        for s in shortcuts.shortcuts(self, browser, searchbar):
+        for s in shortcuts.create_shortcuts(self, browser, searchbar):
             navtb.addWidget(s)
 
-        back_btn = QAction(self.tr("Back") + " " + "(Alt+J)", self)
+        back_btn = QAction(
+            self.tr("Back") + " (" + shortcuts.shortcut("history_back") + ")",
+            self,
+        )
         icon = QIcon(":/images/arrow-left-s-line.png")
         back_btn.setIcon(icon)
-        back_btn.setShortcut("Alt+J")
+        back_btn.setShortcut(shortcuts.shortcut("history_back"))
         back_btn.triggered.connect(lambda: browser.history().back())
 
-        next_btn = QAction(self.tr("Forward") + " " + "(Alt+K)", self)
+        next_btn = QAction(
+            self.tr("Forward")
+            + " ("
+            + shortcuts.shortcut("history_forward")
+            + ")",
+            self,
+        )
         icon = QIcon(":/images/arrow-right-s-line.png")
         next_btn.setIcon(icon)
-        next_btn.setShortcut("Alt+K")
+        next_btn.setShortcut(shortcuts.shortcut("history_forward"))
         next_btn.triggered.connect(lambda: browser.history().forward())
 
         icon = QIcon(":/images/close-line.png")
-        exit_btn = QAction(self.tr("Exit Browser") + " " + "(Ctrl+Q)", self)
-        exit_btn.setShortcut("Ctrl+Q")
+        exit_btn = QAction(
+            self.tr("Exit Browser")
+            + " ("
+            + shortcuts.shortcut("exit_browser")
+            + ")",
+            self,
+        )
+        exit_btn.setShortcut(shortcuts.shortcut("exit_browser"))
         exit_btn.setIcon(icon)
         exit_btn.triggered.connect(lambda: self.close())
 
@@ -321,7 +358,7 @@ class MainWindow(QMainWindow):
         navtb.addWidget(urlbar)
 
         urlbar_focus = QPushButton("", self)
-        urlbar_focus.setShortcut("Ctrl+U")
+        urlbar_focus.setShortcut(shortcuts.shortcut("urlbar_focus"))
         urlbar_focus.clicked.connect(lambda: urlbar.setFocus())
         urlbar_focus.setMaximumWidth(0)
 
@@ -329,7 +366,10 @@ class MainWindow(QMainWindow):
             navtb.addSeparator()
         navtb.addWidget(urlbar_focus)
 
-        add_tab_btn = QAction(self.tr("Add Tab") + " " + "(Ctrl+H)", self)
+        add_tab_btn = QAction(
+            self.tr("Add Tab") + " (" + shortcuts.shortcut("add_tab") + ")",
+            self,
+        )
         icon = QIcon(":/images/add-line.png")
         add_tab_btn.setIcon(icon)
         add_tab_btn.triggered.connect(lambda: self.add_new_tab())
@@ -337,8 +377,15 @@ class MainWindow(QMainWindow):
         navtb.addAction(self.download_btn)
 
         icon = QIcon(":/images/spy-line.png")
-        stealth_btn = QAction(self.tr("Stealth Mode") + " " + "(Alt+S)", self)
-        stealth_btn.setShortcut("Alt+S")
+        stealth_btn = QAction(
+            self.tr("Stealth Mode")
+            + " ("
+            + shortcuts.shortcut("open_stealth")
+            + ")",
+            self,
+        )
+        stealth_btn.setShortcut(shortcuts.shortcut("open_stealth"))
+
         stealth_btn.setIcon(icon)
         stealth_btn.triggered.connect(lambda: self.launch_stealth())
 

@@ -1,0 +1,29 @@
+{
+    "shortcuts": {
+        "store_session": "Alt+X",
+        "reopen_tab": "Ctrl+Shift+T",
+        "max_view": "Alt+F",
+        "zoom_in": "Ctrl++",
+        "zoom_out": "Ctrl+0",
+        "save_page": "Ctrl+S",
+        "mute_page": "Ctrl+M",
+        "reload_page": "Ctrl+R",
+        "search_document": "Ctrl+F",
+        "bookmark_page": "Ctrl+B",
+        "urlbar_focus": "Ctrl+U",
+        "add_tab": "Ctrl+J",
+        "close_tab_group": "Alt+W",
+        "close_tab": "Ctrl+W",
+        "goto_tab_right": "Ctrl+L",
+        "goto_tab_left": "Ctrl+H",
+        "enable_js": "Alt+Ctrl+A",
+        "disable_js": "Alt+Ctrl+S",
+        "open_mpv": "Alt+M",
+        "open_bookmarks": "Alt+B",
+        "open_stealth": "Alt+S",
+        "open_downloads": "Alt+D",
+        "history_back": "Alt+J",
+        "history_forward": "Alt+K",
+        "exit_browser": "Ctrl+Q"
+    }
+}

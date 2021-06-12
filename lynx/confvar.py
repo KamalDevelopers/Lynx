@@ -38,6 +38,10 @@ if os.path.isfile(BASE_PATH + "restore.session"):
         BROWSER_OPEN_URLS = eval(f.read())
     os.remove(BASE_PATH + "restore.session")
 
+with open(BASE_PATH + "shortcuts.json") as f:
+    keyboard_shortcuts = json.load(f)["shortcuts"]
+
+
 # Default Values
 BROWSER_WINDOW_TITLE = "Lynx"
 BROWSER_BORDERLESS = True
