@@ -18,6 +18,7 @@ from PyQt5.QtCore import (
 )
 from PyQt5.QtWebEngineWidgets import (
     QWebEnginePage,
+    QWebEngineView,
 )
 from PyQt5.QtWebEngineCore import QWebEngineUrlRequestInterceptor
 from PyQt5.QtWidgets import (
@@ -118,7 +119,21 @@ class WebChannel(QObject):
         return confvar.BROWSER_LOCALE
 
 
-class CustomWebEnginePage(QWebEnginePage):
+class WebEngineView(QWebEngineView):
+    def setPlaceHolder(self, p):
+        p.hide()
+        self.place_holder = p
+
+    def hide(self):
+        self.place_holder.show()
+        return super().hide()
+
+    def show(self):
+        self.place_holder.hide()
+        return super().show()
+
+
+class WebEnginePage(QWebEnginePage):
     actionSignal = pyqtSignal(QWebEnginePage.WebAction, QWebEnginePage)
     ignored_action = False
 

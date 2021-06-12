@@ -247,11 +247,12 @@ class MainWindow(QMainWindow):
 
         qurl = QUrl(lxu.decode_lynx_url(qurl))
 
-        browser = QWebEngineView()
-        cwe = wk.CustomWebEnginePage(self)
+        browser = wk.WebEngineView()
+        cwe = wk.WebEnginePage(self)
         cwe.actionSignal.connect(self.handle_action)
         cwe.set_add_new_tab_h(self.add_new_tab)
         browser.setPage(cwe)
+
         browser.page().setBackgroundColor(QColor(webkit_background_color))
         browser.channel = QWebChannel()
         browser.channel.registerObject("backend", webchannel)
@@ -262,7 +263,6 @@ class MainWindow(QMainWindow):
             browser.page().profile().setHttpUserAgent(confvar.BROWSER_AGENT)
         browser.settings = self.settings
 
-        htabbox = QVBoxLayout()
         navtb = QToolBar(self.tr("Navigation"))
         # navtb.addSeparator()
         navtb.setMovable(False)
@@ -346,10 +346,17 @@ class MainWindow(QMainWindow):
             navtb.addAction(self.js_btn_disable)
 
         navtb.addSeparator()
+        place_holder = QWidget(self)
+        htabbox = QVBoxLayout()
         htabbox.addWidget(navtb)
         htabbox.addWidget(searchbar)
         htabbox.addWidget(browser)
+        htabbox.addWidget(place_holder)
         htabbox.setContentsMargins(0, 6, 0, 0)
+        browser.setPlaceHolder(place_holder)
+        place_holder.setStyleSheet(
+            "background-color: " + webkit_background_color + ";"
+        )
 
         tabpanel = QWidget()
         tabpanel.setLayout(htabbox)
@@ -392,7 +399,7 @@ class MainWindow(QMainWindow):
         )
         browser.page().loadProgress.connect(
             lambda p: self.load_progress(
-                p, urlbar, browser.page().url().toString()
+                p, urlbar, browser.page().url().toString(), browser
             )
         )
         browser.page().urlChanged.connect(
@@ -458,7 +465,20 @@ class MainWindow(QMainWindow):
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()
 
+        if url[:5] == "file:" or url[:5] == "lynx:":
+            return
+
+        history = browser.page().history()
+        last_url = history.itemAt(
+            history.currentItemIndex() - 1
+        ).url().toString()
+
+        if last_url != QUrl(url).toString():
+            browser.hide()
+
     def load_finished(self, urlbar, browser):
+        browser.show()
+
         url = browser.page().url().toString()
         if url != "lynx:blank":
             utils.log.dbg("DEBUG")(
@@ -766,7 +786,7 @@ class MainWindow(QMainWindow):
         qurl = QUrl(lxu.decode_lynx_url(qurl))
         webview.setUrl(qurl)
 
-    def load_progress(self, progress, urlbar, url):
+    def load_progress(self, progress, urlbar, url, browser):
         global progress_color_loading
         if url[:5] == "file:" or not url or url == "lynx:blank":
             urlbar.setStyleSheet("background-color: ;")
@@ -787,3 +807,4 @@ class MainWindow(QMainWindow):
             )
         else:
             urlbar.setStyleSheet("background-color: ;")
+            browser.show()
