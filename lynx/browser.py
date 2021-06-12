@@ -588,10 +588,11 @@ class MainWindow(QMainWindow):
         text = urlbar.text()
         if validators.url(text):
             url = urlparse(text)
-            if confvar.BROWSER_SHORT_URL > 0:
+            if confvar.BROWSER_SHORT_URL == 1:
+                text = text.split("&")[0]
+            if confvar.BROWSER_SHORT_URL == 2:
                 text = text.replace(url.params, "")
-            if confvar.BROWSER_SHORT_URL > 1:
-                text = text.replace(url.query, "")
+                text = text.replace("?" + url.query, "")
         urlbar.setText(text)
 
     def update_index(self, i, ti):
