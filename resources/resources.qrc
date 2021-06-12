@@ -4,7 +4,10 @@
         <file alias="OpenSans.ttf">font/OpenSans.ttf</file>
     </qresource>
 
-    <qresource prefix="download-images">
+    <qresource prefix="localization">
+        <file alias="sv_SE.qm">localization/sv_SE.qm</file>
+        <file alias="sr_Cyrl_RS.qm">localization/sr_Cyrl_RS.qm</file>
+    </qresource>
 
     <qresource prefix="images">
         <file alias="js_enabled.png">img/js_enabled.png</file>

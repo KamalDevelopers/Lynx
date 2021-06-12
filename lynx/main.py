@@ -31,18 +31,18 @@ def runbrowser():
     browser.open_url_arg(utils.argparser.arguments.get().URL)
 
     translator = QTranslator()
+    locale_loaded = translator.load(confvar.BROWSER_LOCALE, ":/localization/")
+    app.installTranslator(translator)
     if not confvar.BROWSER_LOCALE:
         confvar.BROWSER_LOCALE = QLocale.system().name()
-    locale_loaded = translator.load(
-        confvar.BROWSER_LOCALE + ".qm", "../localization"
-    )
-    utils.log.dbg("INFO")(
-        "Localization loaded: "
-        + str(locale_loaded)
-        + " "
-        + confvar.BROWSER_LOCALE
-    )
-    app.installTranslator(translator)
+    if confvar.BROWSER_LOCALE != "en_US":
+        utils.log.dbg("INFO" if locale_loaded else "ERROR")(
+            ["Invalid localization:",
+             "Localization loaded:"][locale_loaded]
+            + " :/localization/"
+            + confvar.BROWSER_LOCALE
+            + ".qm"
+        )
 
     window = browser.MainWindow()
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
