@@ -134,7 +134,9 @@ class MainWindow(QMainWindow):
         self.settings.setAttribute(
             QWebEngineSettings.PluginsEnabled, confvar.WEBKIT_PLUGINS_ENABLED
         )
-        self.settings.setAttribute(QWebEngineSettings.ScrollAnimatorEnabled, 1)
+        self.settings.setAttribute(
+            QWebEngineSettings.ScrollAnimatorEnabled, True
+        )
         self.settings.setAttribute(
             QWebEngineSettings.JavascriptCanOpenWindows,
             confvar.WEBKIT_JAVASCRIPT_POPUPS_ENABLED,
@@ -264,7 +266,6 @@ class MainWindow(QMainWindow):
 
         if confvar.BROWSER_AGENT is not None:
             browser.page().profile().setHttpUserAgent(confvar.BROWSER_AGENT)
-        browser.settings = self.settings
 
         navtb = QToolBar(self.tr("Navigation"))
         # navtb.addSeparator()
@@ -468,13 +469,14 @@ class MainWindow(QMainWindow):
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()
 
-        if url[:5] == "file:" or url[:5] == "lynx:":
-            return
-
         history = browser.page().history()
         last_url = (
             history.itemAt(history.currentItemIndex() - 1).url().toString()
         )
+
+        if url[:5] == "file:" or url[:5] == "lynx:" or not last_url:
+            browser.hide()
+            return
 
         if urlparse(last_url).hostname != urlparse(url).hostname:
             browser.hide()

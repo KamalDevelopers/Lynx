@@ -16,11 +16,11 @@ function add_adblocker(cssId)
 new QWebChannel(qt.webChannelTransport, function (channel) {
     backend = channel.objects.backend;
 
-    backend.readFile({id}, "extensions/adblock.css", function(pyval) {
+    backend.readFile({id}, {path} + "adblock.css", function(pyval) {
         adblock_code = pyval;
         add_adblocker("deflynx");
     });
-    backend.readFile({id}, "adblock/generated.css", function(pyval) {
+    backend.readFile({id}, {path} + "../../adblock/generated.css", function(pyval) {
         adblock_code = pyval;
         add_adblocker("pluscsslynx");
     });

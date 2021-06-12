@@ -1,6 +1,6 @@
 {
     "name": "DDG Adblocker",
-    "desc": "Automatically disables ads on DuckDuckGo.",
+    "desc": "Automatically disables ads on DuckDuckGo",
     "enabled": true,
     "extension": {
         "host": [

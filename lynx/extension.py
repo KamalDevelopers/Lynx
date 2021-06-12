@@ -7,7 +7,7 @@ import json
 import os
 import time
 
-from PyQt5.QtCore import QFile, QIODevice, QTimer
+from PyQt5.QtCore import QFile, QIODevice
 
 extension_data = {}
 preload_data = {}
@@ -23,10 +23,10 @@ api_script = api_file.readAll().data().decode()
 api_file.close()
 
 
-def read_extension(extension_file):
+def read_extension(path, extension_file):
     global extension_data, permissions, script_list
 
-    with open(confvar.BASE_PATH + "extensions/" + extension_file) as f:
+    with open(path + extension_file) as f:
         data = json.load(f)
 
     if "extension" not in data.keys():
@@ -46,27 +46,34 @@ def read_extension(extension_file):
             if confvar.BROWSER_TS_DISABLED:
                 return
             if not os.path.isfile(
-                confvar.BASE_PATH + "extensions/" + new_name
+                path + new_name
             ):
                 utils.log.msg("INFO")("Transpiling TS code")
                 os.system(
                     "npx tsc "
-                    + confvar.BASE_PATH
-                    + "extensions/"
+                    + path
                     + data["extension"]["js"]
                 )
             data["extension"]["js"] = new_name
-        script_list[data["extension"]["js"]] = data["name"]
+
+        script_list[path + data["extension"]["js"]] = data["name"]
         extension_data[host.replace("www.", "")].append(
-            data["extension"]["js"]
+            path + data["extension"]["js"]
         )
 
 
 def read_extensions():
-    files = os.listdir(confvar.BASE_PATH + "extensions/")
-    for _, extension_file in enumerate(files):
+    extension_files = []
+    extension_paths = []
+
+    for path, subdirs, files in os.walk(confvar.BASE_PATH + "extensions/"):
+        for name in files:
+            extension_files.append(name)
+            extension_paths.append(path + "/")
+
+    for i, extension_file in enumerate(extension_files):
         if extension_file[-5:] == ".json":
-            read_extension(extension_file)
+            read_extension(extension_paths[i], extension_file)
 
 
 def javascript_load(path):
@@ -74,13 +81,15 @@ def javascript_load(path):
 
     if path not in list(preload_data.keys()):
         with open(path) as f:
-            js_code = f.read()
+            js_code = f.read().replace(
+                "{path}", '"' + os.path.dirname(path) + '/"'
+            )
             preload_data[path] = js_code
     return preload_data[path]
 
 
 def execute(load_scripts, browser):
-    js_code = javascript_load(confvar.BASE_PATH + "extensions/" + load_scripts)
+    js_code = javascript_load(load_scripts)
     script_id = "-1"
 
     if script_list[load_scripts] in list(permissions.keys()):

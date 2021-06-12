@@ -1,6 +1,7 @@
 import platform as arch
 from urllib.parse import urlparse
 from subprocess import Popen, PIPE
+import os
 
 import utils.adblock
 import utils.bookmark
@@ -93,6 +94,14 @@ class WebChannel(QObject):
             )
             return
 
+        if not os.path.isfile(path):
+            utils.log.dbg("WARNING")(
+                "Script id: " + str(script_id)
+                + " tried to access invalid path: "
+                + path
+            )
+            return
+
         with open(confvar.BASE_PATH + path) as F:
             return F.read()
 
@@ -101,6 +110,14 @@ class WebChannel(QObject):
         if "filesystem" not in scripts.get_database().get(script_id):
             utils.log.dbg("WARNING")(
                 "Script id: " + str(script_id) + " invalid permissions"
+            )
+            return
+
+        if not os.path.isfile(path):
+            utils.log.dbg("WARNING")(
+                "Script id: " + str(script_id)
+                + " tried to access invalid path: "
+                + path
             )
             return
 

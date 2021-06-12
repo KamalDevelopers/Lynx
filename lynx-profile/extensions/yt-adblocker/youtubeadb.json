@@ -1,5 +1,5 @@
 {
-    "name": "YoutubeAdBlocker",
+    "name": "Youtube Adblocker",
     "desc": "Automatically skips Youtube ads",
     "enabled": true,
     "extension": {
