@@ -502,7 +502,7 @@ class MainWindow(QMainWindow):
 
         if os.path.isfile(url[7:].replace(".html", ".js")):
             script_id = scripts.get_database().create(
-                ["bookmarks", "filesystem"]
+                ["bookmarks", "filesystem", "notifications"]
             )
 
             with open(url[7:].replace(".html", ".js")) as f:

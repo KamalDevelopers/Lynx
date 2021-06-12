@@ -1,4 +1,5 @@
 import platform as arch
+from pynotifier import Notification
 from urllib.parse import urlparse
 from subprocess import Popen, PIPE
 import os
@@ -104,6 +105,19 @@ class WebChannel(QObject):
 
         with open(confvar.BASE_PATH + path) as F:
             return F.read()
+
+    @pyqtSlot(int, str, str, str, int)
+    def sendNotification(self, script_id, title, desc, icon_path, duration):
+        if "notifications" not in scripts.get_database().get(script_id):
+            return
+
+        Notification(
+            title=title,
+            description=desc,
+            icon_path=icon_path,
+            duration=duration,
+            urgency='normal'
+        ).send()
 
     @pyqtSlot(int, str, str)
     def writeFile(self, script_id, path, data):
