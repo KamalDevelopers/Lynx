@@ -1,12 +1,12 @@
 import os
 import time
 import validators
-import scripts
 import platform as arch
 from urllib.parse import urlparse
 from subprocess import Popen, PIPE
 
 import confvar
+import scripts
 import extension
 import webkit as wk
 import utils.log
@@ -473,7 +473,7 @@ class MainWindow(QMainWindow):
             history.currentItemIndex() - 1
         ).url().toString()
 
-        if last_url != QUrl(url).toString():
+        if urlparse(last_url).hostname != urlparse(url).hostname:
             browser.hide()
 
     def load_finished(self, urlbar, browser):

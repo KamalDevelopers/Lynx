@@ -192,7 +192,11 @@ class WebEnginePage(QWebEnginePage):
         return [path]
 
     def javaScriptConsoleMessage(self, level, msg, linenumber, source_id):
-        print('%s:%s: %s' % (source_id, linenumber, msg))
+        if confvar.WEBKIT_DEBUG_LEVEL < 1:
+            return
+        utils.log.dbg("DEBUG")(
+            '%s:%s: %s' % (source_id, linenumber, msg)
+        )
 
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor):
