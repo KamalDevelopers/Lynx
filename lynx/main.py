@@ -25,7 +25,7 @@ from PyQt5.QtGui import QIcon, QFontDatabase
 def runbrowser():
     app = QApplication(sys.argv)
     QFontDatabase.addApplicationFont(
-        "font/" + confvar.BROWSER_FONT_FAMILY + ".ttf"
+        ":/fonts/" + confvar.BROWSER_FONT_FAMILY + ".ttf"
     )
     app.setApplicationName(confvar.BROWSER_WINDOW_TITLE)
     browser.open_url_arg(utils.argparser.arguments.get().URL)
@@ -48,19 +48,29 @@ def runbrowser():
     window.setWindowTitle(confvar.BROWSER_WINDOW_TITLE)
 
     if os.path.isfile(
-        "./img/icons/" + confvar.BROWSER_STYLESHEET + "-lynx_logo.ico"
+        confvar.BASE_PATH
+        + "/themes/icons/"
+        + confvar.BROWSER_STYLESHEET
+        + "-lynx_logo.ico"
     ):
         app.setWindowIcon(
             QIcon(
                 os.path.abspath(
-                    "./img/icons/"
+                    confvar.BASE_PATH
+                    + "/themes/icons/"
                     + confvar.BROWSER_STYLESHEET
                     + "-lynx_logo.ico"
                 )
             )
         )
     else:
-        app.setWindowIcon(QIcon(os.path.abspath("./img/icons/lynx_logo.ico")))
+        app.setWindowIcon(
+            QIcon(
+                os.path.abspath(
+                    confvar.BASE_PATH + "/themes/icons/lynx_logo.ico"
+                )
+            )
+        )
 
     confvar.style.value(
         "QLineEdit", "font-family", confvar.BROWSER_FONT_FAMILY

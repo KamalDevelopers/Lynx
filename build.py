@@ -55,7 +55,7 @@ fname = "Lynx"
 os.mkdir(fname)
 
 PyInstaller.__main__.run(
-    ["lynx/main.py", "--noconsole", "--onefile", "-ilynx/img/icons/logo.ico"]
+    ["lynx/main.py", "--noconsole", "--onefile", "-ilynx-profile/themes/icons/logo.ico"]
 )
 
 # Rename Executable

@@ -50,8 +50,7 @@ class WebChannel(QObject):
     def getBookmarkFavicons(self, script_id):
         if "bookmarks" not in scripts.get_database().get(script_id):
             utils.log.dbg("WARNING")(
-                "Script id: " +
-                str(script_id) + " invalid permissions"
+                "Script id: " + str(script_id) + " invalid permissions"
             )
             return
 
@@ -64,8 +63,7 @@ class WebChannel(QObject):
     def getBookmarkTitles(self, script_id):
         if "bookmarks" not in scripts.get_database().get(script_id):
             utils.log.dbg("WARNING")(
-                "Script id: " +
-                str(script_id) + " invalid permissions"
+                "Script id: " + str(script_id) + " invalid permissions"
             )
             return
 
@@ -78,8 +76,7 @@ class WebChannel(QObject):
     def getBookmarkUrls(self, script_id):
         if "bookmarks" not in scripts.get_database().get(script_id):
             utils.log.dbg("WARNING")(
-                "Script id: " +
-                str(script_id) + " invalid permissions"
+                "Script id: " + str(script_id) + " invalid permissions"
             )
             return
 
@@ -92,8 +89,7 @@ class WebChannel(QObject):
     def readFile(self, script_id, path):
         if "filesystem" not in scripts.get_database().get(script_id):
             utils.log.dbg("WARNING")(
-                "Script id: " +
-                str(script_id) + " invalid permissions"
+                "Script id: " + str(script_id) + " invalid permissions"
             )
             return
 
@@ -104,8 +100,7 @@ class WebChannel(QObject):
     def writeFile(self, script_id, path, data):
         if "filesystem" not in scripts.get_database().get(script_id):
             utils.log.dbg("WARNING")(
-                "Script id: " +
-                str(script_id) + " invalid permissions"
+                "Script id: " + str(script_id) + " invalid permissions"
             )
             return
 
@@ -171,7 +166,7 @@ class WebEnginePage(QWebEnginePage):
 
         if acceptMimeTypes:
             extensions = utils.mime.get_extensions(acceptMimeTypes)
-            file_filter = "Accepted Files | " + ' '.join(extensions)
+            file_filter = "Accepted Files | " + " ".join(extensions)
         else:
             file_filter = "All files | *"
 
@@ -179,10 +174,8 @@ class WebEnginePage(QWebEnginePage):
             "zenity",
             multiple_files,
             "--file-selection",
-            "--file-filter=" +
-            file_filter,
-            "--filename="
-            + confvar.DOWNLOAD_PATH,
+            "--file-filter=" + file_filter,
+            "--filename=" + confvar.DOWNLOAD_PATH,
             "--title=Select File",
         ]
         process = Popen(cmdlist, stdout=PIPE, stderr=PIPE)
@@ -194,9 +187,7 @@ class WebEnginePage(QWebEnginePage):
     def javaScriptConsoleMessage(self, level, msg, linenumber, source_id):
         if confvar.WEBKIT_DEBUG_LEVEL < 1:
             return
-        utils.log.dbg("DEBUG")(
-            '%s:%s: %s' % (source_id, linenumber, msg)
-        )
+        utils.log.dbg("DEBUG")("%s:%s: %s" % (source_id, linenumber, msg))
 
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor):

@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="fonts">
+        <file alias="Noto.ttf">font/Noto.ttf</file>
+        <file alias="OpenSans.ttf">font/OpenSans.ttf</file>
+    </qresource>
+
+    <qresource prefix="download-images">
+
+    <qresource prefix="images">
+        <file alias="js_enabled.png">img/js_enabled.png</file>
+        <file alias="js_disabled.png">img/js_disabled.png</file>
+
+        <file alias="download-idle.png">img/download-item/download-idle.png</file>
+        <file alias="download-20.png">img/download-item/download-20.png</file>
+        <file alias="download-40.png">img/download-item/download-40.png</file>
+        <file alias="download-60.png">img/download-item/download-60.png</file>
+        <file alias="download-80.png">img/download-item/download-80.png</file>
+        <file alias="download-100.png">img/download-item/download-100.png</file>
+        <file alias="download-done.png">img/download-item/download-done.png</file>
+        <file alias="download-reset.png">img/download-item/download-reset.png</file>
+
+        <file alias="arrow-left-s-line.png">img/remix/arrow-left-s-line.png</file>
+        <file alias="arrow-right-s-line.png">img/remix/arrow-right-s-line.png</file>
+        <file alias="close-line.png">img/remix/close-line.png</file>
+        <file alias="search.png">img/search.png</file>
+        <file alias="add-line.png">img/remix/add-line.png</file>
+        <file alias="spy-line.png">img/remix/spy-line.png</file>
+
+        <file alias="secure.png">img/secure.png</file>
+        <file alias="unsecure.png">img/unsecure.png</file>
+    </qresource>
+</RCC>

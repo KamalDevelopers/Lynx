@@ -7,6 +7,7 @@ from subprocess import Popen, PIPE
 
 import confvar
 import scripts
+import resources
 import extension
 import webkit as wk
 import utils.log
@@ -152,19 +153,19 @@ class MainWindow(QMainWindow):
 
         try:
             font_id = QFontDatabase.addApplicationFont(
-                "font/" + confvar.BROWSER_FONT_FAMILY + ".ttf"
+                ":/fonts/" + confvar.BROWSER_FONT_FAMILY + ".ttf"
             )
             font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
             self.default_font = QFont(font_family)
             self.default_font.setPixelSize(11)
             self.setFont(self.default_font)
             utils.log.dbg("INFO")(
-                "Loaded ttf:" + " font/" + confvar.BROWSER_FONT_FAMILY
+                "Loaded ttf:" + " :/fonts/" + confvar.BROWSER_FONT_FAMILY
             )
         except IndexError:
             utils.log.dbg("ERROR")(
-                "Could not load ttf:"
-                + " font/"
+                "Could not load resource:"
+                + " :/fonts/"
                 + confvar.BROWSER_FONT_FAMILY
                 + ".ttf"
             )
@@ -182,7 +183,7 @@ class MainWindow(QMainWindow):
             self.tr("Disable Javascript") + " " + "(Alt+Ctrl+A)", self
         )
         self.js_btn_enable.setShortcut("Alt+Ctrl+A")
-        icon = QIcon("img/js_enabled.png")
+        icon = QIcon(":/images/js_enabled.png")
         self.js_btn_enable.setIcon(icon)
         self.js_btn_enable.triggered.connect(lambda: self.javascript_toggle())
 
@@ -190,14 +191,16 @@ class MainWindow(QMainWindow):
             self.tr("Enable Javascript") + " " + "(Alt+Ctrl+S)", self
         )
         self.js_btn_disable.setShortcut("Alt+Ctrl+S")
-        icon = QIcon("img/js_disabled.png")
+        icon = QIcon(":/images/js_disabled.png")
         self.js_btn_disable.setIcon(icon)
         self.js_btn_disable.setVisible(False)
         self.js_btn_disable.triggered.connect(lambda: self.javascript_toggle())
 
-        self.download_btn = QAction(self.tr("Downloads") + " " + "(Alt+D)", self)
+        self.download_btn = QAction(
+            self.tr("Downloads") + " " + "(Alt+D)", self
+        )
         self.download_btn.setShortcut("Alt+D")
-        icon = QIcon("img/download-item/download-idle.png")
+        icon = QIcon(":/images/download-idle.png")
         self.download_btn.setIcon(icon)
         self.download_btn.triggered.connect(lambda: self.download_pressed())
 
@@ -280,18 +283,18 @@ class MainWindow(QMainWindow):
             navtb.addWidget(s)
 
         back_btn = QAction(self.tr("Back") + " " + "(Alt+J)", self)
-        icon = QIcon("img/remix/arrow-left-s-line.png")
+        icon = QIcon(":/images/arrow-left-s-line.png")
         back_btn.setIcon(icon)
         back_btn.setShortcut("Alt+J")
         back_btn.triggered.connect(lambda: browser.history().back())
 
         next_btn = QAction(self.tr("Forward") + " " + "(Alt+K)", self)
-        icon = QIcon("img/remix/arrow-right-s-line.png")
+        icon = QIcon(":/images/arrow-right-s-line.png")
         next_btn.setIcon(icon)
         next_btn.setShortcut("Alt+K")
         next_btn.triggered.connect(lambda: browser.history().forward())
 
-        icon = QIcon("img/remix/close-line.png")
+        icon = QIcon(":/images/close-line.png")
         exit_btn = QAction(self.tr("Exit Browser") + " " + "(Ctrl+Q)", self)
         exit_btn.setShortcut("Ctrl+Q")
         exit_btn.setIcon(icon)
@@ -301,7 +304,7 @@ class MainWindow(QMainWindow):
         navtb.addAction(back_btn)
         navtb.addAction(next_btn)
 
-        secure_icon = QIcon("img/search.png")
+        secure_icon = QIcon(":/images/search.png")
 
         urlbar = QLineEdit()
         urlbar.returnPressed.connect(
@@ -326,13 +329,13 @@ class MainWindow(QMainWindow):
         navtb.addWidget(urlbar_focus)
 
         add_tab_btn = QAction(self.tr("Add Tab") + " " + "(Ctrl+H)", self)
-        icon = QIcon("img/remix/add-line.png")
+        icon = QIcon(":/images/add-line.png")
         add_tab_btn.setIcon(icon)
         add_tab_btn.triggered.connect(lambda: self.add_new_tab())
         navtb.addAction(add_tab_btn)
         navtb.addAction(self.download_btn)
 
-        icon = QIcon("img/remix/spy-line.png")
+        icon = QIcon(":/images/spy-line.png")
         stealth_btn = QAction(self.tr("Stealth Mode") + " " + "(Alt+S)", self)
         stealth_btn.setShortcut("Alt+S")
         stealth_btn.setIcon(icon)
@@ -469,9 +472,9 @@ class MainWindow(QMainWindow):
             return
 
         history = browser.page().history()
-        last_url = history.itemAt(
-            history.currentItemIndex() - 1
-        ).url().toString()
+        last_url = (
+            history.itemAt(history.currentItemIndex() - 1).url().toString()
+        )
 
         if urlparse(last_url).hostname != urlparse(url).hostname:
             browser.hide()
@@ -508,14 +511,16 @@ class MainWindow(QMainWindow):
     def update_urlbar_icon(self, urlbar):
         icon = None
 
-        if urlbar.text()[:5] == "lynx:" \
-           or urlbar.text()[:12] == "view-source:" \
-           or not urlbar.text():
-            icon = QIcon("img/search.png")
+        if (
+            urlbar.text()[:5] == "lynx:"
+            or urlbar.text()[:12] == "view-source:"
+            or not urlbar.text()
+        ):
+            icon = QIcon(":/images/search.png")
         if "https://" == urlbar.text()[:8]:
-            icon = QIcon("img/secure.png")
+            icon = QIcon(":/images/secure.png")
         if "http://" == urlbar.text()[:7]:
-            icon = QIcon("img/unsecure.png")
+            icon = QIcon(":/images/unsecure.png")
         if icon is not None:
             urlbar.removeAction(urlbar.actions()[0])
             urlbar.addAction(icon, QLineEdit.LeadingPosition)
@@ -613,13 +618,13 @@ class MainWindow(QMainWindow):
         if progress >= 100:
             downloading_item = False
 
-        icon = QIcon("img/download-item/" + set_picture + ".png")
+        icon = QIcon(":/images/" + set_picture + ".png")
         self.download_btn.setIcon(icon)
         if not downloading_item:
             QTimer.singleShot(
                 1000,
                 lambda: self.download_btn.setIcon(
-                    QIcon("img/download-item/download-reset.png")
+                    QIcon(":/images/download-reset.png")
                 ),
             )
 

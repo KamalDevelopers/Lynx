@@ -5,7 +5,7 @@ from os.path import isfile, join
 
 format_paths = ["lynx/", "lynx/utils/"]
 format_command = "black --line-length=79 "
-ignore = ["confvar.py"]
+ignore = ["confvar.py", "resources.py"]
 files = {}
 for format_path in format_paths:
     files[format_path] = [f for f in listdir(format_path) if isfile(join(format_path, f))]
