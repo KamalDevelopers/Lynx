@@ -37,8 +37,7 @@ def runbrowser():
         confvar.BROWSER_LOCALE = QLocale.system().name()
     if confvar.BROWSER_LOCALE != "en_US":
         utils.log.dbg("INFO" if locale_loaded else "ERROR")(
-            ["Invalid localization:",
-             "Localization loaded:"][locale_loaded]
+            ["Invalid localization:", "Localization loaded:"][locale_loaded]
             + " :/localization/"
             + confvar.BROWSER_LOCALE
             + ".qm"

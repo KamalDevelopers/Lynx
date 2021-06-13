@@ -48,12 +48,15 @@ class WebChannel(QObject):
     def __init__(self):
         super().__init__()
 
+    def permissionError(self, script_id):
+        utils.log.dbg("WARNING")(
+            "Script id: " + str(script_id) + " insufficient permissions"
+        )
+
     @pyqtSlot(int, result=list)
     def getBookmarkFavicons(self, script_id):
         if "bookmarks" not in scripts.get_database().get(script_id):
-            utils.log.dbg("WARNING")(
-                "Script id: " + str(script_id) + " invalid permissions"
-            )
+            self.permissionError(script_id)
             return
 
         result = []
@@ -64,9 +67,7 @@ class WebChannel(QObject):
     @pyqtSlot(int, result=list)
     def getBookmarkTitles(self, script_id):
         if "bookmarks" not in scripts.get_database().get(script_id):
-            utils.log.dbg("WARNING")(
-                "Script id: " + str(script_id) + " invalid permissions"
-            )
+            self.permissionError(script_id)
             return
 
         result = []
@@ -77,9 +78,7 @@ class WebChannel(QObject):
     @pyqtSlot(int, result=list)
     def getBookmarkUrls(self, script_id):
         if "bookmarks" not in scripts.get_database().get(script_id):
-            utils.log.dbg("WARNING")(
-                "Script id: " + str(script_id) + " invalid permissions"
-            )
+            self.permissionError(script_id)
             return
 
         result = []
@@ -90,16 +89,14 @@ class WebChannel(QObject):
     @pyqtSlot(int, str, result=str)
     def readFile(self, script_id, path):
         if "filesystem" not in scripts.get_database().get(script_id):
-            utils.log.dbg("WARNING")(
-                "Script id: " + str(script_id) + " invalid permissions"
-            )
+            self.permissionError(script_id)
             return
 
         if not os.path.isfile(path):
             utils.log.dbg("WARNING")(
                 "Script id: "
                 + str(script_id)
-                + " tried to access invalid path: "
+                + " (read from) invalid path: "
                 + path
             )
             return
@@ -107,9 +104,28 @@ class WebChannel(QObject):
         with open(confvar.BASE_PATH + path) as F:
             return F.read()
 
+    @pyqtSlot(int, str, str)
+    def writeFile(self, script_id, path, data):
+        if "filesystem" not in scripts.get_database().get(script_id):
+            self.permissionError(script_id)
+            return
+
+        try:
+            with open(confvar.BASE_PATH + path, "w") as F:
+                F.write(data)
+        except OSError:
+            utils.log.dbg("WARNING")(
+                "Script id: "
+                + str(script_id)
+                + " (write to) invalid path: "
+                + path
+            )
+            return
+
     @pyqtSlot(int, str, str, str, int)
     def sendNotification(self, script_id, title, desc, icon_path, duration):
         if "notifications" not in scripts.get_database().get(script_id):
+            self.permissionError(script_id)
             return
 
         Notification(
@@ -119,26 +135,6 @@ class WebChannel(QObject):
             duration=duration,
             urgency="normal",
         ).send()
-
-    @pyqtSlot(int, str, str)
-    def writeFile(self, script_id, path, data):
-        if "filesystem" not in scripts.get_database().get(script_id):
-            utils.log.dbg("WARNING")(
-                "Script id: " + str(script_id) + " invalid permissions"
-            )
-            return
-
-        if not os.path.isfile(path):
-            utils.log.dbg("WARNING")(
-                "Script id: "
-                + str(script_id)
-                + " tried to access invalid path: "
-                + path
-            )
-            return
-
-        with open(confvar.BASE_PATH + path, "w") as F:
-            F.write(data)
 
     @pyqtSlot(int, result=str)
     def locale(self, script_id):

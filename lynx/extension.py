@@ -1,11 +1,11 @@
 import confvar
 import scripts
+import resources
 import webkit as wk
 import utils.log
 
 import json
 import os
-import time
 
 from PyQt5.QtCore import QFile, QIODevice
 
@@ -13,18 +13,38 @@ extension_data = {}
 preload_data = {}
 permissions = {}
 script_list = {}
+api_scripts = {}
 
-api_file = QFile(":/qtwebchannel/qwebchannel.js")
-if not api_file.open(QIODevice.ReadOnly):
-    utils.log.dbg("ERROR")("Could not open API file")
 
-scripts.ScriptDatabase()
-api_script = api_file.readAll().data().decode()
-api_file.close()
+def load_api(api_scripts):
+    webchannel_file = QFile(":/qtwebchannel/qwebchannel.js")
+    webchannel_file.open(QIODevice.ReadOnly)
+    webchannel_script = webchannel_file.readAll().data().decode()
+    webchannel_file.close()
+
+    api_file = QFile(":/scripts/api.js")
+    api_file.open(QIODevice.ReadOnly)
+    api_script = api_file.readAll().data().decode()
+    api_file.close()
+
+    run_file = QFile(":/scripts/run.js")
+    run_file.open(QIODevice.ReadOnly)
+    run_script = run_file.readAll().data().decode()
+    run_file.close()
+
+    api_scripts["webchannel"] = webchannel_script
+    api_scripts["api"] = api_script
+    api_scripts["run"] = run_script
 
 
 def read_extension(path, extension_file):
-    global extension_data, permissions, script_list
+    global extension_data
+    global permissions
+    global script_list
+    global api_scripts
+
+    load_api(api_scripts)
+    scripts.ScriptDatabase()
 
     with open(path + extension_file) as f:
         data = json.load(f)
@@ -75,33 +95,37 @@ def javascript_load(path):
 
     if path not in list(preload_data.keys()):
         with open(path) as f:
-            js_code = f.read().replace(
-                "{path}", '"' + os.path.dirname(path) + '/"'
-            )
-            preload_data[path] = js_code
+            js_code = f.read()
+            preload_data[path] = [js_code, os.path.dirname(path) + "/"]
     return preload_data[path]
 
 
 def execute(load_scripts, browser):
-    js_code = javascript_load(load_scripts)
-    script_id = "-1"
+    js_code = javascript_load(load_scripts)[0]
+    path = javascript_load(load_scripts)[1]
 
     if script_list[load_scripts] in list(permissions.keys()):
         script_id = scripts.get_database().create(
             permissions[script_list[load_scripts]]
         )
+    else:
+        script_id = scripts.get_database().create([])
 
-    js_code = js_code.replace("{id}", script_id)
+    script = (
+        api_scripts["run"]
+        .replace("{id}", script_id)
+        .replace("{path}", '"' + path + '"')
+    )
+
+    js_code = script.replace("{source}", js_code)
     browser.page().runJavaScript(js_code, 0)
 
 
 def on_page_load(browser):
-    global api_script
+    browser.page().runJavaScript(api_scripts["webchannel"])
+    browser.page().runJavaScript(api_scripts["api"])
 
-    browser.page().runJavaScript(api_script)
-    time.sleep(0.01)
     match = browser.page().url().host().replace("www.", "")
-
     if match in list(extension_data.keys()):
         for load_scripts in extension_data[match]:
             execute(load_scripts, browser)

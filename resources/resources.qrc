@@ -32,4 +32,9 @@
         <file alias="secure.png">img/secure.png</file>
         <file alias="unsecure.png">img/unsecure.png</file>
     </qresource>
+
+    <qresource prefix="scripts">
+        <file alias="api.js">scripts/api.js</file>
+        <file alias="run.js">scripts/run.js</file>
+    </qresource>
 </RCC>
