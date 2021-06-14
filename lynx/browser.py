@@ -778,7 +778,7 @@ class MainWindow(QMainWindow):
             browser.page().setAudioMuted(1)
 
     def set_tab_icon(self, i, webpage):
-        if webpage.icon():
+        if not webpage.icon().isNull():
             self.tabs.setTabIcon(i, webpage.icon())
 
     def tab_open_doubleclick(self, i):
