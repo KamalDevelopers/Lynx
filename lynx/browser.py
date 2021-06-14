@@ -97,6 +97,11 @@ class MainWindow(QMainWindow):
         self.last_closed_tab = None
         self.tab_indexes = []
 
+        confvar.style.value(
+            "QLineEdit", "font-family", confvar.BROWSER_FONT_FAMILY
+        )
+        self.setStyleSheet(confvar.style.get())
+
         if confvar.BROWSER_BORDERLESS:
             self.setWindowFlags(Qt.FramelessWindowHint)
             # Activate corner grips
@@ -180,6 +185,7 @@ class MainWindow(QMainWindow):
         self.tabs.setMovable(True)
         self.tabs.tabBar().setExpanding(True)
         self.tabs.tabBar().setAutoHide(1)
+        self.tabs.setFont(QFont(confvar.BROWSER_FONT_FAMILY, 8))
 
         self.js_btn_enable = QAction(
             self.tr("Disable Javascript")

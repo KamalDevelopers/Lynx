@@ -71,11 +71,7 @@ def runbrowser():
             )
         )
 
-    confvar.style.value(
-        "QLineEdit", "font-family", confvar.BROWSER_FONT_FAMILY
-    )
     app.setAttribute(Qt.AA_DontShowIconsInMenus, True)
-    app.setStyleSheet(confvar.style.get())
     app.exec_()
 
 

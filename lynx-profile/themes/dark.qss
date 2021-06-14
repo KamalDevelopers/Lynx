@@ -274,7 +274,7 @@ QLineEdit {
     background-color: #15191c;
     padding: 1px;
     border-style: solid;
-    border: 1px solid #202224;
+    border: 1px solid #0e1011;
     border-radius: 10px;
     color: #9f9f9f;
 }
