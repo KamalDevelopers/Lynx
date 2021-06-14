@@ -13,6 +13,7 @@ extension_data = {}
 preload_data = {}
 permissions = {}
 script_list = {}
+script_load = {}
 api_scripts = {}
 
 
@@ -41,6 +42,7 @@ def read_extension(path, extension_file):
     global extension_data
     global permissions
     global script_list
+    global script_load
     global api_scripts
 
     load_api(api_scripts)
@@ -54,6 +56,11 @@ def read_extension(path, extension_file):
 
     if "permissions" in data.keys():
         permissions[data["name"]] = data["permissions"]
+
+    if "run" in data.keys():
+        script_load[data["name"]] = data["run"]
+    else:
+        script_load[data["name"]] = "onfinished"
 
     for _, host in enumerate(data["extension"]["host"]):
         if not data["enabled"]:
@@ -100,9 +107,14 @@ def javascript_load(path):
     return preload_data[path]
 
 
-def execute(load_scripts, browser):
+def execute(load_scripts, browser, onload):
     js_code = javascript_load(load_scripts)[0]
     path = javascript_load(load_scripts)[1]
+
+    if onload and script_load[script_list[load_scripts]] != "onload":
+        return
+    if not onload and script_load[script_list[load_scripts]] == "onload":
+        return
 
     if script_list[load_scripts] in list(permissions.keys()):
         script_id = scripts.get_database().create(
@@ -121,17 +133,17 @@ def execute(load_scripts, browser):
     browser.page().runJavaScript(js_code, 0)
 
 
-def on_page_load(browser):
+def on_page_load(browser, onload=False):
     browser.page().runJavaScript(api_scripts["webchannel"])
     browser.page().runJavaScript(api_scripts["api"])
 
     match = browser.page().url().host().replace("www.", "")
     if match in list(extension_data.keys()):
         for load_scripts in extension_data[match]:
-            execute(load_scripts, browser)
+            execute(load_scripts, browser, onload)
 
     if "*" in list(extension_data.keys()):
         for load_scripts in extension_data["*"]:
-            execute(load_scripts, browser)
+            execute(load_scripts, browser, onload)
         return 1
     return 0

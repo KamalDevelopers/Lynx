@@ -515,6 +515,7 @@ class MainWindow(QMainWindow):
 
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()
+        extension.on_page_load(browser, True)
 
         history = browser.page().history()
         last_url = (
