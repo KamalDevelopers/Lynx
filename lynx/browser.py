@@ -468,7 +468,6 @@ class MainWindow(QMainWindow):
         urlbar.textEdited.connect(
             lambda: self.update_index(self.tabs.currentIndex(), tab_i)
         )
-        urlbar.textChanged.connect(lambda: self.shorten_url(urlbar))
 
     @property
     def grip_size(self):
@@ -590,6 +589,7 @@ class MainWindow(QMainWindow):
         urlbar.setText(url)
         if urlbar.text() == "lynx:home" or urlbar.text() == "lynx:blank":
             urlbar.setText("")
+        self.shorten_url(urlbar)
 
     def shorten_url(self, urlbar):
         text = urlbar.text()
@@ -850,9 +850,11 @@ class MainWindow(QMainWindow):
 
     def load_progress(self, progress, urlbar, url, browser):
         global progress_color_loading
+
         if url[:5] == "file:" or not url or url == "lynx:blank":
             urlbar.setStyleSheet("background-color: ;")
             return
+
         if progress < 99:
             percent = progress / 100
             urlbar.setStyleSheet(
