@@ -2,7 +2,7 @@ pyqt5
 PyQtWebEngine
 configparser
 argparse
-python-abp
-adblockparser
 colorlog
 validators
+pynotifier
+adblock

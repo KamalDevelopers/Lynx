@@ -1,17 +1,16 @@
-function add_adblocker(css_id, code)
-{
-    if (!document.getElementById(css_id)) {
-        css = document.createElement('style');
-        css = document.createElement('style');   
-        css.type = 'text/css';                   
-        css.id = css_id;
-        document.head.appendChild(css);          
-        css.innerText = code;
+let generated_filter = await browser.readFile("./custom-filter.txt");
+var selectors = generated_filter.split("\n");
+
+for (let i = 0; i < selectors.length; i++) {
+    try {
+        var block = document.querySelectorAll(selectors[i]);
+    }
+    catch (err) {
+        console.log(selectors[i]);
+        continue;
+    }
+
+    for (let x = 0; x < block.length; x++) {
+        block[x].setAttribute("style", "display: none !important;");
     }
 }
-
-let filter = await browser.readFile("adblock.css");
-let generated_filter = await browser.readFile("../../adblock/generated.css");
-
-add_adblocker("lynx_filter1", filter);
-add_adblocker("lynx_filter2", generated_filter);

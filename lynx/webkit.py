@@ -222,8 +222,11 @@ class WebEnginePage(QWebEnginePage):
 class RequestInterceptor(QWebEngineUrlRequestInterceptor):
     def interceptRequest(self, info):
         url = info.requestUrl().toString()
-        if utils.adblock.match(url) is not False:
+        first_party = info.firstPartyUrl().toString()
+
+        if utils.adblock.match(url, first_party, info.resourceType()):
             info.block(True)
+
         if confvar.BROWSER_HTTPS_ONLY:
             if url[:5] == "http:":
                 info.redirect(QUrl(url.replace("http:", "https:")))

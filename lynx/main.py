@@ -79,10 +79,6 @@ if __name__ == "__main__":
     start_time = time.time()
     if confvar.BROWSER_ADBLOCKER:
         utils.adblock.read_filter(confvar.BASE_PATH + "adblock/filter.txt")
-        utils.log.dbg("DEBUG")(
-            "Generated adblock rules: %s seconds"
-            % round(time.time() - start_time, 4)
-        )
 
     extension.read_extensions()
     utils.bookmark.read_bookmarks()

@@ -1,61 +1,53 @@
-import confvar
-from abp.filters import parse_filterlist
-from adblockparser import AdblockRules
-
-adblock_url_rules = None
-adblock_css_rules = None
-adblock_url_max = 2000
-adblock_css_max = 1000
+import adblock
 
 
-def strip_rule(rule):
-    rule = (
-        rule.replace("//*", "")
-        .replace("^", "")
-        .replace("*", "")
-        .replace("$", "")
-    )
-    return rule
+adblocker = None
+resource_types = [
+    "main_frame",
+    "sub_frame",
+    "stylesheet",
+    "script",
+    "image",
+    "font",
+    "sub_frame",
+    "object",
+    "media",
+    "other",
+    "other",
+    "other",
+    "image",
+    "xhr",
+    "ping",
+    "other",
+    "csp_report",
+    "other",
+    "other",
+    "other",
+    "other",
+]
 
 
 def read_filter(path, regen=False):
-    global adblock_url_rules
-    global adblock_css_rules
+    global adblocker
 
-    url_rules = []
-    css_rules = []
-    block = " { display: none !important; visibility: hidden !important; } "
+    filter_set = adblock.FilterSet()
 
-    with open(path) as filterlist:
-        for line in parse_filterlist(filterlist):
-            if line.type == "filter":
-                if (
-                    line.selector["type"] == "url-pattern"
-                    and len(url_rules) < adblock_url_max
-                ):
-                    url_rules.append(line.text)
-                if (
-                    line.selector["type"] == "url-regexp"
-                    and len(url_rules) < adblock_url_max
-                ):
-                    url_rules.append(line.text)
-                if (
-                    line.selector["type"] == "css"
-                    and len(css_rules) < adblock_css_max
-                ):
-                    if line.text[:2] == "##":
-                        css_rules.append(strip_rule(line.text.split("##")[1]))
+    with open(path) as f:
+        filter_set.add_filter_list(f.read())
 
-    url_rules.append("tpc.googlesyndication.com/*")
-    adblock_url_rules = AdblockRules(url_rules)
-    adblock_css_rules = ",".join(css_rules) + block
-
-    with open(confvar.BASE_PATH + "adblock/generated.css", "w") as F:
-        F.write(adblock_css_rules)
+    adblocker = adblock.Engine(filter_set)
 
 
-def match(url):
-    global adblock_url_rules
-    if not adblock_url_rules:
+def match(url, first_party_url, resource_type):
+    global adblocker
+
+    if not adblocker:
         return False
-    return adblock_url_rules.should_block(url)
+
+    result = adblocker.check_network_urls(
+        url, first_party_url, resource_types[int(resource_type)]
+    )
+    if not result.matched:
+        return False
+
+    return True
