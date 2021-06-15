@@ -232,6 +232,9 @@ class RequestInterceptor(QWebEngineUrlRequestInterceptor):
         url = info.requestUrl().toString()
         first_party = info.firstPartyUrl().toString()
 
+        if first_party[:5] == "file:":
+            return
+
         if utils.adblock.match(url, first_party, info.resourceType()):
             info.block(True)
 
