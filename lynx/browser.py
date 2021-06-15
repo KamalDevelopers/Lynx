@@ -32,6 +32,7 @@ from PyQt5.QtCore import (
     QRectF,
 )
 from PyQt5.QtWidgets import (
+    QSplitter,
     QWidget,
     QTabWidget,
     QLineEdit,
@@ -402,15 +403,26 @@ class MainWindow(QMainWindow):
             navtb.addAction(self.js_btn_enable)
             navtb.addAction(self.js_btn_disable)
 
+        place_holder = QWidget()
+        place_holder.hide()
+        browser.setPlaceHolder(place_holder)
+
+        inspector = QWebEngineView()
+        browser.page().setInspector(inspector)
+
+        view_splitter = QSplitter()
+        view_splitter.addWidget(browser)
+        view_splitter.addWidget(place_holder)
+        view_splitter.addWidget(inspector)
+        view_splitter.setCollapsible(2, False)
+        view_splitter.setSizes([200, 200, 100])
+
         navtb.addSeparator()
-        place_holder = QWidget(self)
         htabbox = QVBoxLayout()
         htabbox.addWidget(navtb)
         htabbox.addWidget(searchbar)
-        htabbox.addWidget(browser)
-        htabbox.addWidget(place_holder)
+        htabbox.addWidget(view_splitter)
         htabbox.setContentsMargins(0, 6, 0, 0)
-        browser.setPlaceHolder(place_holder)
         place_holder.setStyleSheet(
             "background-color: " + webkit_background_color + ";"
         )
@@ -503,6 +515,17 @@ class MainWindow(QMainWindow):
             100, lambda: self.navigate_to_url("view-source:" + url, page)
         )
 
+    def inspect_page(self, page):
+        if not page.inspector:
+            utils.log.dbg("WARNING")("No inspector window initialized")
+            return
+        if not page.devToolsPage():
+            page.setDevToolsPage(page.inspector.page())
+            page.inspector.show()
+            return
+        page.setDevToolsPage(None)
+        page.inspector.hide()
+
     def handle_action(self, action, page):
         if action == QWebEnginePage.SavePage:
             self.save_page(page)
@@ -517,6 +540,10 @@ class MainWindow(QMainWindow):
             current_url = page.url().toString()
             if "file://" not in current_url:
                 self.view_source(page, current_url)
+        if action == QWebEnginePage.InspectElement:
+            if page.inspector:
+                return
+            self.inspect_page(page)
 
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()
@@ -526,6 +553,9 @@ class MainWindow(QMainWindow):
         last_url = (
             history.itemAt(history.currentItemIndex() - 1).url().toString()
         )
+
+        if not self.first_opened:
+            return
 
         if url[:5] == "file:" or url[:5] == "lynx:" or not last_url:
             browser.hide()

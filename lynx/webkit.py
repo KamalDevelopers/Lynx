@@ -149,10 +149,13 @@ class WebEngineView(QWebEngineView):
         self.place_holder = p
 
     def hide(self):
+        self.page().inspector.hide()
         self.place_holder.show()
         return super().hide()
 
     def show(self):
+        if self.page().devToolsPage():
+            self.page().inspector.show()
         self.place_holder.hide()
         return super().show()
 
@@ -160,10 +163,15 @@ class WebEngineView(QWebEngineView):
 class WebEnginePage(QWebEnginePage):
     actionSignal = pyqtSignal(QWebEnginePage.WebAction, QWebEnginePage)
     ignored_action = False
+    inspector = False
 
     # Hook the "add_new_tab" method
     def set_add_new_tab_h(self, _add_new_tab):
         self.add_new_tab = _add_new_tab
+
+    def setInspector(self, view):
+        view.hide()
+        self.inspector = view
 
     def acceptNavigationRequest(self, url, _type, isMainFrame):
         modifiers = QApplication.keyboardModifiers()

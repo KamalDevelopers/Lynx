@@ -8,6 +8,7 @@
         "save_page": "Ctrl+S",
         "mute_page": "Ctrl+M",
         "reload_page": "Ctrl+R",
+        "inspect_page": "Ctrl+Shift+I",
         "search_document": "Ctrl+F",
         "bookmark_page": "Ctrl+B",
         "urlbar_focus": "Ctrl+U",

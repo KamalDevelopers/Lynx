@@ -3,6 +3,9 @@ import confvar
 import utils.bookmark
 import utils.lynxutils as lxu
 
+from PyQt5.QtWebEngineWidgets import (
+    QWebEnginePage,
+)
 from PyQt5.QtWidgets import (
     QPushButton,
     QDesktopWidget,
@@ -35,6 +38,10 @@ def create_shortcuts(window, browser, searchbar):
     reload_page = QPushButton("", window)
     reload_page.setShortcut(shortcut("reload_page"))
     reload_page.clicked.connect(lambda: browser.reload())
+
+    inspect_page = QPushButton("", window)
+    inspect_page.setShortcut(shortcut("inspect_page"))
+    inspect_page.clicked.connect(lambda: window.inspect_page(browser.page()))
 
     reopen_tab = QPushButton("", window)
     reopen_tab.setShortcut(shortcut("reopen_tab"))
@@ -87,6 +94,7 @@ def create_shortcuts(window, browser, searchbar):
     shorts.append(save_page)
     shorts.append(mute_page)
     shorts.append(reload_page)
+    shorts.append(inspect_page)
     shorts.append(reopen_tab)
     shorts.append(open_bookmarks_page)
     shorts.append(max_view)
