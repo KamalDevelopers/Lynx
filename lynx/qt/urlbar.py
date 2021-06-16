@@ -11,17 +11,18 @@ from PyQt5.QtWidgets import QLineEdit
 
 class UrlBar(QLineEdit):
     current_icon = None
+    raw_url = ""
 
     def updateIcon(self):
         if (
-            super().text()[:5] == "lynx:"
-            or super().text()[:12] == "view-source:"
-            or not super().text()
+            self.raw_url[:5] == "lynx:"
+            or self.raw_url[:12] == "view-source:"
+            or not self.raw_url
         ):
             self.setIcon(":/images/search.png")
-        if "https://" == super().text()[:8]:
+        if "https://" == self.raw_url[:8]:
             self.setIcon(":/images/secure.png")
-        if "http://" == super().text()[:7]:
+        if "http://" == self.raw_url[:7]:
             self.setIcon(":/images/unsecure.png")
 
     def setIcon(self, path):
@@ -47,17 +48,22 @@ class UrlBar(QLineEdit):
         self.trimUrl()
 
     def trimUrl(self):
-        text = super().text()
+        self.raw_url = super().text()
+        text = self.raw_url.replace(" ", "%20")
+
         if validators.url(text):
             url = urlparse(text)
             if confvar.BROWSER_SHORT_URL == 1:
                 text = text.split("&")[0]
+
             if confvar.BROWSER_SHORT_URL == 2:
                 text = text.replace(url.params, "")
                 text = text.replace("?" + url.query, "")
                 text = text.replace(url.scheme + "://", "")
                 if text[:4] == "www.":
                     text = text[4:]
+
+        text = text.replace("%20", " ")
         super().setText(text)
 
     def progress(self, percent, color):
@@ -77,3 +83,15 @@ class UrlBar(QLineEdit):
             )
         else:
             super().setStyleSheet("background-color: ;")
+
+    def focusOutEvent(self, event):
+        if super().text() == self.raw_url:
+            self.trimUrl()
+        return super().focusOutEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if self.raw_url:
+            super().setText(self.raw_url)
+            self.selectAll()
+            return
+        return super().mouseDoubleClickEvent(event)
