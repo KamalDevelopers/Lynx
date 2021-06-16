@@ -97,7 +97,6 @@ class MainWindow(QMainWindow):
         self.source_code = False
         self.first_opened = False
         self.last_closed_tab = None
-        self.tab_indexes = []
 
         confvar.style.value(
             "QLineEdit", "font-family", confvar.BROWSER_FONT_FAMILY
@@ -179,7 +178,7 @@ class MainWindow(QMainWindow):
                 + ".ttf"
             )
 
-        self.tabs = QTabWidget()
+        self.tabs = TabWidget()
         self.tabs.setIconSize(QSize(13, 13))
         self.tabs.setDocumentMode(True)
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
@@ -425,13 +424,8 @@ class MainWindow(QMainWindow):
 
         tabpanel = QWidget()
         tabpanel.setLayout(htabbox)
-        i = self.tabs.addTab(tabpanel, label)
-        tab_i = len(self.tab_indexes)
-        self.tab_indexes.append(i)
-
+        self.tabs.addTab(tabpanel, label, silent)
         self.tabs.setTabPosition(QTabWidget.North)
-        if silent != 1:
-            self.tabs.setCurrentIndex(i)
 
         self.fullscreen = 0
         urlbar.setFocus()
@@ -455,12 +449,10 @@ class MainWindow(QMainWindow):
             )
         )
         browser.page().titleChanged.connect(
-            lambda _, i=i, browser=browser: self.tabs.setTabText(
-                self.tab_indexes[tab_i], browser.page().title()
-            )
+            lambda: self.tabs.setTabTextId(tabpanel, browser.page().title())
         )
         browser.page().iconChanged.connect(
-            lambda: self.set_tab_icon(self.tab_indexes[tab_i], browser.page())
+            lambda: self.tabs.setTabIconId(tabpanel, browser.page().icon())
         )
         browser.page().loadProgress.connect(
             lambda p: self.load_progress(
@@ -472,9 +464,6 @@ class MainWindow(QMainWindow):
         )
         browser.page().profile().downloadRequested.connect(
             self.download_item_requested
-        )
-        urlbar.textEdited.connect(
-            lambda: self.update_index(self.tabs.currentIndex(), tab_i)
         )
 
     @property
@@ -627,9 +616,6 @@ class MainWindow(QMainWindow):
                 text = text.replace(url.params, "")
                 text = text.replace("?" + url.query, "")
         urlbar.setText(text)
-
-    def update_index(self, i, ti):
-        self.tab_indexes[ti] = i
 
     def current_urls(self):
         open_urls = []
@@ -802,10 +788,6 @@ class MainWindow(QMainWindow):
             browser.page().setAudioMuted(0)
         else:
             browser.page().setAudioMuted(1)
-
-    def set_tab_icon(self, i, webpage):
-        if not webpage.icon().isNull():
-            self.tabs.setTabIcon(i, webpage.icon())
 
     def tab_open_doubleclick(self, i):
         if i == -1:
