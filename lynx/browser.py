@@ -566,6 +566,9 @@ class MainWindow(QMainWindow):
         if not self.first_opened:
             return
 
+        if urlparse(url).hostname in lxu.search_engine_hosts():
+            return
+
         if url[:5] == "file:" or url[:5] == "lynx:" or not last_url:
             browser.hide()
             return
@@ -830,7 +833,7 @@ class MainWindow(QMainWindow):
 
         qurl = QUrl(url)
         if "." not in url and not lxu.check_lynx_url(qurl):
-            qurl = QUrl("https://duckduckgo.com/?q=" + url)
+            qurl = QUrl(confvar.BROWSER_SEARCH_ENGINE.replace("{query}", url))
         elif (
             "." in url
             and not lxu.check_lynx_url(qurl)

@@ -104,3 +104,9 @@ def feature_parser(feature):
         "desktop video capture",
         "desktop video and audio capture",
     ][feature]
+
+
+def search_engine_hosts():
+    return [
+        "duckduckgo.com"
+    ]
