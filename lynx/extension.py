@@ -94,22 +94,33 @@ def read_extensions():
 
     for i, extension_file in enumerate(extension_files):
         if extension_file[-5:] == ".json":
-            read_extension(extension_paths[i], extension_file)
+            try:
+                read_extension(extension_paths[i], extension_file)
+            except KeyError:
+                utils.log.dbg("WARNING")("Faulty extension: " + extension_file)
 
 
 def javascript_load(path):
     global preload_data
 
     if path not in list(preload_data.keys()):
-        with open(path) as f:
-            js_code = f.read()
-            preload_data[path] = [js_code, os.path.dirname(path) + "/"]
+        try:
+            with open(path) as f:
+                js_code = f.read()
+                preload_data[path] = [js_code, os.path.dirname(path) + "/"]
+        except OSError:
+            utils.log.dbg("WARNING")("Could not read: " + path)
+            preload_data[path] = [False, False]
+
     return preload_data[path]
 
 
 def execute(load_scripts, browser, onload):
     js_code = javascript_load(load_scripts)[0]
     path = javascript_load(load_scripts)[1]
+
+    if not js_code and not path:
+        return False
 
     if onload and script_load[script_list[load_scripts]] != "onload":
         return
