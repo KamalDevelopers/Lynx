@@ -17,6 +17,7 @@ import utils.lynxutils as lxu
 import qt.shortcuts as shortcuts
 from qt.grip import SideGrip
 from qt.events import EventHandler
+from qt.tabs import TabWidget
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
@@ -403,19 +404,17 @@ class MainWindow(QMainWindow):
             navtb.addAction(self.js_btn_enable)
             navtb.addAction(self.js_btn_disable)
 
-        place_holder = QWidget()
-        place_holder.hide()
-        browser.setPlaceHolder(place_holder)
-
         inspector = QWebEngineView()
         browser.page().setInspector(inspector)
 
         view_splitter = QSplitter()
         view_splitter.addWidget(browser)
-        view_splitter.addWidget(place_holder)
         view_splitter.addWidget(inspector)
-        view_splitter.setCollapsible(2, False)
+        view_splitter.setCollapsible(1, False)
         view_splitter.setSizes([200, 200, 100])
+        view_splitter.setStyleSheet(
+            "background-color: " + webkit_background_color + ";"
+        )
 
         navtb.addSeparator()
         htabbox = QVBoxLayout()
@@ -423,9 +422,6 @@ class MainWindow(QMainWindow):
         htabbox.addWidget(searchbar)
         htabbox.addWidget(view_splitter)
         htabbox.setContentsMargins(0, 6, 0, 0)
-        place_holder.setStyleSheet(
-            "background-color: " + webkit_background_color + ";"
-        )
 
         tabpanel = QWidget()
         tabpanel.setLayout(htabbox)
@@ -881,7 +877,7 @@ class MainWindow(QMainWindow):
     def load_progress(self, progress, urlbar, url, browser):
         global progress_color_loading
 
-        if url[:5] == "file:" or not url or url == "lynx:blank":
+        if not browser.page().history().count():
             urlbar.setStyleSheet("background-color: ;")
             return
 

@@ -144,19 +144,14 @@ class WebChannel(QObject):
 
 
 class WebEngineView(QWebEngineView):
-    def setPlaceHolder(self, p):
-        p.hide()
-        self.place_holder = p
-
     def hide(self):
-        self.page().inspector.hide()
-        self.place_holder.show()
+        if not self.page().inspector.isHidden():
+            self.page().inspector.hide()
         return super().hide()
 
     def show(self):
         if self.page().devToolsPage():
             self.page().inspector.show()
-        self.place_holder.hide()
         return super().show()
 
 
