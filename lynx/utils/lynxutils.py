@@ -91,3 +91,16 @@ def check_lynx_url(qurl):
     if str(qurl.toString())[:5] == "lynx:":
         return True
     return False
+
+
+def feature_parser(feature):
+    return [
+        "notifications",
+        "location",
+        "microphone",
+        "camera",
+        "audio and camera",
+        "mouse lock",
+        "desktop video capture",
+        "desktop video and audio capture",
+    ][feature]

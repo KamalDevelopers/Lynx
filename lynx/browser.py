@@ -440,6 +440,11 @@ class MainWindow(QMainWindow):
                 self.fullscreen_webview(htabbox, browser),
             )
         )
+        browser.page().featurePermissionRequested.connect(
+            lambda origin, feature: (
+                self.feature_request(origin, feature, browser)
+            )
+        )
         browser.page().loadFinished.connect(
             lambda: self.load_finished(urlbar, browser)
         )
@@ -529,6 +534,25 @@ class MainWindow(QMainWindow):
             if page.inspector:
                 return
             self.inspect_page(page)
+
+    def feature_request(self, origin, feature, browser):
+        requested = lxu.feature_parser(feature)
+
+        if (
+            not confvar.BROWSER_ALWAYS_ALLOW
+            or requested not in confvar.BROWSER_ALWAYS_ALLOW.split(",")
+        ):
+            browser.page().setFeaturePermission(
+                origin, feature, QWebEnginePage.PermissionDeniedByUser
+            )
+            return
+
+        browser.page().setFeaturePermission(
+            origin, feature, QWebEnginePage.PermissionGrantedByUser
+        )
+        utils.log.dbg("INFO")(
+            "Granted " + requested + " permissions to: " + origin.toString()
+        )
 
     def load_started(self, urlbar, url, browser):
         self.load_start_time = time.time()
