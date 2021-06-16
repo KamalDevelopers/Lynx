@@ -3,7 +3,7 @@ import sys
 from os import listdir
 from os.path import isfile, join
 
-format_paths = ["lynx/", "lynx/utils/"]
+format_paths = ["lynx/", "lynx/utils/", "lynx/qt/"]
 format_command = "black --line-length=79 "
 ignore = ["confvar.py", "resources.py"]
 files = {}

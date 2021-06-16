@@ -84,7 +84,7 @@ def create_shortcuts(window, browser, searchbar):
         lambda: utils.bookmark.add_bookmark(
             browser.page().url().toString(),
             browser.page().iconUrl().toString(),
-            browser.page().title()
+            browser.page().title(),
         )
     )
 

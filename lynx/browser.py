@@ -1,6 +1,5 @@
 import os
 import time
-import validators
 import platform as arch
 from urllib.parse import urlparse
 from subprocess import Popen, PIPE
@@ -15,6 +14,7 @@ import utils.bookmark
 import utils.lynxutils as lxu
 
 import qt.shortcuts as shortcuts
+from qt.urlbar import UrlBar
 from qt.grip import SideGrip
 from qt.events import EventHandler
 from qt.tabs import TabWidget
@@ -349,14 +349,12 @@ class MainWindow(QMainWindow):
         navtb.addAction(back_btn)
         navtb.addAction(next_btn)
 
-        secure_icon = QIcon(":/images/search.png")
-
-        urlbar = QLineEdit()
+        urlbar = UrlBar()
+        urlbar.setIcon(":/images/search.png")
         urlbar.returnPressed.connect(
             lambda: self.navigate_to_url(urlbar.text(), browser)
         )
         urlbar.setFixedHeight(26)
-        urlbar.addAction(secure_icon, QLineEdit.LeadingPosition)
 
         # completer = QCompleter(bookmark.get_bookmarks())
         # urlbar.setCompleter(completer)
@@ -432,7 +430,7 @@ class MainWindow(QMainWindow):
 
         if qurl and qurl.toString()[:5] != "lynx:":
             urlbar.setText(qurl.toString())
-        self.update_urlbar(urlbar, qurl)
+        urlbar.setUrl(qurl.toString(), browser.page().view_source_url)
 
         browser.page().fullScreenRequested.connect(
             lambda request: (
@@ -465,7 +463,9 @@ class MainWindow(QMainWindow):
             )
         )
         browser.page().urlChanged.connect(
-            lambda qurl, browser=browser: self.update_urlbar(urlbar, qurl)
+            lambda qurl: urlbar.setUrl(
+                qurl.toString(), browser.page().view_source_url
+            )
         )
         browser.page().profile().downloadRequested.connect(
             self.download_item_requested
@@ -500,7 +500,7 @@ class MainWindow(QMainWindow):
 
     def view_source(self, page, url):
         page.toHtml(lambda html: self.set_source(html))
-        self.view_source_url = "view-source:" + url
+        page.view_source_url = "view-source:" + url
         QTimer.singleShot(
             100, lambda: self.navigate_to_url("view-source:" + url, page)
         )
@@ -586,7 +586,7 @@ class MainWindow(QMainWindow):
             browser.setFocus()
 
         self.first_opened = True
-        self.update_urlbar_icon(urlbar)
+        urlbar.updateIcon()
 
         if url[:5] != "file:":
             extension.on_page_load(browser)
@@ -601,45 +601,6 @@ class MainWindow(QMainWindow):
                 js_code = f.read().replace("{id}", script_id)
             browser.page().runJavaScript(js_code, 0)
             return
-
-    def update_urlbar_icon(self, urlbar):
-        icon = None
-
-        if (
-            urlbar.text()[:5] == "lynx:"
-            or urlbar.text()[:12] == "view-source:"
-            or not urlbar.text()
-        ):
-            icon = QIcon(":/images/search.png")
-        if "https://" == urlbar.text()[:8]:
-            icon = QIcon(":/images/secure.png")
-        if "http://" == urlbar.text()[:7]:
-            icon = QIcon(":/images/unsecure.png")
-        if icon is not None:
-            urlbar.removeAction(urlbar.actions()[0])
-            urlbar.addAction(icon, QLineEdit.LeadingPosition)
-
-    def update_urlbar(self, urlbar, qurl):
-        if "file:///" in qurl.toString():
-            if "temp-view.html" in qurl.toString():
-                urlbar.setText(self.view_source_url)
-                return
-        url = lxu.encode_lynx_url(qurl)
-        urlbar.setText(url)
-        if urlbar.text() == "lynx:home" or urlbar.text() == "lynx:blank":
-            urlbar.setText("")
-        self.shorten_url(urlbar)
-
-    def shorten_url(self, urlbar):
-        text = urlbar.text()
-        if validators.url(text):
-            url = urlparse(text)
-            if confvar.BROWSER_SHORT_URL == 1:
-                text = text.split("&")[0]
-            if confvar.BROWSER_SHORT_URL == 2:
-                text = text.replace(url.params, "")
-                text = text.replace("?" + url.query, "")
-        urlbar.setText(text)
 
     def current_urls(self):
         open_urls = []
@@ -881,26 +842,8 @@ class MainWindow(QMainWindow):
         webview.setUrl(qurl)
 
     def load_progress(self, progress, urlbar, url, browser):
-        global progress_color_loading
-
-        if not browser.page().history().count():
-            urlbar.setStyleSheet("background-color: ;")
-            return
-
-        if progress < 99:
-            percent = progress / 100
-            urlbar.setStyleSheet(
-                "background: qlineargradient(x1:0, y1:0, x2:1, y2:0,"
-                + "stop: 0 "
-                + progress_color_loading
-                + ", stop: "
-                + str(percent)
-                + " "
-                + progress_color_loading
-                + ", stop: "
-                + str(percent + 0.001)
-                + " rgba(0, 0, 0, 0), stop: 1 #00000005)"
-            )
-        else:
-            urlbar.setStyleSheet("background-color: ;")
+        if progress == 100 or not browser.page().history().count():
+            urlbar.progress(100, progress_color_loading)
             browser.show()
+            return
+        urlbar.progress(progress, progress_color_loading)

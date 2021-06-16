@@ -27,7 +27,7 @@ class EventHandler:
             return
         if event.button() == Qt.LeftButton:
             self.m_flag = True
-            self.m_position = event.globalPos()-self.window.pos()
+            self.m_position = event.globalPos() - self.window.pos()
             event.accept()
             self.window.setCursor(QCursor(Qt.OpenHandCursor))
 
@@ -49,7 +49,7 @@ class EventHandler:
 
     def mouseMoveEvent(self, event):
         if self.m_flag:
-            self.window.move(event.globalPos()-self.m_position)
+            self.window.move(event.globalPos() - self.m_position)
         event.accept()
 
     def mouseReleaseEvent(self, event):

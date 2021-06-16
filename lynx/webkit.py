@@ -159,6 +159,7 @@ class WebEnginePage(QWebEnginePage):
     actionSignal = pyqtSignal(QWebEnginePage.WebAction, QWebEnginePage)
     ignored_action = False
     inspector = False
+    view_source_url = ""
 
     # Hook the "add_new_tab" method
     def set_add_new_tab_h(self, _add_new_tab):
