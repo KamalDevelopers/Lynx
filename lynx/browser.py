@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
 
         if confvar.BROWSER_STORAGE:
             QWebEngineProfile.defaultProfile().setPersistentStoragePath(
-                confvar.BROWSER_STORAGE
+                os.path.abspath(confvar.BROWSER_STORAGE)
             )
 
         try:
