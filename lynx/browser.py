@@ -281,7 +281,7 @@ class MainWindow(QMainWindow):
 
         qurl = QUrl(lxu.decode_lynx_url(qurl))
 
-        browser = wk.WebEngineView()
+        browser = wk.WebEngineView(self)
         cwe = wk.WebEnginePage(self)
         cwe.actionSignal.connect(self.handle_action)
         cwe.set_add_new_tab_h(self.add_new_tab)
@@ -470,6 +470,8 @@ class MainWindow(QMainWindow):
         browser.page().profile().downloadRequested.connect(
             self.download_item_requested
         )
+
+        return browser
 
     @property
     def grip_size(self):

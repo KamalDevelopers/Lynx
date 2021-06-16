@@ -144,6 +144,15 @@ class WebChannel(QObject):
 
 
 class WebEngineView(QWebEngineView):
+    def __init__(self, parent=None):
+        super().__init__()
+        self._parent = parent
+
+    def createWindow(self, window_type):
+        if window_type == QWebEnginePage.WebBrowserTab:
+            return self._parent.add_new_tab()
+        return super().createWindow(window_type)
+
     def hide(self):
         if not self.page().inspector.isHidden():
             self.page().inspector.hide()
