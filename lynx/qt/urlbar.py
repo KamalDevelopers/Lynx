@@ -89,9 +89,9 @@ class UrlBar(QLineEdit):
             self.trimUrl()
         return super().focusOutEvent(event)
 
-    def mouseDoubleClickEvent(self, event):
-        if self.raw_url:
+    def mousePressEvent(self, event):
+        if self.raw_url and super().text() != self.raw_url:
             super().setText(self.raw_url)
             self.selectAll()
             return
-        return super().mouseDoubleClickEvent(event)
+        return super().mousePressEvent(event)
