@@ -150,7 +150,9 @@ class WebEngineView(QWebEngineView):
 
     def createWindow(self, window_type):
         if window_type == QWebEnginePage.WebBrowserTab:
-            return self._parent.add_new_tab()
+            return self._parent.add_new_tab(
+                QUrl("view-source:" + self.page().url().toString())
+            )
         return super().createWindow(window_type)
 
     def hide(self):
@@ -168,11 +170,19 @@ class WebEnginePage(QWebEnginePage):
     actionSignal = pyqtSignal(QWebEnginePage.WebAction, QWebEnginePage)
     ignored_action = False
     inspector = False
-    view_source_url = ""
 
     # Hook the "add_new_tab" method
     def set_add_new_tab_h(self, _add_new_tab):
         self.add_new_tab = _add_new_tab
+
+    def updateBackgroundColor(self, color=None):
+        if color:
+            return super().setBackgroundColor(color)
+        return super().setBackgroundColor(self.background_color)
+
+    def setDefaultBackgroundColor(self, color):
+        self.background_color = color
+        self.updateBackgroundColor(color)
 
     def setInspector(self, view):
         view.hide()

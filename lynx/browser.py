@@ -287,7 +287,10 @@ class MainWindow(QMainWindow):
         cwe.set_add_new_tab_h(self.add_new_tab)
         browser.setPage(cwe)
 
-        browser.page().setBackgroundColor(QColor(webkit_background_color))
+        browser.page().setDefaultBackgroundColor(
+            QColor(webkit_background_color)
+        )
+
         browser.channel = QWebChannel()
         browser.channel.registerObject("backend", webchannel)
         browser.page().setWebChannel(browser.channel)
@@ -430,7 +433,7 @@ class MainWindow(QMainWindow):
 
         if qurl and qurl.toString()[:5] != "lynx:":
             urlbar.setText(qurl.toString())
-        urlbar.setUrl(qurl.toString(), browser.page().view_source_url)
+        urlbar.setUrl(qurl.toString())
 
         browser.page().fullScreenRequested.connect(
             lambda request: (
@@ -464,7 +467,7 @@ class MainWindow(QMainWindow):
         )
         browser.page().urlChanged.connect(
             lambda qurl: urlbar.setUrl(
-                qurl.toString(), browser.page().view_source_url
+                qurl.toString()
             )
         )
         browser.page().profile().downloadRequested.connect(
@@ -500,13 +503,6 @@ class MainWindow(QMainWindow):
     def set_source(self, html):
         self.source_code = html
 
-    def view_source(self, page, url):
-        page.toHtml(lambda html: self.set_source(html))
-        page.view_source_url = "view-source:" + url
-        QTimer.singleShot(
-            100, lambda: self.navigate_to_url("view-source:" + url, page)
-        )
-
     def inspect_page(self, page):
         if not page.inspector:
             utils.log.dbg("WARNING")("No inspector window initialized")
@@ -528,10 +524,6 @@ class MainWindow(QMainWindow):
         if action == QWebEnginePage.OpenLinkInNewWindow:
             url = page.contextMenuData().linkUrl()
             lxu.launch_lynx(url.toString())
-        if action == QWebEnginePage.ViewSource:
-            current_url = page.url().toString()
-            if "file://" not in current_url:
-                self.view_source(page, current_url)
         if action == QWebEnginePage.InspectElement:
             if page.inspector:
                 return
@@ -579,9 +571,12 @@ class MainWindow(QMainWindow):
             browser.hide()
 
     def load_finished(self, urlbar, browser):
-        browser.show()
-
         url = browser.page().url().toString()
+        browser.page().updateBackgroundColor()
+        if url[:12] == "view-source:":
+            browser.page().updateBackgroundColor(Qt.white)
+
+        browser.show()
         if url != "lynx:blank":
             utils.log.dbg("DEBUG")(
                 "Loaded webpage in "
@@ -821,17 +816,6 @@ class MainWindow(QMainWindow):
     def navigate_to_url(self, url, webview):
         if not url:
             return
-
-        if url[:12] == "view-source:":
-            if not self.source_code:
-                return
-            with open(confvar.BASE_PATH + "lynx/view-source.html") as f:
-                content = f.read()
-            with open("./temp/temp-view.html", "w") as f:
-                content = content.replace("{source}", self.source_code)
-                f.write(content)
-            url = "file:///" + os.path.abspath("./temp/temp-view.html")
-            url = url.replace("\\", "/")
 
         qurl = QUrl(url)
         if "." not in url and not lxu.check_lynx_url(qurl):

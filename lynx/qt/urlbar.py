@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QLineEdit
 
 class UrlBar(QLineEdit):
     current_icon = None
+    has_focus = False
     raw_url = ""
 
     def updateIcon(self):
@@ -33,13 +34,9 @@ class UrlBar(QLineEdit):
         self.current_icon = path
         super().addAction(QIcon(self.current_icon), QLineEdit.LeadingPosition)
 
-    def setUrl(self, url, view_source_url=""):
+    def setUrl(self, url):
         if url[:5] == "http:" and url[6] != "/":
             url = url[5:]
-        if "file:///" in url:
-            if "temp-view.html" in url:
-                super().setText(view_source_url)
-                return
         encoded_url = lxu.encode_lynx_url(QUrl(url))
         if encoded_url == "lynx:home" or encoded_url == "lynx:blank":
             super().setText("")
@@ -85,13 +82,16 @@ class UrlBar(QLineEdit):
             super().setStyleSheet("background-color: ;")
 
     def focusOutEvent(self, event):
+        self.has_focus = False
         if super().text() == self.raw_url:
             self.trimUrl()
         return super().focusOutEvent(event)
 
     def mousePressEvent(self, event):
+        if self.has_focus:
+            return super().mousePressEvent(event)
+
+        self.has_focus = True
         if self.raw_url and super().text() != self.raw_url:
             super().setText(self.raw_url)
-            self.selectAll()
-            return
-        return super().mousePressEvent(event)
+        super().selectAll()
