@@ -1,6 +1,7 @@
 {
     "shortcuts": {
         "store_session": "Alt+X",
+        "hide_tabs": "Alt+H",
         "reopen_tab": "Ctrl+Shift+T",
         "max_view": "Alt+F",
         "zoom_in": "Ctrl++",

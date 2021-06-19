@@ -30,3 +30,9 @@ class TabWidget(QTabWidget):
 
     def setTabTextId(self, tab, title):
         return super().setTabText(self.findTab(tab), title)
+
+    def hideTabs(self):
+        if self.tabBar().isHidden():
+            if self.tabBar().count() > 1:
+                return self.tabBar().show()
+        return self.tabBar().hide()

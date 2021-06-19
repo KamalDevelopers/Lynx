@@ -19,6 +19,10 @@ def shortcut(name):
 def create_shortcuts(window, browser, searchbar):
     shorts = []
 
+    hide_tabs = QPushButton("", window)
+    hide_tabs.setShortcut(shortcut("hide_tabs"))
+    hide_tabs.clicked.connect(lambda: window.tabs.hideTabs())
+
     zoom_in = QPushButton("", window)
     zoom_in.setShortcut(shortcut("zoom_in"))
     zoom_in.clicked.connect(lambda: window.zoom(0.1, browser))
@@ -67,9 +71,8 @@ def create_shortcuts(window, browser, searchbar):
 
     max_view = QPushButton("", window)
     max_view.setShortcut(shortcut("max_view"))
-    size = QDesktopWidget().screenGeometry(-1)
     max_view.clicked.connect(
-        lambda: window.setGeometry(0, 0, size.width(), size.height())
+        lambda: window.showMaximized()
     )
 
     search_text = QPushButton("", window)
@@ -88,9 +91,10 @@ def create_shortcuts(window, browser, searchbar):
         )
     )
 
-    shorts.append(mpv_open)
+    shorts.append(hide_tabs)
     shorts.append(zoom_in)
     shorts.append(zoom_out)
+    shorts.append(mpv_open)
     shorts.append(save_page)
     shorts.append(mute_page)
     shorts.append(reload_page)
