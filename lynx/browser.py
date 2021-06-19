@@ -437,8 +437,8 @@ class MainWindow(QMainWindow):
 
         browser.page().fullScreenRequested.connect(
             lambda request: (
+                self.fullscreen_webview(request.toggleOn(), htabbox, browser),
                 request.accept(),
-                self.fullscreen_webview(htabbox, browser),
             )
         )
         browser.page().featurePermissionRequested.connect(
@@ -613,8 +613,8 @@ class MainWindow(QMainWindow):
             )
         return open_urls
 
-    def fullscreen_webview(self, htabbox, browser):
-        if self.fullscreen == 0:
+    def fullscreen_webview(self, toggle_on, htabbox, browser):
+        if toggle_on:
             self.winsize = self.geometry()
             browser.setParent(None)
             browser.showFullScreen()
@@ -628,6 +628,10 @@ class MainWindow(QMainWindow):
             self.setGeometry(self.winsize)
             self.settings.setAttribute(QWebEngineSettings.ShowScrollBars, 1)
             self.fullscreen = 0
+
+            # Hack to fix the window focus
+            self.lower()
+            self.raise_()
 
     def open_searchbar(self, browser, searchbar):
         if searchbar.isHidden():
