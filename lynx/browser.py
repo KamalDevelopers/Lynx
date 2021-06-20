@@ -466,9 +466,7 @@ class MainWindow(QMainWindow):
             )
         )
         browser.page().urlChanged.connect(
-            lambda qurl: urlbar.setUrl(
-                qurl.toString()
-            )
+            lambda qurl: urlbar.setUrl(qurl.toString())
         )
         browser.page().profile().downloadRequested.connect(
             self.download_item_requested

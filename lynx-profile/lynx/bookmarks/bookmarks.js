@@ -26,19 +26,7 @@ function searchFilter() {
 new QWebChannel(qt.webChannelTransport, function (channel) {
     window.backend = channel.objects.backend;
 
-    async function get_bookmarks() {
-        let urls = await backend.getBookmarkUrls({id});
-        let titles = await backend.getBookmarkTitles({id});
-        let favicons = await backend.getBookmarkFavicons({id});
-        return [urls, titles, favicons];
-    }
-
-    async function execute() {
-        let result = await get_bookmarks();
-        bookmark_url = result[0];
-        bookmark_title = result[1]
-        bookmark_favi = result[2]
-
+    function create(bookmark_url, bookmark_title, bookmark_favi) {
         var ul = document.getElementById("bookmark-list");
         var li = document.createElement("li");
         var im = document.createElement("img");
@@ -62,6 +50,24 @@ new QWebChannel(qt.webChannelTransport, function (channel) {
         li.appendChild(au);
         ul.appendChild(li);
     }
+
+    async function get_bookmarks() {
+        let urls = await backend.getBookmarkUrls({id});
+        let titles = await backend.getBookmarkTitles({id});
+        let favicons = await backend.getBookmarkFavicons({id});
+        return [urls, titles, favicons];
+    }
+
+    async function execute() {
+        let result = await get_bookmarks();
+        bookmark_urls = result[0];
+        bookmark_titles = result[1]
+        bookmark_favis = result[2]
+
+        for (var i = 0; i < bookmark_urls.length; i++)
+            create(bookmark_urls[i], bookmark_titles[i], bookmark_favis[i]);
+    }
+
     execute();
 
     backend.locale({id}, function(l) {

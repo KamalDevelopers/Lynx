@@ -17,8 +17,6 @@ def shortcut(name):
 
 
 def create_shortcuts(window, browser, searchbar):
-    shorts = []
-
     hide_tabs = QPushButton("", window)
     hide_tabs.setShortcut(shortcut("hide_tabs"))
     hide_tabs.clicked.connect(lambda: window.tabs.hideTabs())
@@ -71,9 +69,7 @@ def create_shortcuts(window, browser, searchbar):
 
     max_view = QPushButton("", window)
     max_view.setShortcut(shortcut("max_view"))
-    max_view.clicked.connect(
-        lambda: window.showMaximized()
-    )
+    max_view.clicked.connect(lambda: window.showMaximized())
 
     search_text = QPushButton("", window)
     search_text.setShortcut(shortcut("search_document"))
@@ -91,22 +87,22 @@ def create_shortcuts(window, browser, searchbar):
         )
     )
 
-    shorts.append(hide_tabs)
-    shorts.append(zoom_in)
-    shorts.append(zoom_out)
-    shorts.append(mpv_open)
-    shorts.append(save_page)
-    shorts.append(mute_page)
-    shorts.append(reload_page)
-    shorts.append(inspect_page)
-    shorts.append(reopen_tab)
-    shorts.append(open_bookmarks_page)
-    shorts.append(max_view)
-    shorts.append(search_text)
-    shorts.append(bookmark_page)
-    shorts.append(close_tab_group)
+    all_shortcuts = [
+        hide_tabs,
+        zoom_in,
+        zoom_out,
+        mpv_open,
+        save_page,
+        mute_page,
+        reload_page,
+        inspect_page,
+        reopen_tab,
+        open_bookmarks_page,
+        max_view,
+        search_text,
+        bookmark_page,
+        close_tab_group,
+    ]
 
-    for s in shorts:
-        s.setMaximumWidth(0)
-
-    return shorts
+    [s.setMaximumWidth(0) for s in all_shortcuts]
+    return all_shortcuts
