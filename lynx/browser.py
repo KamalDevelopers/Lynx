@@ -569,6 +569,14 @@ class MainWindow(QMainWindow):
             browser.hide()
 
     def load_finished(self, urlbar, browser):
+        browser.page().runJavaScript(
+            """
+            navigator.doNotTrack = 1;
+            window.doNotTrack = 1;
+            navigator.msDoNotTrack = 1;"
+            """
+        )
+
         url = browser.page().url().toString()
         browser.page().updateBackgroundColor()
         if url[:12] == "view-source:":

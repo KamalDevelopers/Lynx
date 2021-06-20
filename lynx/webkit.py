@@ -244,8 +244,9 @@ class WebEnginePage(QWebEnginePage):
 
 class RequestInterceptor(QWebEngineUrlRequestInterceptor):
     def interceptRequest(self, info):
-        url = info.requestUrl().toString()
+        info.setHttpHeader("DNT".encode(), "1".encode())
         first_party = info.firstPartyUrl().toString()
+        url = info.requestUrl().toString()
 
         if first_party[:5] == "file:":
             return
