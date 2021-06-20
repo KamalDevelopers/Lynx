@@ -511,7 +511,9 @@ class MainWindow(QMainWindow):
             page.setDevToolsPage(page.inspector.page())
             page.inspector.show()
             return
+        page.setBackgroundColor(Qt.white)
         page.setDevToolsPage(None)
+        page.setBackgroundColor(QColor(webkit_background_color))
         page.inspector.hide()
 
     def handle_action(self, action, page):
