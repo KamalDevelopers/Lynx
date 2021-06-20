@@ -3,7 +3,9 @@ import sys
 import shutil
 import subprocess
 import confvar
+import random
 import utils.log
+import urllib.request
 import platform as arch
 
 
@@ -107,6 +109,13 @@ def feature_parser(feature):
 
 
 def search_engine_hosts():
-    return [
-        "duckduckgo.com"
-    ]
+    return ["duckduckgo.com"]
+
+
+def random_user_agent():
+    agents = urllib.request.urlopen(
+        "https://raw.githubusercontent.com/Kikobeats/"
+        + "top-user-agents/master/index.json"
+    ).read()
+
+    return random.choice(eval(agents))

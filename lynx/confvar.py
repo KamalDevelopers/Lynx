@@ -23,6 +23,9 @@ DOWNLOAD_PATH = OS_HOME + "/" + "Downloads/"
 BASE_PATH = data["package"]["profile"]
 VERSION = utils.version.version()
 
+if os.getenv('LYNX_PROFILE'):
+    BASE_PATH = os.getenv('LYNX_PROFILE')
+
 if not os.path.isdir("./temp"):
     os.mkdir("./temp")
 
@@ -50,6 +53,7 @@ BROWSER_HOMEPAGE = "lynx:home"
 BROWSER_NEWTAB = "lynx:blank"
 BROWSER_FONT_FAMILY = "Noto"
 BROWSER_STYLESHEET = "equinox"
+BROWSER_STEALTH_STYLESHEET = "stealth"
 BROWSER_FONT_SIZE = 10
 BROWSER_SHORT_URL = 2
 BROWSER_STORAGE = False
@@ -63,6 +67,7 @@ BROWSER_SEARCH_ENGINE = (
 BROWSER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0"
 )
+BROWSER_BLOCK_CANVAS = False
 BROWSER_PROXY = None
 BROWSER_TS_DISABLED = True
 
@@ -104,7 +109,8 @@ def configure():
         BROWSER_STORAGE, BROWSER_HTTPS_ONLY, BROWSER_AGENT, \
         BROWSER_LOCALE, STEALTH_FLAG, BROWSER_TS_DISABLED, BROWSER_SHORT_URL, \
         BROWSER_BORDERLESS, BROWSER_ALWAYS_ALLOW, BROWSER_SEARCH_ENGINE, \
-        BROWSER_PROXY, BROWSER_STORAGE
+        BROWSER_PROXY, BROWSER_STORAGE, BROWSER_BLOCK_CANVAS, \
+        BROWSER_STEALTH_STYLESHEET
 
     global WEBKIT_JAVASCRIPT_ENABLED, WEBKIT_FULLSCREEN_ENABLED, \
         WEBKIT_WEBGL_ENABLED, WEBKIT_PLUGINS_ENABLED, \
@@ -124,6 +130,12 @@ def configure():
     BROWSER_ADBLOCKER = configur.getboolean("BROWSER", "ADBLOCKER")
     BROWSER_ALWAYS_ALLOW = sparse(configur.get("BROWSER", "ALWAYS_ALLOW"))
     BROWSER_SEARCH_ENGINE = sparse(configur.get("BROWSER", "SEARCH_ENGINE"))
+    BROWSER_STEALTH_STYLESHEET = sparse(configur.get(
+        "BROWSER", "STEALTH_STYLESHEET"
+    ))
+    BROWSER_BLOCK_CANVAS = configur.getboolean(
+        "BROWSER", "BLOCK_CANVAS"
+    )
     BROWSER_STORE_VISITED_LINKS = configur.getboolean(
         "BROWSER", "STORE_VISITED_LINKS"
     )
@@ -149,17 +161,16 @@ def configure():
     WEBKIT_PLUGINS_ENABLED = configur.getboolean("WEBKIT", "PLUGINS_ENABLED")
 
     if STEALTH_FLAG:
-        BROWSER_STYLESHEET = "stealth"
+        BROWSER_STYLESHEET = BROWSER_STEALTH_STYLESHEET
         BROWSER_ADBLOCKER = True
         BROWSER_STORAGE = "./temp"
         BROWSER_STORE_VISITED_LINKS = False
         BROWSER_HTTPS_ONLY = True
         BROWSER_TS_DISABLED = True
-        BROWSER_AGENT = (
-            "Mozilla/5.0 (Windows NT 10.0;rv:78.0) Gecko/20100101 Firefox/78.0"
-        )
+        BROWSER_AGENT = "randomize"
         BROWSER_PROXY = None
         BROWSER_ALWAYS_ALLOW = None
+        BROWSER_BLOCK_CANVAS = True
         BROWSER_WINDOW_TITLE = "Lynx Stealth"
         WEBKIT_WEBGL_ENABLED = 0
         WEBKIT_PLUGINS_ENABLED = 0

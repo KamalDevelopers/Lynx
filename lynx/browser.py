@@ -297,6 +297,8 @@ class MainWindow(QMainWindow):
         browser.setUrl(QUrl(qurl))
 
         if confvar.BROWSER_AGENT is not None:
+            if confvar.BROWSER_AGENT == "randomize":
+                confvar.BROWSER_AGENT = lxu.random_user_agent()
             browser.page().profile().setHttpUserAgent(confvar.BROWSER_AGENT)
 
         navtb = QToolBar(self.tr("Navigation"))
@@ -569,14 +571,6 @@ class MainWindow(QMainWindow):
             browser.hide()
 
     def load_finished(self, urlbar, browser):
-        browser.page().runJavaScript(
-            """
-            navigator.doNotTrack = 1;
-            window.doNotTrack = 1;
-            navigator.msDoNotTrack = 1;"
-            """
-        )
-
         url = browser.page().url().toString()
         browser.page().updateBackgroundColor()
         if url[:12] == "view-source:":

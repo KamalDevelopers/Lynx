@@ -23,6 +23,9 @@ from PyQt5.QtGui import QIcon, QFontDatabase
 
 
 def runbrowser():
+    if confvar.BROWSER_BLOCK_CANVAS:
+        sys.argv.append("--disable-reading-from-canvas")
+
     app = QApplication(sys.argv)
     QFontDatabase.addApplicationFont(
         ":/fonts/" + confvar.BROWSER_FONT_FAMILY + ".ttf"
