@@ -1,0 +1,2 @@
+Default: Reject
+Allow: devtools

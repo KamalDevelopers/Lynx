@@ -10,6 +10,7 @@ import resources
 import extension
 import webkit as wk
 import utils.log
+import utils.cookies
 import utils.bookmark
 import utils.lynxutils as lxu
 
@@ -149,6 +150,9 @@ class MainWindow(QMainWindow):
         )
         QWebEngineProfile.defaultProfile().setUrlRequestInterceptor(
             interceptor
+        )
+        QWebEngineProfile.defaultProfile().cookieStore().setCookieFilter(
+            utils.cookies.filter
         )
 
         if confvar.BROWSER_STORE_VISITED_LINKS is False:

@@ -4,6 +4,7 @@ import time
 
 import confvar
 import utils.argparser
+import utils.cookies
 import utils.log
 
 import utils.bookmark
@@ -82,6 +83,8 @@ if __name__ == "__main__":
     start_time = time.time()
     if confvar.BROWSER_ADBLOCKER:
         utils.adblock.read_filter(confvar.BASE_PATH + "adblock/filter.txt")
+    if confvar.BROWSER_COOKIE_FILTER:
+        utils.cookies.read_filter(confvar.BASE_PATH + "adblock/cookies.txt")
 
     extension.read_extensions()
     utils.bookmark.read_bookmarks()
