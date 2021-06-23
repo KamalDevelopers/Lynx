@@ -50,23 +50,21 @@ if str(exit) == "n":
     sys.exit()
 
 version = gversion("lynx/lynx.json")
-zips = "Lynx " + str(platform.system()) + " " + version
+zips = "Lynx " + str(platform.system()) + " " + version + ".zip"
 fname = "Lynx"
 os.mkdir(fname)
 
 PyInstaller.__main__.run(
-    ["lynx/main.py", "--noconsole", "--onefile", "-ilynx-profile/themes/icons/logo.ico"]
+    ["lynx/main.py", "--noconsole", "--onefile", "-ilynx-profile/themes/icons/logo.ico", "--hidden-import=PyQt5.sip"]
 )
 
 # Rename Executable
 if platform.system() == "Linux":
-    shutil.move("dist/main", "./" + fname + "/lynx")
+    shutil.move("dist/main", "./" + fname + "/Lynx")
 if platform.system() == "Windows":
     shutil.move("dist/main.exe", "./" + fname + "/Lynx.exe")
 
 # Copy Files
-shutil.copytree("lynx/font", "./" + fname + "/font")
-shutil.copytree("lynx/img", "./" + fname + "/img")
 shutil.copytree("lynx-profile", "./" + fname + "/lynx-profile")
 
 # Write Package Info
@@ -74,8 +72,6 @@ package(version, "lynx/lynx.json", "./" + fname + "/lynx.json", "lynx-profile/")
 
 # Create Zip
 zipf = zipfile.ZipFile(zips, "w", zipfile.ZIP_DEFLATED, compresslevel=1)
-zipdir(fname + "/font", zipf)
-zipdir(fname + "/img", zipf)
 zipdir(fname, zipf)
 zipf.close()
 
