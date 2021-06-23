@@ -2,12 +2,14 @@ import os
 import sys
 import json
 import platform
+import resources
 from os.path import expanduser
 from configparser import ConfigParser
 
 import utils.version
 import utils.log
 from utils.stylesheet import StyleSheet
+from PyQt5.QtCore import QFile, QIODevice
 
 
 with open("lynx.json") as f:
@@ -45,41 +47,6 @@ with open(BASE_PATH + "shortcuts.json") as f:
     keyboard_shortcuts = json.load(f)["shortcuts"]
 
 
-# Default Values
-BROWSER_WINDOW_TITLE = "Lynx"
-BROWSER_BORDERLESS = True
-BROWSER_LOCALE = None
-BROWSER_HOMEPAGE = "lynx:home"
-BROWSER_NEWTAB = "lynx:blank"
-BROWSER_FONT_FAMILY = "Noto"
-BROWSER_STYLESHEET = "equinox"
-BROWSER_STEALTH_STYLESHEET = "stealth"
-BROWSER_FONT_SIZE = 10
-BROWSER_SHORT_URL = 2
-BROWSER_STORAGE = False
-BROWSER_ADBLOCKER = True
-BROWSER_COOKIE_FILTER = False
-BROWSER_STORE_VISITED_LINKS = False
-BROWSER_HTTPS_ONLY = False
-BROWSER_ALWAYS_ALLOW = None
-BROWSER_SEARCH_ENGINE = (
-    "https://duckduckgo.com/?q="
-)
-BROWSER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0"
-)
-BROWSER_BLOCK_CANVAS = False
-BROWSER_PROXY = None
-BROWSER_TS_DISABLED = True
-
-WEBKIT_JAVASCRIPT_ENABLED = 1
-WEBKIT_FULLSCREEN_ENABLED = 1
-WEBKIT_WEBGL_ENABLED = 1
-WEBKIT_PLUGINS_ENABLED = 1
-WEBKIT_JAVASCRIPT_POPUPS_ENABLED = 1
-WEBKIT_DEBUG_LEVEL = 0
-
-
 def alter_value(cat, var, val):
     global configur
     val = str(val)
@@ -111,13 +78,21 @@ def configure():
         BROWSER_LOCALE, STEALTH_FLAG, BROWSER_TS_DISABLED, BROWSER_SHORT_URL, \
         BROWSER_BORDERLESS, BROWSER_ALWAYS_ALLOW, BROWSER_SEARCH_ENGINE, \
         BROWSER_PROXY, BROWSER_STORAGE, BROWSER_BLOCK_CANVAS, \
-        BROWSER_STEALTH_STYLESHEET, BROWSER_COOKIE_FILTER
+        BROWSER_STEALTH_STYLESHEET, BROWSER_COOKIE_FILTER, \
+        BROWSER_STORE_VISITED_LINKS
 
     global WEBKIT_JAVASCRIPT_ENABLED, WEBKIT_FULLSCREEN_ENABLED, \
         WEBKIT_WEBGL_ENABLED, WEBKIT_PLUGINS_ENABLED, \
-        WEBKIT_JAVASCRIPT_POPUPS_ENABLED
+        WEBKIT_JAVASCRIPT_POPUPS_ENABLED, WEBKIT_DEBUG_LEVEL
 
-    configur.read(BASE_PATH + "config.ini")
+    default_file = QFile(":/config/default.ini")
+    default_file.open(QIODevice.ReadOnly)
+    default_config = default_file.readAll().data().decode()
+    default_file.close()
+
+    configur.read_string(default_config)
+    if os.path.isfile(BASE_PATH + "config.ini"):
+        configur.read(BASE_PATH + "config.ini")
 
     BROWSER_WINDOW_TITLE = "Lynx"
     BROWSER_HOMEPAGE = configur.get("BROWSER", "HOMEPAGE")
@@ -142,6 +117,9 @@ def configure():
         "BROWSER", "STORE_VISITED_LINKS"
     )
 
+    BROWSER_AGENT = (
+        "Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0"
+    )
     if sparse(configur.get("BROWSER", "AGENT")):
         BROWSER_AGENT = sparse(configur.get("BROWSER", "AGENT"))
 
@@ -159,6 +137,7 @@ def configure():
     WEBKIT_FULLSCREEN_ENABLED = configur.getboolean(
         "WEBKIT", "FULLSCREEN_ENABLED"
     )
+    WEBKIT_DEBUG_LEVEL = 0
     WEBKIT_WEBGL_ENABLED = configur.getboolean("WEBKIT", "WEBGL_ENABLED")
     WEBKIT_PLUGINS_ENABLED = configur.getboolean("WEBKIT", "PLUGINS_ENABLED")
 
@@ -183,9 +162,4 @@ def configure():
         style = StyleSheet(f.read())
 
 
-try:
-    configure()
-except:
-    utils.log.dbg("ERROR")(
-        "Failed to load configuration from profile"
-    )
+configure()
