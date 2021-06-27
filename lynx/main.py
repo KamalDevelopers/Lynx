@@ -26,6 +26,10 @@ from PyQt5.QtGui import QIcon, QFontDatabase
 def runbrowser():
     if confvar.BROWSER_BLOCK_CANVAS:
         sys.argv.append("--disable-reading-from-canvas")
+    if confvar.BROWSER_BLOCK_WEBRTC_LEAKS:
+        sys.argv.append(
+            "--force-webrtc-ip-handling-policy=disable_non_proxied_udp"
+        )
 
     app = QApplication(sys.argv)
     QFontDatabase.addApplicationFont(
